@@ -4,6 +4,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <link rel='stylesheet' href="{{ url_for('static', filename='css/index.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="{{ url_for('static', filename='js/index.js') }}"></script>
 {% endblock %}
 {% block content %}
     <div id="main-div">
@@ -30,7 +31,7 @@
                                 <h1>Lorem Ipsum</h1>
                             </div>
                             <div class='description-body'>
-                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent ipsum metus, pharetra ut imperdiet vel, condimentum vehicula ante. Cras maximus, felis et ullamcorper malesuada, dolor mauris tincidunt ante, at faucibus lectus arcu ac velit. Aenean tincidunt sapien risus, posuere pellentesque tortor faucibus quis. Nam ac est id metus ultricies maximus. Vivamus luctus vulputate lorem vel facilisis. Maecenas eu scelerisque sapien, in euismod risus. Aliquam tincidunt lectus a risus sagittis, quis dapibus quam porttitor.
+                                    Lorem ipsum dolor sit {{ deputy.profession }} {{ deputy.id_register }} {{ deputy.name }} amet, consectetur adipiscing elit. Praesent ipsum metus, pharetra ut imperdiet vel, condimentum vehicula ante. Cras maximus, felis et ullamcorper malesuada, dolor mauris tincidunt ante, at faucibus lectus arcu ac velit. Aenean tincidunt sapien risus, posuere pellentesque tortor faucibus quis. Nam ac est id metus ultricies maximus. Vivamus luctus vulputate lorem vel facilisis. Maecenas eu scelerisque sapien, in euismod risus. Aliquam tincidunt lectus a risus sagittis, quis dapibus quam porttitor.
     
                                     In et fermentum augue. Aenean id libero facilisis, consectetur orci ac, aliquet est. Quisque lorem leo, faucibus quis neque vel, laoreet ullamcorper orci. Praesent dignissim diam a varius suscipit. Praesent quis lacus quis purus fermentum hendrerit ut in elit. Suspendisse in consectetur enim. Fusce vehicula felis vitae lorem mollis, eu fringilla lectus ornare. Fusce malesuada orci dictum elit placerat sollicitudin. Nunc tincidunt sodales aliquet. Aenean dictum eget diam sit amet pellentesque.
                                     

@@ -1,5 +1,6 @@
 from pymongo import MongoClient
 
+
 class Db():
     def __init__(self, host, port, dbname):
         try:
@@ -10,7 +11,6 @@ class Db():
         except Exception as e:
             print(e)
 
-    @classmethod
     def build_collection(self, collection_name):
         try:
             return self.connection[collection_name]
