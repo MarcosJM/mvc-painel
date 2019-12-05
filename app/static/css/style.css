@@ -1,0 +1,16 @@
+body
+{
+    width: 100%;
+    font-family: sans-serif;
+}
+.black-div
+{
+    color: #ffffff;
+    background-color: #000000;
+}
+
+.white-div
+{
+    color:#000000;
+    background-color: #ffffff;
+}
