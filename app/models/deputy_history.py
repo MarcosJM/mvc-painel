@@ -13,8 +13,6 @@ class DeputyHistory:
         query = {'ideCadastro': self.id_register}
         result = list(dbConn.build_collection(self._collection).find(query))
 
-        print(result[0]['nomeProfissao'], result[0]['dataNascimento'])
-
         history = {element['numLegislatura']: Deputy(element['ideCadastro'], element['nomeParlamentarAtual'],
                                                      element['nomeCivil'], element['sexo'],
                                                      element['dataNascimento'], element['dataFalecimento'],
@@ -28,6 +26,5 @@ class DeputyHistory:
 
     # returns deputy data from a particular legislatura
     def getLegislatureData(self, legislature_number):
-        print(self.history[legislature_number])
         return self.history[legislature_number]
 
