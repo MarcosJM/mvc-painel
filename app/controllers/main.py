@@ -3,7 +3,7 @@ from flask import render_template, request, redirect, url_for, session, flash, j
 from app.models.deputy_history import DeputyHistory
 from app import dbConn
 
-class Main():
+class Main:
     def __init__(self):
         @app.route("/")
         def homepage():
