@@ -1,53 +1,101 @@
 {% extends "base.html" %}
 {% block headblock %}
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/series-label.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/export-data.js"></script>
+    <script src="https://code.highcharts.com/modules/item-series.js"></script>
     <link rel='stylesheet' href="{{ url_for('static', filename='css/index.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <script src="{{ url_for('static', filename='js/index.js') }}"></script>
 {% endblock %}
 {% block content %}
     <div id="main-div">
-        <div class='container-fluid'>
-            <div class='container'>
-                <div class='row white-div fullheight-div'>
-                    <div class='.col-sm-8'>
-                        <div class='row'>
-                            <div class='description-header'>
-                                <h1>Lorem Ipsum</h1>
-                            </div>
-                            <div class='description-body'>
-                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent ipsum metus, pharetra ut imperdiet vel, condimentum vehicula ante. Cras maximus, felis et ullamcorper malesuada, dolor mauris tincidunt ante, at faucibus lectus arcu ac velit. Aenean tincidunt sapien risus, posuere pellentesque tortor faucibus quis. Nam ac est id metus ultricies maximus. Vivamus luctus vulputate lorem vel facilisis. Maecenas eu scelerisque sapien, in euismod risus. Aliquam tincidunt lectus a risus sagittis, quis dapibus quam porttitor.
-    
-                                    In et fermentum augue. Aenean id libero facilisis, consectetur orci ac, aliquet est. Quisque lorem leo, faucibus quis neque vel, laoreet ullamcorper orci. Praesent dignissim diam a varius suscipit. Praesent quis lacus quis purus fermentum hendrerit ut in elit. Suspendisse in consectetur enim. Fusce vehicula felis vitae lorem mollis, eu fringilla lectus ornare. Fusce malesuada orci dictum elit placerat sollicitudin. Nunc tincidunt sodales aliquet. Aenean dictum eget diam sit amet pellentesque.
-                                    
-                                    Sed at fringilla risus. Quisque vehicula ipsum a felis vehicula iaculis. Morbi a faucibus tortor. Morbi augue orci, interdum quis ullamcorper non, mollis ac quam. Maecenas sodales nunc tortor, at scelerisque turpis efficitur eget. Suspendisse potenti. Sed in consectetur justo. Nulla molestie sem nec odio finibus aliquam.
-                                    
-                                    Maecenas a nunc sodales, consequat leo nec, commodo lectus. Fusce lobortis commodo posuere. Duis euismod, risus sed rutrum hendrerit, quam felis luctus purus, non mattis enim velit commodo sem. Mauris eleifend, nunc vel mollis feugiat, erat orci dictum erat, vitae aliquet massa ante quis sapien. Curabitur at gravida magna. Aliquam lacus enim, mattis id ex eget, condimentum sodales elit. Nullam iaculis, magna et mattis dapibus, ante sapien lobortis purus, et venenatis ex arcu in tortor. Donec eget felis eu risus laoreet suscipit. Nam quis scelerisque magna. Integer eget commodo arcu. Donec ac sem et purus aliquam tristique vel et dolor. Nulla sodales tellus id pellentesque euismod. Suspendisse auctor augue at diam gravida, eget maximus nisl lacinia. In at pharetra sem. Vestibulum in dui in tellus ultrices sagittis et nec dolor.
-                            </div>
+        <div class='container'>
+            <div class='row'>
+                Dashboard
+            </div>
+        </div>
+        <div class= 'çontainer'>
+            <div class='row'>
+                <div class='col-sm-2'>
+                </div>
+                <div class='col-sm-4'>
+                </div>
+                <div class='col-sm-2'>
+                </div>
+            </div>
+        </div>
+        <div class='container'>
+            <div class='row'>
+                <div class='container'>
+                    <div class='row'>
+                        <h1>Sobre</h1>
+                    </div>
+                </div>
+                <div class='container'>
+                    <div class='row'>
+                        Suspendisse eget placerat enim, at porttitor orci. Integer feugiat ipsum eu erat lacinia, sit amet venenatis justo sagittis. Vestibulum tempus purus et suscipit auctor. Cras porta, odio et posuere mollis, lectus ante tincidunt enim, vehicula tempus justo metus auctor quam. Sed erat dolor, placerat sed mi non, ultrices scelerisque lectus. Donec rhoncus dui ut interdum luctus. Nulla rutrum molestie mi, sed tempor eros ullamcorper vel. Quisque eget quam ac lectus finibus dapibus nec vitae leo. Mauris viverra est ligula, et semper justo scelerisque id. Suspendisse posuere cursus magna, ultrices consectetur felis luctus ac. Maecenas eget nunc eget nisi rutrum posuere. Pellentesque porttitor orci ut massa tristique hendrerit. Mauris turpis arcu, porttitor nec malesuada non, varius et odio. Quisque dictum, libero eget blandit tincidunt, ex mauris rhoncus leo, et varius ante sem in orci. Phasellus vel urna quis nisi sollicitudin posuere vel quis sem.
+                    </div>
+                </div>                
+            </div>
+        </div>
+        <div class='container'>
+            <div class='row'>
+                <div class='container'>
+                    <div class='row'>
+                        <h1>Diversidade</h1>
+                    </div>
+                </div>
+                <div class='container'>
+                    <div class='row'>
+                        <div class='col-sm-4'>
+                                Suspendisse eget placerat enim, at porttitor orci. Integer feugiat ipsum eu erat lacinia, sit amet venenatis justo sagittis. Vestibulum tempus purus et suscipit auctor. Cras porta, odio et posuere mollis, lectus ante tincidunt enim, vehicula tempus justo metus auctor quam. Sed erat dolor, placerat sed mi non, ultrices scelerisque lectus. Donec rhoncus dui ut interdum luctus. Nulla rutrum molestie mi, sed tempor eros ullamcorper vel. Quisque eget quam ac lectus finibus dapibus nec vitae leo. Mauris viverra est ligula, et semper justo scelerisque id. Suspendisse posuere cursus magna, ultrices consectetur felis luctus ac. Maecenas eget nunc eget nisi rutrum posuere. Pellentesque porttitor orci ut massa tristique hendrerit. Mauris turpis arcu, porttitor nec malesuada non, varius et odio. Quisque dictum, libero eget blandit tincidunt, ex mauris rhoncus leo, et varius ante sem in orci. Phasellus vel urna quis nisi sollicitudin posuere vel quis sem.
                         </div>
-                        <div class='row'>
-                            <div class='description-header'>
-                                <h1>Lorem Ipsum</h1>
-                            </div>
-                            <div class='description-body'>
-                                    Lorem ipsum dolor sit {{ deputy.profession }} {{ deputy.id_register }} {{ deputy.name }} amet, consectetur adipiscing elit. Praesent ipsum metus, pharetra ut imperdiet vel, condimentum vehicula ante. Cras maximus, felis et ullamcorper malesuada, dolor mauris tincidunt ante, at faucibus lectus arcu ac velit. Aenean tincidunt sapien risus, posuere pellentesque tortor faucibus quis. Nam ac est id metus ultricies maximus. Vivamus luctus vulputate lorem vel facilisis. Maecenas eu scelerisque sapien, in euismod risus. Aliquam tincidunt lectus a risus sagittis, quis dapibus quam porttitor.
-    
-                                    In et fermentum augue. Aenean id libero facilisis, consectetur orci ac, aliquet est. Quisque lorem leo, faucibus quis neque vel, laoreet ullamcorper orci. Praesent dignissim diam a varius suscipit. Praesent quis lacus quis purus fermentum hendrerit ut in elit. Suspendisse in consectetur enim. Fusce vehicula felis vitae lorem mollis, eu fringilla lectus ornare. Fusce malesuada orci dictum elit placerat sollicitudin. Nunc tincidunt sodales aliquet. Aenean dictum eget diam sit amet pellentesque.
-                                    
-                                    Sed at fringilla risus. Quisque vehicula ipsum a felis vehicula iaculis. Morbi a faucibus tortor. Morbi augue orci, interdum quis ullamcorper non, mollis ac quam. Maecenas sodales nunc tortor, at scelerisque turpis efficitur eget. Suspendisse potenti. Sed in consectetur justo. Nulla molestie sem nec odio finibus aliquam.
-                                    
-                                    Maecenas a nunc sodales, consequat leo nec, commodo lectus. Fusce lobortis commodo posuere. Duis euismod, risus sed rutrum hendrerit, quam felis luctus purus, non mattis enim velit commodo sem. Mauris eleifend, nunc vel mollis feugiat, erat orci dictum erat, vitae aliquet massa ante quis sapien. Curabitur at gravida magna. Aliquam lacus enim, mattis id ex eget, condimentum sodales elit. Nullam iaculis, magna et mattis dapibus, ante sapien lobortis purus, et venenatis ex arcu in tortor. Donec eget felis eu risus laoreet suscipit. Nam quis scelerisque magna. Integer eget commodo arcu. Donec ac sem et purus aliquam tristique vel et dolor. Nulla sodales tellus id pellentesque euismod. Suspendisse auctor augue at diam gravida, eget maximus nisl lacinia. In at pharetra sem. Vestibulum in dui in tellus ultrices sagittis et nec dolor.
-                            </div>
+                        <div class='col-sm-8'>
+                            <div id= 'genderChart'></div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class='container-fluid'>
-            <div class='group-buttons'>
-                    <a href="#">Link</a>
+        <div class='container'>
+            <div class='row'>
+                <div class='container'>
+                    <div class='row'>
+                        <h1>Profissões</h1>
+                    </div>
+                </div>
+                <div class='container'>
+                    <div class='row'>
+                        <div class='col-sm-4'>
+                            Suspendisse eget placerat enim, at porttitor orci. Integer feugiat ipsum eu erat lacinia, sit amet venenatis justo sagittis. Vestibulum tempus purus et suscipit auctor. Cras porta, odio et posuere mollis, lectus ante tincidunt enim, vehicula tempus justo metus auctor quam. Sed erat dolor, placerat sed mi non, ultrices scelerisque lectus. Donec rhoncus dui ut interdum luctus. Nulla rutrum molestie mi, sed tempor eros ullamcorper vel. Quisque eget quam ac lectus finibus dapibus nec vitae leo. Mauris viverra est ligula, et semper justo scelerisque id. Suspendisse posuere cursus magna, ultrices consectetur felis luctus ac. Maecenas eget nunc eget nisi rutrum posuere. Pellentesque porttitor orci ut massa tristique hendrerit. Mauris turpis arcu, porttitor nec malesuada non, varius et odio. Quisque dictum, libero eget blandit tincidunt, ex mauris rhoncus leo, et varius ante sem in orci. Phasellus vel urna quis nisi sollicitudin posuere vel quis sem.
+                        </div>
+                        <div class='col-sm-4'>
+    
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
+        <div class='container'>
+            <div class='row'>
+                <div class='container'>
+                    <div class='row'>
+                        <h1>Gastos</h1>
+                    </div>
+                </div>
+                <div class='container'>
+                    <div class='row'>
+                        <div class='col-sm-4'>
+                            Suspendisse eget placerat enim, at porttitor orci. Integer feugiat ipsum eu erat lacinia, sit amet venenatis justo sagittis. Vestibulum tempus purus et suscipit auctor. Cras porta, odio et posuere mollis, lectus ante tincidunt enim, vehicula tempus justo metus auctor quam. Sed erat dolor, placerat sed mi non, ultrices scelerisque lectus. Donec rhoncus dui ut interdum luctus. Nulla rutrum molestie mi, sed tempor eros ullamcorper vel. Quisque eget quam ac lectus finibus dapibus nec vitae leo. Mauris viverra est ligula, et semper justo scelerisque id. Suspendisse posuere cursus magna, ultrices consectetur felis luctus ac. Maecenas eget nunc eget nisi rutrum posuere. Pellentesque porttitor orci ut massa tristique hendrerit. Mauris turpis arcu, porttitor nec malesuada non, varius et odio. Quisque dictum, libero eget blandit tincidunt, ex mauris rhoncus leo, et varius ante sem in orci. Phasellus vel urna quis nisi sollicitudin posuere vel quis sem.
+                        </div>
+                        <div class='col-sm-4'>
+        
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>    
     </div>
 {% endblock %}
