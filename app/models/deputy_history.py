@@ -16,15 +16,14 @@ class DeputyHistory:
         history = {element['numLegislatura']: Deputy(element['ideCadastro'], element['nomeParlamentarAtual'],
                                                      element['nomeCivil'], element['sexo'],
                                                      element['dataNascimento'], element['dataFalecimento'],
-                                                     element['nomeProfissao'], element['email'],
+                                                     element['nomeProfissao'],
+                                                     element['escolaridade'], element['email'],
                                                      element['ufRepresentacaoAtual'], element['partidoAtual'],
                                                      element['situacaoNaLegislaturaAtual'],
                                                      element['filiacoesPartidarias'],
                                                      element['periodosExercicio']) for element in result}
 
         return history
-
-
 
     # returns deputy data from a particular legislatura
     def getLegislatureData(self, legislature_number):

@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block headblock %}
-    <link rel='stylesheet' href="{{ url_for('static', filename='css/index.css') }}">
+    <link rel='stylesheet' href="{{ url_for('static', filename='css/camara.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 
     <!-- HIGHCHARTS LIBRARY -->
@@ -16,11 +16,12 @@
     <script src="https://code.highcharts.com/modules/series-label.js"></script>
     <script src="https://code.highcharts.com/modules/export-data.js"></script>
     <script src="https://code.highcharts.com/modules/item-series.js"></script>
+    <script src="https://code.highcharts.com/modules/funnel.js"></script>
 
 
     <!-- HIGHCHARTS LIBRARY -->
 
-    <script src="{{ url_for('static', filename='js/index.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/camara.js') }}"></script>
 {% endblock %}
 {% block content %}
     <div id="main-div">
@@ -38,7 +39,7 @@
             <div class='row'>
                 <div class='container'>
                     <div class='row'>
-                        <h1>Sobre</h1>
+                        <h1>A Câmara</h1>
                     </div>
                 </div>
                 <div class='container'>
@@ -87,6 +88,25 @@
                         </div>
                         <div class='col-sm-8'>
                                 <div id="chart"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class='container'>
+            <div class='row'>
+                <div class='container'>
+                    <div class='row'>
+                        <h1>Escolaridade</h1>
+                    </div>
+                </div>
+                <div class='container'>
+                    <div class='row'>
+                        <div class='col-sm-4'>
+                            Suspendisse eget placerat enim, at porttitor orci. Integer feugiat ipsum eu erat lacinia, sit amet venenatis justo sagittis. Vestibulum tempus purus et suscipit auctor. Cras porta, odio et posuere mollis, lectus ante tincidunt enim, vehicula tempus justo metus auctor quam. Sed erat dolor, placerat sed mi non, ultrices scelerisque lectus. Donec rhoncus dui ut interdum luctus. Nulla rutrum molestie mi, sed tempor eros ullamcorper vel. Quisque eget quam ac lectus finibus dapibus nec vitae leo. Mauris viverra est ligula, et semper justo scelerisque id. Suspendisse posuere cursus magna, ultrices consectetur felis luctus ac. Maecenas eget nunc eget nisi rutrum posuere. Pellentesque porttitor orci ut massa tristique hendrerit. Mauris turpis arcu, porttitor nec malesuada non, varius et odio. Quisque dictum, libero eget blandit tincidunt, ex mauris rhoncus leo, et varius ante sem in orci. Phasellus vel urna quis nisi sollicitudin posuere vel quis sem.
+                        </div>
+                        <div class='col-sm-8'>
+                                <div id="schooling"></div>
                         </div>
                     </div>
                 </div>

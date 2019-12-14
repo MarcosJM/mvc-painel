@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block headblock %}
   <link rel="stylesheet" href="{{ url_for('static', filename='css/selection.css') }}">
-  <script type="text/javascript" src= "{{ url_for('static', filename='js/selection.css') }}"></script>
+  <script type="text/javascript" src= "{{ url_for('static', filename='js/selection.js') }}"></script>
 {% endblock %}
 {% block content %}
   <div id="main-div">
@@ -26,19 +26,19 @@
     <div class="container">
       <div class="row center-items">
         <div class="col-sm-3">
-          <div class="analysis-selection">
+          <div class="analysis-selection" id="anchor-camara-page">
             <i class="glyphicon fas fa-landmark fa-4x"></i>
             <p class="box-label">A Câmara</p>
           </div>
         </div>
         <div class="col-sm-3">
-          <div class="analysis-selection">
+          <div class="analysis-selection" id="anchor-deputy-page">
             <i class="glyphicon fas fa-user fa-4x"></i>
             <p class="box-label">Os Deputados</p>
           </div>
         </div>
         <div class="col-sm-3">
-          <div class="analysis-selection">
+          <div class="analysis-selection" id="anchor-comparison-page">
             <i class="glyphicon fas fa-users fa-4x"></i>
             <p class="box-label">Comparar</p>
           </div>
