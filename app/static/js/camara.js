@@ -31,7 +31,6 @@ function loadGenderCount()
 
         chart: {
             type: 'item',
-            // height: '80%'
         },
 
         title: {
@@ -45,7 +44,6 @@ function loadGenderCount()
         legend: {
             labelFormat: '{name} <span style="opacity: 0.4">{y}</span>'
         },
-        tooltip: { enabled: false },
 
         series: [{
             name: 'Representatives',
@@ -111,6 +109,7 @@ function loadSchooling() {
            Highcharts.chart('schooling', {
               chart: {
                 type: 'funnel',
+                height: '500'
               },
               title: {
                 text: 'Escolaridade'
