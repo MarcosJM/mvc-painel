@@ -9,6 +9,10 @@ class Main:
         def homepage():
             return render_template("home.html")
 
+        @app.route("/explore/")
+        def exploreSelect():
+            return render_template("selectionPage.html")
+
 class MainReqs:
     def __init__(self):
         @app.route("/gender_count", methods=['POST'])

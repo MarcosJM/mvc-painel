@@ -2,7 +2,8 @@ $(document).ready(function(){
   $('#btn-explore').click(
     function()
     {
-      //window.location.assign('');
+      alert('clicou');
+      window.location.assign('/explore/');
     }
   );
 });
