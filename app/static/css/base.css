@@ -1,43 +1,58 @@
 
+.page-header
+{
+  margin-bottom: 30px;
+  padding: 0px;
+}
+
 .header-area
 {
     padding: auto auto 30px 30px;
 }
 
 
-.header-ul 
+.header-ul
 {
     list-style-type: none;
     margin: 0;
     padding: 0;
     overflow: hidden;
     background-color: #333;
-    margin-bottom: 30px;
 }
-  
-.header-li 
+
+.header-li
 {
     float: left;
+    padding: 5px 0px;
 }
-  
+
 .anchor-headerstyle
 {
-    display: block;
     color: white;
     text-align: center;
     padding: 14px 16px;
     text-decoration: none;
 }
-  
-.header-li a:hover 
+
+.header-li a:hover
 {
     background-color: #111;
+    color: #FFFFFF;
+    text-decoration: none;
 }
 
 .footer-center
 {
-    padding: 3%;
+    padding: 2.5%;
     display: flex;
     justify-content: center;
     align-items: center;
+}
+.footer
+{
+
+}
+.main-div
+{
+  margin-bottom: 5px;
 }
