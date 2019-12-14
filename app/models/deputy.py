@@ -4,7 +4,7 @@ from datetime import date
 class Deputy:
 
     def __init__(self, id_register, parliamentary_name, name, sex, born_in, died_in, profession,
-                 email, state, party, current_status, party_affiliations, periods_in_exercise):
+                 schooling, email, state, party, current_status, party_affiliations, periods_in_exercise):
 
         self.id_register = id_register
         self.parliamentary_name = parliamentary_name
@@ -13,6 +13,7 @@ class Deputy:
         self.born_in = born_in
         self.died_in = died_in
         self.profession = profession
+        self.schooling = schooling
         self.email = email
         self.state = state
         self.party = party

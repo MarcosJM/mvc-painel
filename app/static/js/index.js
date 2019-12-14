@@ -2,6 +2,7 @@ $(document).ready(function(){
     loadGenderCount();
     loadProfessions();
     loadValuesByState();
+    loadSchooling();
 });
 
 // function loadData(){
@@ -91,6 +92,51 @@ function loadProfessions() {
                 subtitle: {
                     text: 'Frequência de cada profissão.'
                 }
+            });
+        },
+        error: function(error){
+            console.log(error);
+        }
+    });
+};
+
+function loadSchooling() {
+    $.ajax({
+        type: 'POST',
+        url: '/schooling',
+        success: function(response){
+           Highcharts.chart('schooling', {
+              chart: {
+                type: 'funnel',
+              },
+              title: {
+                text: 'Escolaridade'
+              },
+              plotOptions: {
+                funnel: {
+                  depth: 100
+                },
+                series: {
+                  dataLabels: {
+                    enabled: true,
+                    format: '<b>{point.name}</b> <br/>{point.y:,.0f} ({point.yPercentage} %)',
+                    softConnector: true,
+                    crop: false
+                  },
+                  center: ['50%', '50%'],
+                  neckWidth: '30%',
+                  neckHeight: '25%',
+                  width: '80%',
+                }
+              },
+              legend: {
+                enabled: true
+              },
+              series: [{
+                  name: 'Deputados',
+                  data: response['data']
+                }
+              ]
             });
         },
         error: function(error){
