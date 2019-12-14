@@ -1,0 +1,46 @@
+.analysis-selection
+{
+  border: 5px solid #666666;
+  color: #666666;
+  text-align: center;
+  min-width: 30%;
+  min-height: 30%;
+  padding: 60px 0px;
+  cursor: pointer;
+}
+
+.analysis-selection:hover
+{
+  border: 5px solid #666666;
+  color: #FFFFFF;
+  background-color: #999999;
+}
+
+.center-items
+{
+  display: flex;
+  justify-content: center;
+}
+
+.box-label
+{
+  margin: 0;
+}
+/*based on the answer in https://stackoverflow.com/questions/29299574/responsive-size-font-awesome-icons*/
+@media screen and (max-width: 299px) {
+    .glyphicon {
+        font-size: 1.2em;
+    }
+}
+
+@media screen and (min-width: 300px) and (max-width: 799px) {
+    .glyphicon {
+        font-size: 2em;
+    }
+}
+
+@media screen and (min-width: 800px) {
+    .glyphicon {
+        font-size: 4em;
+    }
+}

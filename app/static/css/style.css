@@ -11,7 +11,18 @@
 body
 {
     width: 100%;
+    height: 100%;
     font-family: sans-serif;
+    display: flex;
+    flex-direction: column;
+}
+.footer
+{
+  flex-shrink: 0;
+}
+.content
+{
+  flex: 1 0 auto;
 }
 .black-div
 {
