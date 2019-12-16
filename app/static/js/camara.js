@@ -4,7 +4,6 @@ $(document).ready(function(){
     loadValuesByState();
     loadSchooling();
     loadTotalSpent();
-});
 
     $("[id^='gender-leg-']").on('click', function(){
       let thisId =  $(this).attr('id').split('-');
@@ -20,6 +19,9 @@ $(document).ready(function(){
           .attr('width', '5');
       }
     });
+});
+
+
 
     /**
     function genderChart displays the gender comparisson graph
@@ -179,43 +181,41 @@ $(document).ready(function(){
                 console.log(response);
                 console.log('PASSEEEEEI');
                 Highcharts.mapChart('map', {
-                chart: {
+                  chart: {
                     map: 'countries/br/br-all'
-                },
-                title: {
-                    text: 'Highmaps basic demo'
-                },
-                subtitle: {
-                    text: 'Source map: <a href="http://code.highcharts.com/mapdata/countries/br/br-all.js">Brazil</a>'
-                },
-                series: {
-                  dataLabels: {
-                    enabled: true,
-                    format: '<b>{point.name}</b> <br/>{point.y:,.0f} ({point.yPercentage} %)',
-                    softConnector: true,
-                    crop: false
                   },
-                  center: ['50%', '50%'],
-                  neckWidth: '30%',
-                  neckHeight: '25%',
-                  width: '80%',
-                }
-              },
-              legend: {
-                enabled: true
-              },
-              series: [{
-                  name: 'Deputados',
-                  data: response['data']
-                }
-              ]
-            });
+                  title: {
+                    text: 'Highmaps basic demo'
+                  },
+                  subtitle: {
+                    text: 'Source map: <a href="http://code.highcharts.com/mapdata/countries/br/br-all.js">Brazil</a>'
+                  },
+                  series: {
+                    dataLabels: {
+                      enabled: true,
+                      format: '<b>{point.name}</b> <br/>{point.y:,.0f} ({point.yPercentage} %)',
+                      softConnector: true,
+                      crop: false
+                    },
+                    center: ['50%', '50%'],
+                    neckWidth: '30%',
+                    neckHeight: '25%',
+                    width: '80%',
+                  },
+                  legend: {
+                    enabled: true
+                  },
+                  series: [{
+                    name: 'Deputados',
+                    data: response['data']
+                  }]
+                });
         },
         error: function(error){
             console.log(error);
         }
     });
-};
+}
 
 function loadValuesByState() {
     $.ajax({
