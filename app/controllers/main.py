@@ -17,6 +17,7 @@ class Main:
         def exploreGeneral():
             return render_template("camara.html")
 
+#
 class MainReqs:
     def __init__(self):
         @app.route("/gender_count", methods=['POST'])

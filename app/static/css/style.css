@@ -35,3 +35,7 @@ body
     color:#000000;
     background-color: #ffffff;
 }
+.btn
+{
+  border-radius: 0px;
+}

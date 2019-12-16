@@ -1,4 +1,5 @@
-.btn
+.camara-image
 {
-  border-radius: 0px;
+  background: linear-gradient(rgba(102, 102, 102, 0.75), rgba(102, 102, 102, 0.75)), url("../images/camara.jpg");
+  height: 100%;
 }
