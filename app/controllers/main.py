@@ -17,7 +17,7 @@ class Main:
         def exploreGeneral():
             return render_template("camara.html")
 
-#
+
 class MainReqs:
     def __init__(self):
         @app.route("/gender_count", methods=['POST'])
@@ -30,8 +30,6 @@ def get_count_deputies_by_gender():
     result = list(dbConn.build_collection('deputado').aggregate(
         [{"$group": {"_id": {"legislatura": "$numLegislatura", "sexo": "$sexo", "deputado": "$ideCadastro"}}}]))
 
-
-
     for item in result:
         if item['_id']['legislatura'] in genderCount:
             if item['_id']['sexo'] in genderCount[item['_id']['legislatura']]:
@@ -39,5 +37,5 @@ def get_count_deputies_by_gender():
             else:
                 genderCount[item['_id']['legislatura']][item['_id']['sexo']] = 1
         else:
-            genderCount[item['_id']['legislatura']] = { item['_id']['sexo'] : 1 }
+            genderCount[item['_id']['legislatura']] = { item['_id']['sexo']: 1}
     return genderCount

@@ -3,6 +3,8 @@ $(document).ready(function(){
     loadProfessions();
     loadValuesByState();
     loadSchooling();
+    loadTotalSpent();
+});
 
     $("[id^='gender-leg-']").on('click', function(){
       let thisId =  $(this).attr('id').split('-');
@@ -186,26 +188,80 @@ $(document).ready(function(){
                 subtitle: {
                     text: 'Source map: <a href="http://code.highcharts.com/mapdata/countries/br/br-all.js">Brazil</a>'
                 },
-                series: [{
-                    data: response['data'],
-                    showInLegend: false,
-                    states: {
-                        hover: {
-                            color: '#BADA55'
-                        }
-                    },
-                    dataLabels: {
-                        enabled: true,
-                        format: '{point.name}'
-                    }
-                }]
-             });
-            },
-            error: function(error){
-                console.log('erross')
-                console.log(error);
-            }
-        });
-    }
+                series: {
+                  dataLabels: {
+                    enabled: true,
+                    format: '<b>{point.name}</b> <br/>{point.y:,.0f} ({point.yPercentage} %)',
+                    softConnector: true,
+                    crop: false
+                  },
+                  center: ['50%', '50%'],
+                  neckWidth: '30%',
+                  neckHeight: '25%',
+                  width: '80%',
+                }
+              },
+              legend: {
+                enabled: true
+              },
+              series: [{
+                  name: 'Deputados',
+                  data: response['data']
+                }
+              ]
+            });
+        },
+        error: function(error){
+            console.log(error);
+        }
+    });
+};
 
-});
+function loadValuesByState() {
+    $.ajax({
+        type: 'POST',
+        url: '/values_by_state',
+        success: function(response) {
+            Highcharts.mapChart('map', {
+            chart: {
+                map: 'countries/br/br-all'
+            },
+            title: {
+                text: 'Highmaps basic demo'
+            },
+            subtitle: {
+                text: 'Source map: <a href="http://code.highcharts.com/mapdata/countries/br/br-all.js">Brazil</a>'
+            },
+            series: [{
+                data: response['data'],
+                showInLegend: false,
+                states: {
+                    hover: {
+                        color: '#BADA55'
+                    }
+                },
+                dataLabels: {
+                    enabled: true,
+                    format: '{point.name}'
+                }
+            }]
+         });
+        },
+        error: function(error){
+            console.log(error);
+        }
+    });
+}
+
+function loadTotalSpent() {
+    $.ajax({
+        type: 'POST',
+        url: '/total_spent',
+        success: function(response) {
+            $('#total_spent').text(response['data']);
+        },
+        error: function(error){
+            console.log(error);
+        }
+    });
+}
