@@ -53,7 +53,6 @@ class GeneralAnalysis:
             query = [{'$match': {'codLegislatura': legislature_number}},
                      {'$group': {'_id': 0, 'sum': {'$sum': '$vlrLiquido'}}}]
             result = list(self._collection_expense.aggregate(query))
-            print(result)
             result = result[0]['sum']
             result_fmt = {'data': format_number(result)}
             return result_fmt
