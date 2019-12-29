@@ -1,5 +1,5 @@
 from app import app
-from flask import render_template, request, redirect, url_for, session, flash, json
+from flask import request
 from app import dbConn
 from datetime import datetime
 from collections import Counter
@@ -95,6 +95,40 @@ class ScoreSystem:
                 score = (deputy_result / best_result) * 10
                 return score
 
+        def calculateIndicatorTwoScore(deputy_id, legislature_number=56):
+            """
+            this method calculates the score of a deputy in the fiscalizador indicator perspective
+            :param deputy_id: String - the deputy's identifier
+            :param legislature_number: String - the legislature to be considered
+            :return: float - a value between 0 and 10
+            """
+            pipeline = [{"$match": {"legislatura": legislature_number}},
+                        {"$group": {"_id": "$sigla", "count": {"$sum": 1}}}]
+
+            # getting the number of reunions in each cpi
+            cpiReunions = list(self._collections['reuniao_comissao_inquerito'].aggregate(pipeline))
+            cpiReunionsFormatted = {}
+            for cpi in cpiReunions:
+                valuesOnly = list(cpi.values())
+                cpiReunionsFormatted.update({valuesOnly[0]: valuesOnly[1]})
+            pipeline[0]['$match'] = dict(pipeline[0]['$match'], **{'presencas': deputy_id})
+
+            # getting the presences of the deputy in the reunions he attended
+            cpiPresences = list(self._collections['reuniao_comissao_inquerito'].aggregate(pipeline))
+            cpiPresencesFormatted = {}
+            for cpi in cpiPresences:
+                valuesOnly = list(cpi.values())
+                cpiPresencesFormatted.update({valuesOnly[0]: valuesOnly[1]})
+
+            # for each cpi the deputy attended, we compare his attendances to the total number of meetings
+            indicatorScore = 0
+            for cpi in cpiPresencesFormatted.items():
+                print('cpi formatted', cpiPresencesFormatted)
+                print('cpi reunions', cpiReunionsFormatted)
+                indicatorScore += (cpi[1] / cpiReunionsFormatted[cpi[0]])
+
+            return str((indicatorScore / len(cpiPresencesFormatted)) * 10)
+
         @app.route("/score_indicator_three", methods=['GET', 'POST'])
         def requestIndicatorThreeScore():
             # getting variables from url
@@ -102,5 +136,9 @@ class ScoreSystem:
             legislature_number = request.args.get('legislature_number', default=56, type=int)
             return calculateIndicatorThreeScore(deputy_id, legislature_number)
 
-        # @app.route("/score_indicator_one", methods=['GET', 'POST'])
-
+        @app.route("/score_indicator_two", methods=['GET', 'POST'])
+        def requestIndicatorTwoScore():
+            # getting variables from url
+            deputy_id = request.args.get('deputy_id', type=int)
+            legislature_number = request.args.get('legislature_number', default=56, type=int)
+            return calculateIndicatorTwoScore(deputy_id, legislature_number)
