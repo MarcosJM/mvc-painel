@@ -10,6 +10,7 @@ COLLECTIONS_NAMES = ['deputado', 'gasto', 'reuniao_audiencia_publica', 'reuniao_
 
 
 def initialize_collections(collections=COLLECTIONS_NAMES):
+    """ Function to initialize mongodb collections. Return a dictionary w/ each collection. """
     try:
         collections_dict = {}
         for collection in collections:
@@ -19,12 +20,12 @@ def initialize_collections(collections=COLLECTIONS_NAMES):
         print(e)
 
 def dateformats():
+    """ Possible date formats. Both of them are used by the Camara dos Deputados data API. """
     return ['%Y-%m-%d', '%d/%m/%Y']
 
 
 def str2date(string):
     """Parse a string into a datetime object."""
-
     for fmt in dateformats():
         try:
             return datetime.strptime(string, fmt)
@@ -34,6 +35,7 @@ def str2date(string):
 
 
 def get_records_by_intervals(records, dates, data_key):
+    """ Given a records with date (accessed by data_key) and dates, recover the events within the dates ranges. """
     if len(dates) == 1:
         date_start = str2date(dates[0][0])
         date_finish = str2date(dates[0][1])
