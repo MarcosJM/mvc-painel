@@ -1,18 +1,60 @@
 from app import app
-from flask import render_template, request, redirect, url_for, session, flash, json
+from flask import request
 from app import dbConn
+from datetime import datetime
+from collections import Counter
 # =================================================
+
+COLLECTIONS_NAMES = ['deputado', 'gasto', 'reuniao_audiencia_publica', 'reuniao_comissao_inquerito',
+                     'reuniao_comissao_permanente', 'autoria', 'votacao']
+
+
+def initialize_collections(collections=COLLECTIONS_NAMES):
+    """ Function to initialize mongodb collections. Return a dictionary w/ each collection. """
+    try:
+        collections_dict = {}
+        for collection in collections:
+            collections_dict[collection] = dbConn.build_collection(collection)
+        return collections_dict
+    except Exception as e:
+        print(e)
+
+def dateformats():
+    """ Possible date formats. Both of them are used by the Camara dos Deputados data API. """
+    return ['%Y-%m-%d', '%d/%m/%Y']
+
+
+def str2date(string):
+    """Parse a string into a datetime object."""
+    for fmt in dateformats():
+        try:
+            return datetime.strptime(string, fmt)
+        except ValueError:
+            pass
+    raise ValueError("'%s' is not a recognized date/time" % string)
+
+
+def get_records_by_intervals(records, dates, data_key):
+    """ Given a records with date (accessed by data_key) and dates, recover the events within the dates ranges. """
+    if len(dates) == 1:
+        date_start = str2date(dates[0][0])
+        date_finish = str2date(dates[0][1])
+        result = [item for item in records if date_start <= str2date(item[data_key]) <= date_finish]
+
+    elif len(dates) > 1:  # more than one date to compare
+        result = []
+        for date in dates:
+            date_start = str2date(date[0])
+            date_finish = str2date(date[1])
+            result += [item for item in records if date_start <= str2date(item[data_key])
+                       <= date_finish]
+    return result
 
 
 class ScoreSystem:
     def __init__(self):
+        self._collections = initialize_collections()
 
-        self._collection_deputy = dbConn.build_collection('deputado')
-        self._collection_expense = dbConn.build_collection('gasto')
-        self._collection_public_audience = dbConn.build_collection('reuniao_audiencia_publica')
-        self._collection_cpi = dbConn.build_collection('reuniao_comissao_inquerito')
-
-        @app.route("/score_indicator_three", methods=['POST'])
         def calculateIndicatorThreeScore(deputy_id, legislature_number=56):
             """
             calculate the transparent indicator of the deputy final score
@@ -21,45 +63,58 @@ class ScoreSystem:
             :param legislature_number: to filter
             :return: score (0-10)
             """
-            # getting variables from url
-            deputy_id = request.args.get('deputy_id', type=int)
-            legislature_number = request.args.get('legislature_number', default=56, type=int)
 
-            query = {'legislatura': legislature_number}
-            result = self._collection_public_audience.count_documents(query)
-            total_number_of_public_audience = result
+            # recover all the public audiences events that happened in a legislature
+            query_all_events = {'legislatura': legislature_number}
+            result_all_events = list(self._collections['reuniao_audiencia_publica'].find(query_all_events))
+            public_audiences = result_all_events
 
-            query2 = dict(query, **{'presencas': deputy_id})
-            result2 = self._collection_public_audience.count_documents(query2)
-            total_number_of_public_audience_deputy = result2
+            # recover the periods in which the deputy was actively working
+            query_deputy_availability = {'numLegislatura': str(legislature_number), 'ideCadastro': str(deputy_id)}
+            query_field = {'periodosExercicio': 1, '_id': 0}
+            result = next(self._collections['deputado'].find(query_deputy_availability, query_field), None)
 
-            score = (total_number_of_public_audience_deputy/total_number_of_public_audience)*10
-            return score
+            if result is not None:
+                periods_of_exercise_deputy = result['periodosExercicio']['periodoExercicio']
 
-        @app.route("/score_indicator_two", methods=['GET','POST'])
-        def calculateIndicatorTwoScore():
+                if isinstance(periods_of_exercise_deputy, dict):
+                    periods_of_exercise_deputy = [periods_of_exercise_deputy]
+
+                dates = [(item['dataInicio'], item['dataFim']) for item in
+                         periods_of_exercise_deputy]
+
+                # filter all public audiences by the period of availability of the deputy
+                public_audiences_filtered = get_records_by_intervals(public_audiences, dates, 'data')
+
+                # count, for each deputy, how many public audiences attended
+                public_audiences_presences = Counter([dep_id for item in public_audiences_filtered
+                                                      for dep_id in item['presencas']])
+                best_result = public_audiences_presences.most_common(1)[0][1]  # max number of presences
+                deputy_result = public_audiences_presences[deputy_id]
+
+                score = (deputy_result / best_result) * 10
+                return score
+
+        def calculateIndicatorTwoScore(deputy_id, legislature_number=56):
             """
             this method calculates the score of a deputy in the fiscalizador indicator perspective
             :param deputy_id: String - the deputy's identifier
             :param legislature_number: String - the legislature to be considered
             :return: float - a value between 0 and 10
             """
-            # getting variables from url
-            deputy_id = request.args.get('deputy_id', type=int)
-            legislature_number = request.args.get('legislature_number', default=56, type=int)
-
-            pipeline = [{"$match": {"legislatura":legislature_number}},
+            pipeline = [{"$match": {"legislatura": legislature_number}},
                         {"$group": {"_id": "$sigla", "count": {"$sum": 1}}}]
+
             # getting the number of reunions in each cpi
-            cpiReunions = list(self._collection_cpi.aggregate(pipeline))
+            cpiReunions = list(self._collections['reuniao_comissao_inquerito'].aggregate(pipeline))
             cpiReunionsFormatted = {}
             for cpi in cpiReunions:
                 valuesOnly = list(cpi.values())
                 cpiReunionsFormatted.update({valuesOnly[0]: valuesOnly[1]})
+            pipeline[0]['$match'] = dict(pipeline[0]['$match'], **{'presencas': deputy_id})
 
-            pipeline[0]['$match'] = dict(pipeline[0]['$match'], **{'presencas':deputy_id})
             # getting the presences of the deputy in the reunions he attended
-            cpiPresences = list(self._collection_cpi.aggregate(pipeline))
+            cpiPresences = list(self._collections['reuniao_comissao_inquerito'].aggregate(pipeline))
             cpiPresencesFormatted = {}
             for cpi in cpiPresences:
                 valuesOnly = list(cpi.values())
@@ -70,6 +125,20 @@ class ScoreSystem:
             for cpi in cpiPresencesFormatted.items():
                 print('cpi formatted', cpiPresencesFormatted)
                 print('cpi reunions', cpiReunionsFormatted)
-                indicatorScore += (cpi[1]/cpiReunionsFormatted[cpi[0]])
+                indicatorScore += (cpi[1] / cpiReunionsFormatted[cpi[0]])
 
-            return str((indicatorScore/len(cpiPresencesFormatted)) * 10)
+            return str((indicatorScore / len(cpiPresencesFormatted)) * 10)
+
+        @app.route("/score_indicator_three", methods=['GET', 'POST'])
+        def requestIndicatorThreeScore():
+            # getting variables from url
+            deputy_id = request.args.get('deputy_id', type=int)
+            legislature_number = request.args.get('legislature_number', default=56, type=int)
+            return calculateIndicatorThreeScore(deputy_id, legislature_number)
+
+        @app.route("/score_indicator_two", methods=['GET', 'POST'])
+        def requestIndicatorTwoScore():
+            # getting variables from url
+            deputy_id = request.args.get('deputy_id', type=int)
+            legislature_number = request.args.get('legislature_number', default=56, type=int)
+            return calculateIndicatorTwoScore(deputy_id, legislature_number)
