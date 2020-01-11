@@ -11,12 +11,13 @@ import numpy as np
 class DeputyInfo:
 
     def __init__(self, id_register):
+        self._collection_deputy = dbConn.build_collection('deputado')
         self.deputy = self._set_up_deputy(id_register)
 
     def _set_up_deputy(self, id_register):
         """ recover all information from the last legislature"""
         query = {'ideCadastro': str(id_register)}
-        result = list(self._collection_deputy.find(query).limit(1).sort({"$natural": -1}))
+        result = list(self._collection_deputy.find(query).limit(1).sort("numLegislatura", -1))[0]
 
         deputy_instance = Deputy(result['ideCadastro'], result['nomeParlamentarAtual'], result['nomeCivil'],
                                  result['sexo'], result['dataNascimento'], result['dataFalecimento'],
@@ -26,7 +27,6 @@ class DeputyInfo:
                                  result['periodosExercicio'])
         return deputy_instance
 
-    @app.route("/deputy_personal_info", methods=['GET', 'POST'])
     def getDeputyPersonalInfo(self):
         return self.deputy
 
@@ -63,14 +63,3 @@ class DeputyInfo:
         deputy_presence = presences_by_deputy[self.deputy.id_register]
 
         return {'presence': deputy_presence, 'mean-presence': mean_presence, 'all-events': total_events}
-
-
-
-
-
-
-
-
-
-
-

@@ -10,7 +10,7 @@ class DeputyListing:
         self._collection_deputy = dbConn.build_collection('deputado')
         self._query_fields = {'_id':0, 'ideCadastro': 1, 'nomeParlamentarAtual': 1, 'ufRepresentacaoAtual':1, 'partidoAtual':1, 'urlFoto':1}
 
-        @app.route("/deputy_listing", methods=['GET', 'POST'])
+        @app.route("/deputy_listing", methods=['POST'])
         def getDeputyListing():
             allDeputiesId = self.getDeputyIdList()
             allDeputies = []

@@ -2,6 +2,7 @@ from app import app
 from flask import render_template, request, redirect, url_for, session, flash, json
 from app.models.deputy_history import DeputyHistory
 from app import dbConn
+from app.controllers.deputy_info import DeputyInfo
 
 class Main:
     def __init__(self):
@@ -20,6 +21,17 @@ class Main:
         @app.route("/explore/deputados")
         def exploreDeputados():
             return render_template("deputados.html")
+
+        @app.route("/explore/deputados/deputado", methods=['GET', 'POST'])
+        def deputadoPersonalInfo():
+            depId = request.args['depId']
+            print('depId', depId)
+            deputy = DeputyInfo(depId)
+            print('deputy ', deputy.getDeputyPersonalInfo)
+            return render_template("deputado.html", personalInfo=deputy.getDeputyPersonalInfo)
+
+
+
 
 class MainReqs:
     def __init__(self):
