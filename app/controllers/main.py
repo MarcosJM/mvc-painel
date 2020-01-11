@@ -17,6 +17,9 @@ class Main:
         def exploreGeneral():
             return render_template("camara.html")
 
+        @app.route("/explore/deputados")
+        def exploreDeputados():
+            return render_template("deputados.html")
 
 class MainReqs:
     def __init__(self):
