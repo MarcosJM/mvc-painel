@@ -3,57 +3,13 @@ from flask import request
 from app import dbConn
 from datetime import datetime
 from collections import Counter
+import app.utils as utils
 # =================================================
-
-COLLECTIONS_NAMES = ['deputado', 'gasto', 'reuniao_audiencia_publica', 'reuniao_comissao_inquerito',
-                     'reuniao_comissao_permanente', 'autoria', 'votacao']
-
-
-def initialize_collections(collections=COLLECTIONS_NAMES):
-    """ Function to initialize mongodb collections. Return a dictionary w/ each collection. """
-    try:
-        collections_dict = {}
-        for collection in collections:
-            collections_dict[collection] = dbConn.build_collection(collection)
-        return collections_dict
-    except Exception as e:
-        print(e)
-
-def dateformats():
-    """ Possible date formats. Both of them are used by the Camara dos Deputados data API. """
-    return ['%Y-%m-%d', '%d/%m/%Y']
-
-
-def str2date(string):
-    """Parse a string into a datetime object."""
-    for fmt in dateformats():
-        try:
-            return datetime.strptime(string, fmt)
-        except ValueError:
-            pass
-    raise ValueError("'%s' is not a recognized date/time" % string)
-
-
-def get_records_by_intervals(records, dates, data_key):
-    """ Given a records with date (accessed by data_key) and dates, recover the events within the dates ranges. """
-    if len(dates) == 1:
-        date_start = str2date(dates[0][0])
-        date_finish = str2date(dates[0][1])
-        result = [item for item in records if date_start <= str2date(item[data_key]) <= date_finish]
-
-    elif len(dates) > 1:  # more than one date to compare
-        result = []
-        for date in dates:
-            date_start = str2date(date[0])
-            date_finish = str2date(date[1])
-            result += [item for item in records if date_start <= str2date(item[data_key])
-                       <= date_finish]
-    return result
 
 
 class ScoreSystem:
     def __init__(self):
-        self._collections = initialize_collections()
+        self._collections = dbConn.initialize_collections()
 
         def calculateIndicatorThreeScore(deputy_id, legislature_number=56):
             """
@@ -84,7 +40,7 @@ class ScoreSystem:
                          periods_of_exercise_deputy]
 
                 # filter all public audiences by the period of availability of the deputy
-                public_audiences_filtered = get_records_by_intervals(public_audiences, dates, 'data')
+                public_audiences_filtered = utils.get_records_by_intervals(public_audiences, dates, 'data')
 
                 # count, for each deputy, how many public audiences attended
                 public_audiences_presences = Counter([dep_id for item in public_audiences_filtered
@@ -128,6 +84,55 @@ class ScoreSystem:
                 indicatorScore += (cpi[1] / cpiReunionsFormatted[cpi[0]])
 
             return str((indicatorScore / len(cpiPresencesFormatted)) * 10)
+
+        def calculateIndicatorOneScore(deputy_id, legislature_number=56):
+            """
+            this method calculates the score of a deputy in the fiscalizador indicator perspective
+            :param deputy_id: String - the deputy's identifier
+            :param legislature_number: String - the legislature to be considered
+            :return: float - a value between 0 and 10
+            """
+            # ============ propositions authored
+            query_authoring = [{'$match': {'legislatura': legislature_number}},
+                               {'$group': {'_id': '$idDeputadoAutor', 'count': {'$sum': 1}}}]
+
+            result = list(self._collections['autoria'].aggregate(query_authoring))
+            best_result = max(result, key=lambda d: d['count'])['count']
+            deputy_result = next((item['count'] for item in result if item['_id'] == deputy_id), None)
+            score_authoring = (deputy_result / best_result) * 10
+
+            # ============ presence in votings
+            query_all_events = {'legislatura': legislature_number}
+            result_all_events = list(self._collections['votacao'].find(query_all_events))
+            votings = result_all_events
+
+            # recover the periods in which the deputy was actively working
+            query_deputy_availability = {'numLegislatura': str(legislature_number), 'ideCadastro': str(deputy_id)}
+            query_field = {'periodosExercicio': 1, '_id': 0}
+            result = next(self._collections['deputado'].find(query_deputy_availability, query_field), None)
+
+            if result is not None:
+                periods_of_exercise_deputy = result['periodosExercicio']['periodoExercicio']
+
+                if isinstance(periods_of_exercise_deputy, dict):
+                    periods_of_exercise_deputy = [periods_of_exercise_deputy]
+
+                dates = [(item['dataInicio'], item['dataFim']) for item in
+                         periods_of_exercise_deputy]
+
+                # filter all public audiences by the period of availability of the deputy
+                votings_filtered = utils.get_records_by_intervals(votings, dates, 'data')
+
+                total_votings = len(votings_filtered)
+                deputy_presences = [voting for voting in votings if str(deputy_id) in voting['presentes']]
+                score_voting = (deputy_presences / total_votings) * 10
+
+            # ============ presence in commissions
+            query_deputy_commissions = {'numLegislatura': str(legislature_number)}
+            query_field = {'comissoes': 1, '_id': 0}
+            result_commissions = next(self._collections['deputado'].find(query_deputy_commissions, query_field), None)
+
+            # todo finish
 
         @app.route("/score_indicator_three", methods=['GET', 'POST'])
         def requestIndicatorThreeScore():
