@@ -46,9 +46,9 @@ class DeputyInfo:
             period_in_exercise = result['periodosExercicio']['periodoExercicio']
 
             if isinstance(period_in_exercise, dict):
-                periods_of_exercise_deputy = [period_in_exercise]
+                periods_of_exercise = [period_in_exercise]
 
-            dates_in_exercise = [(item['dataInicio'], item['dataFim']) for item in periods_of_exercise_deputy]
+            dates_in_exercise = [(item['dataInicio'], item['dataFim']) for item in periods_of_exercise]
             return dates_in_exercise
         else:
             return None
@@ -120,6 +120,7 @@ class DeputyInfo:
 
         except Exception as e:
             print(e)
+
 
 
 
