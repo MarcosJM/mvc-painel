@@ -1,6 +1,8 @@
 from datetime import datetime
 
 
+LEGISLATURES = [53, 54, 55, 56]
+
 def dateformats():
     """ Possible date formats. Both of them are used by the Camara dos Deputados data API. """
     return ['%Y-%m-%d', '%d/%m/%Y']

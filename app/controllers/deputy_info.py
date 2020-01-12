@@ -19,7 +19,7 @@ class DeputyInfo:
         query = {'ideCadastro': str(id_register)}
         result = list(self._collection_deputy.find(query).limit(1).sort("numLegislatura", -1))[0]
 
-        deputy_instance = Deputy(result['ideCadastro'], result['nomeParlamentarAtual'], result['nomeCivil'],
+        deputy_instance = Deputy(result['urlFoto'], result['ideCadastro'], result['nomeParlamentarAtual'], result['nomeCivil'],
                                  result['sexo'], result['dataNascimento'], result['dataFalecimento'],
                                  result['nomeProfissao'], result['escolaridade'], result['email'],
                                  result['ufRepresentacaoAtual'], result['partidoAtual'],
@@ -42,23 +42,26 @@ class DeputyInfo:
 
         result = next(self._collection_deputy.find(query, query_field), None)
 
-        period_in_exercise = result['periodosExercicio']['periodoExercicio']
+        if result is None:
+            return None
+        else:
+            period_in_exercise = result['periodosExercicio']['periodoExercicio']
 
-        if isinstance(period_in_exercise, dict):
-            periods_of_exercise_deputy = [period_in_exercise]
+            if isinstance(period_in_exercise, dict):
+                period_in_exercise = [period_in_exercise]
 
-        dates_in_exercise = [(item['dataInicio'], item['dataFim']) for item in periods_of_exercise_deputy]
-        # ======= recover all events
-        query_event = {'legislatura': legislature_number}
-        result_event = list(dbConn.build_collection(event_collection_name).find(query_event))
-        all_events = result_event
+            dates_in_exercise = [(item['dataInicio'], item['dataFim']) for item in period_in_exercise]
+            # ======= recover all events
+            query_event = {'legislatura': legislature_number}
+            result_event = list(dbConn.build_collection(event_collection_name).find(query_event))
+            all_events = result_event
 
-        # filter all public audiences by the period of availability of the deputy
-        filtered_events = utils.get_records_by_intervals(all_events, dates_in_exercise, date_key_name)
-        total_events = len(filtered_events)  # number of votings happened in the period observed
-        presences = list(chain.from_iterable([voting[presence_key_name] for voting in filtered_events]))
-        presences_by_deputy = Counter(presences)
-        mean_presence = np.mean(list(presences_by_deputy.values()))
-        deputy_presence = presences_by_deputy[self.deputy.id_register]
+            # filter all public audiences by the period of availability of the deputy
+            filtered_events = utils.get_records_by_intervals(all_events, dates_in_exercise, date_key_name)
+            total_events = len(filtered_events)  # number of votings happened in the period observed
+            presences = list(chain.from_iterable([voting[presence_key_name] for voting in filtered_events]))
+            presences_by_deputy = Counter(presences)
+            mean_presence = np.mean(list(presences_by_deputy.values()))
+            deputy_presence = presences_by_deputy[self.deputy.id_register]
 
-        return {'presence': deputy_presence, 'mean-presence': mean_presence, 'all-events': total_events}
+            return {'presence': deputy_presence, 'mean-presence': mean_presence, 'all-events': total_events}

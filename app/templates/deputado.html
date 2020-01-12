@@ -13,9 +13,16 @@
     <!-- Google Font -->
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900" rel="stylesheet">
 
+    <!-- jquery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <!-- FontAwesome JS-->
-    <script defer src="https://use.fontawesome.com/releases/v5.1.1/js/all.js" integrity="sha384-BtvRZcyfv4r0x/phJt9Y9HhnN5ur1Z+kZbKVgzVBAlQZX4jvAuImlIz+bG7TS00a" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.1.1/js/all.j" integrity="sha384-BtvRZcyfv4r0x/phJt9Y9HhnN5ur1Z+kZbKVgzVBAlQZX4jvAuImlIz+bG7TS00a" crossorigin="anonymous"></script>
     <script src="{{ url_for('static', filename='js/deputado.js') }}"></script>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/export-data.js"></script>
+    <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+
     <!-- Theme CSS -->
     <link id="theme-style" rel="stylesheet" href="{{ url_for('static', filename='css/deputado.css') }}">
 
@@ -27,13 +34,13 @@
 	    <div class="resume-wrapper-inner mx-auto text-left bg-white shadow-lg">
 		    <header class="resume-header pt-4 pt-md-0">
 			    <div class="media flex-column flex-md-row">
-				    <img class="mr-3 img-fluid picture mx-auto" src="assets/images/profile.jpg" alt="">
+				    <img class="mr-3 img-fluid picture mx-auto deputy-picture" src="{{ personalInfo.picture_url }}" alt="foto do(a) deputado(a) {{ personalInfo.parliamentary_name }}">
 				    <div class="media-body p-4 d-flex flex-column flex-md-row mx-auto mx-lg-0">
 					    <div class="primary-info">
-						    <h1 class="name mt-0 mb-1 text-white text-uppercase text-uppercase">Fulano</h1>
-						    <div class="title mb-3">PTA</div>
+						    <h1 class="name mt-0 mb-1 text-white text-uppercase text-uppercase">{{ personalInfo.parliamentary_name }}</h1>
+						    <div class="title mb-3"> {{ personalInfo.party['sigla'] }} </div>
 						    <ul class="list-unstyled">
-								<li class="mb-2"><a href="#"><i class="far fa-envelope fa-fw mr-2" data-fa-transform="grow-3"></i>fulano@gov.br</a></li>
+								<li class="mb-2"><a href="#"><i class="far fa-envelope fa-fw mr-2" data-fa-transform="grow-3"></i>{{ personalInfo.email }}</a></li>
 						    </ul>
 					    </div>
 				    </div>
@@ -56,7 +63,7 @@
 							<p class="info-item"><span class="title">UF:</span> {{ personalInfo.state }}</p>
 							<p class="info-item"><span class="title">Partido Atual:</span> {{ personalInfo.party.sigla }}</p>
 							<p class="info-item"><span class="title">Partidos Anteriores:</span> {{ personalInfo.party_affiliations}}</p>
-							<p class="info-item"><span class="title">Tempo de Câmara:</span> {{ personalInfo.periods_in_exercise }}</p>
+							<!-- <p class="info-item"><span class="title">Tempo de Câmara:</span> {{ personalInfo.periods_in_exercise }}</p> -->
 						</div>
 				</section>
 
@@ -66,11 +73,15 @@
 						    <div class="resume-section-content">
 								<article class="resume-timeline-item position-relative pb-5">
 									<div class="resume-timeline-item-desc">
-                    {{ presencyEvents }}
 										<p>Role description goes here ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Donec pede justo, fringilla vel.</p>
-										<h6 class="font-weight-bold">Mais sobre as Comissões Permanentes</h6>
+                    <h6 class="font-weight-bold">Votações</h6>
+                    <div id="votingPrecencesChart">
+
+                    </div>
+                    <h6 class="font-weight-bold">Mais sobre as Comissões Permanentes</h6>
 										<h6 class="font-weight-bold">Mais sobre as Comissões de Inquérito</h6>
 									</div>
+
 								</article>
 						    </div>
 					    </section>
