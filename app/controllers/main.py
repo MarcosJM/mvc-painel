@@ -46,16 +46,28 @@ class MainReqs:
         def returnGenterCount():
             return get_count_deputies_by_gender()
 
-        @app.route("/deputy_voting_presence", methods=['POST'])
-        def getPresenceInVotings():
+        @app.route("/deputy_event_presence", methods=['POST'])
+        def getPresenceInEvents():
             depId = request.form['depId']
             deputy = DeputyInfo(depId)
-            votingPresences = {}
+            eventPresences = {}
             for legislature in LEGISLATURES:
                 votingPresenceInLegislature = deputy.getPresenceInEvent('votacao', 'presentes', 'data', legislature)
-                if votingPresenceInLegislature is not None:
-                    votingPresences.update({legislature: votingPresenceInLegislature})
-            return {'votingPresences': votingPresences}
+                audiencePresenceInLegislature = deputy.getPresenceInEvent('reuniao_audiencia_publica', 'presencas',
+                                                                          'data', legislature)
+                cpiPresenceInLegislature = deputy.getPresenceInEvent('reuniao_comissao_inquerito', 'presencas', 'data',
+                                                                     legislature)
+                cpPresenceInLegislature = deputy.getPresenceInEvent('reuniao_comissao_permanente', 'presencas', 'data',
+                                                                    legislature)
+                if (votingPresenceInLegislature is not None) or (audiencePresenceInLegislature is not None) or (cpiPresenceInLegislature is not None) or (cpPresenceInLegislature is not None):
+                    eventPresences.update({legislature:
+                                            {'votacoes': votingPresenceInLegislature,
+                                            'audiencias': audiencePresenceInLegislature,
+                                            'comissao_inquerito': cpiPresenceInLegislature,
+                                            'comissao_permanente': cpPresenceInLegislature}
+                                            })
+
+            return {'eventPresences': eventPresences}
 
 
 

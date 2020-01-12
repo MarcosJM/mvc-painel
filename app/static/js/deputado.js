@@ -1,25 +1,46 @@
 $(document).ready(function(){
   loadVotingPresence();
+  $("[id^='event-leg-']").on('click', function(){
+    let thisId =  $(this).attr('id').split('-');
+    thisId = thisId[thisId.length -1];
+    displayNoneCharts();
+    $('#eventPrecencesChart'+thisId).attr('style', 'display:initial');
+  });
+
+
 });
+
+function displayNoneCharts()
+{
+  $("[id^='eventPrecencesChart']").attr('style', 'display:none');
+}
 
 function loadVotingPresence()
 {
   let depId = window.location.href.split("=")[1];
   $.ajax({
       type: 'POST',
-      url: '/deputy_voting_presence',
+      url: '/deputy_event_presence',
       data:{'depId': depId},
       success: function(response){
-        let votingPresences = response.votingPresences
-        let legislatures = Object.keys(votingPresences)
-        let allEvents = []
-        let allPresences = []
+        let eventPresences = response.eventPresences
+        let legislatures = Object.keys(eventPresences)
         for(iterator=0; iterator<legislatures.length; iterator++)
         {
-          allEvents.push(votingPresences[legislatures[iterator]]['all-events']);
-          allPresences.push(votingPresences[legislatures[iterator]]['presence']);
+          $('#event-leg-'+legislatures[iterator]).prop("disabled", false);
+          let allEvents = [];
+          let allPresences = [];
+          let allAverages = [];
+          let eventNames = Object.keys(eventPresences[legislatures[iterator]]);
+          for(iterator2=0; iterator2<eventNames.length; iterator2++)
+          {
+            allEvents.push(eventPresences[legislatures[iterator]][eventNames[iterator2]]['all-events'])
+            allPresences.push(eventPresences[legislatures[iterator]][eventNames[iterator2]]['presence'])
+            allAverages.push(eventPresences[legislatures[iterator]][eventNames[iterator2]]['mean-presence'])
+          }
+          generateVotingPresenceChart('eventPrecencesChart'+String(legislatures[iterator]), eventNames, allEvents, allPresences, allAverages);
         }
-        generateVotingPresenceChart(legislatures, allEvents, allPresences);
+        $('#eventPrecencesChart'+String(legislatures[0])).attr('style', 'display:initial');
       },
       error: function(error){
           console.log(error);
@@ -27,9 +48,12 @@ function loadVotingPresence()
   });
 }
 
-function generateVotingPresenceChart(legislatures, allEvents, allPresences)
+
+
+// PLOT FUNCTIONS ===================================================================================================
+function generateVotingPresenceChart(chartDivId, eventNames, allEvents, allPresences, allAverages)
 {
-  Highcharts.chart('votingPrecencesChart', {
+  Highcharts.chart(chartDivId, {
     chart: {
         type: 'column'
     },
@@ -37,7 +61,7 @@ function generateVotingPresenceChart(legislatures, allEvents, allPresences)
         text: 'Presenças em Votações Nominais'
     },
     xAxis: {
-        categories: legislatures
+        categories: eventNames
     },
     yAxis: [{
         min: 0,
@@ -59,16 +83,22 @@ function generateVotingPresenceChart(legislatures, allEvents, allPresences)
         }
     },
     series: [{
-        name: 'Quantidade de votações',
+        name: 'Quantidade de reuniões',
         color: 'rgba(165,170,217,1)',
         data: allEvents,
         pointPadding: 0.3,
         pointPlacement: 0.0
     }, {
         name: 'Quantidade de presenças',
-        color: 'rgba(126,86,134,.9)',
+        color: 'rgba(126,86,134,1)',
         data: allPresences,
-        pointPadding: 0.4,
+        pointPadding: 0.3,
+        pointPlacement: 0.0
+    }, {
+        name: 'Presença média',
+        color: 'rgba(128, 127, 159,1)',
+        data: allAverages,
+        pointPadding: 0.3,
         pointPlacement: 0.0
     }]
   });

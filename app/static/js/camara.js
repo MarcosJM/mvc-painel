@@ -32,7 +32,6 @@ $(document).ready(function(){
     function genderChart(legislature)
     {
       let genderChartResponse = JSON.parse(localStorage.getItem('genderResponse'));
-      console.log(genderChartResponse);
       Highcharts.chart('genderChart', {
         plotOptions: {
           column: {
@@ -79,11 +78,6 @@ $(document).ready(function(){
         }]
 
       });
-      // $('#genderChart').children().click(function(){
-      //   $("#genderChart image")
-      //     .attr('transform', 'translate(4,0)')
-      //     .attr('width', '5');
-      // });
 
     }
 
@@ -178,8 +172,6 @@ $(document).ready(function(){
             type: 'POST',
             url: '/values_by_state',
             success: function(response) {
-                console.log(response);
-                console.log('PASSEEEEEI');
                 Highcharts.mapChart('map', {
                   chart: {
                     map: 'countries/br/br-all'
