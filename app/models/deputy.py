@@ -3,9 +3,10 @@ from datetime import date
 
 class Deputy:
 
-    def __init__(self, id_register, parliamentary_name, name, sex, born_in, died_in, profession,
+    def __init__(self, picture_url, id_register, parliamentary_name, name, sex, born_in, died_in, profession,
                  schooling, email, state, party, current_status, party_affiliations, periods_in_exercise):
 
+        self.picture_url = picture_url
         self.id_register = id_register
         self.parliamentary_name = parliamentary_name
         self.name = name

@@ -1,0 +1,35 @@
+.input-search-area
+{
+  display: flex;
+  justify-content: center;
+  margin-bottom: 10%;
+}
+.deputy-card
+{
+  width: 12rem;
+  display:inline-block;
+  justify-content: center;
+  margin: 0 1%;
+}
+.deputy-img
+{
+  display: block;
+  margin: 0 auto;
+  width: 8rem;
+}
+.deputy-info-display
+{
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.deputy-uf-display
+{
+  color: #B2BEB5;
+}
+.deputy-party-display
+{
+  background-color: #666666;
+  color: #FFFFFF;
+}
