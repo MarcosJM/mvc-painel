@@ -21,6 +21,18 @@ def str2date(string):
     raise ValueError("'%s' is not a recognized date/time" % string)
 
 
+def date2timestamp(date):
+    try:
+        if type(date) == str:
+            datetime_obj = str2date(date)
+            return datetime_obj.timestamp()
+
+        elif type(date) == datetime:
+            return date.timestamp()
+    except Exception as e:
+        print(e)
+
+
 def get_records_by_intervals(records, dates, data_key):
     """ Given a records with date (accessed by data_key) and dates, recover the events within the dates ranges. """
     if len(dates) == 1:  # if it's only one date

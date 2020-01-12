@@ -13,6 +13,7 @@ class DeputyInfo:
     def __init__(self, id_register):
         self._collection_deputy = dbConn.build_collection('deputado')
         self._collection_authors = dbConn.build_collection('autoria')
+        self._collection_expenses = dbConn.build_collection('gasto')
         self.deputy = self._set_up_deputy(id_register)
 
     def _set_up_deputy(self, id_register):
@@ -120,6 +121,40 @@ class DeputyInfo:
         except Exception as e:
             print(e)
 
+    def getExpenses(self, year_number=2018):
+        """  """
+        try:
+            pipeline = [{'$group': {'_id': {'legislatura': "$codLegislatura", 'ano': "$numAno", 'mes': "$numMes",
+                                            'deputado': "$ideCadastro"}, 'totalGasto': { '$sum': "$vlrLiquido"}}},
+                        {'$match': {"_id.ano": year_number}},
+                        {'$facet': {
+                            "intervalos": [{'$group': {'_id': {'mes': "$_id.mes", 'ano': "$_id.ano"},
+                                                       'gastoMaximo': {'$max': "$totalGasto"},
+                                                       'gastoMinimo': {'$min': "$totalGasto"}}}],
+                            "gastosDeputado": [{'$match': {"_id.deputado": self.deputy.id_register}},
+                                               {'$group': {'_id': {'mes': "$_id.mes", 'ano': "$_id.ano",
+                                                                   'deputado': "$_id.deputado"},
+                                                           'valorGasto': {'$push': "$totalGasto"}}},
+                                               {'$sort': {"_id.mes": 1}}
+                                               ]}}]
+            result = next(self._collection_expenses.aggregate(pipeline), None)
+
+            if result is not None:
+                ranges = [[utils.date2timestamp('1/'+str(item['_id']['mes']+'/'+str(item['_id']['ano']))),
+                           item['gastoMinimo'], item['gastoMaximo']] for item in result['intervalos']]
+                ranges = list(chain.from_iterable(ranges))
+
+                deputy_expenses = [[utils.date2timestamp('1/'+str(item['_id']['mes']+'/'+str(item['_id']['ano']))),
+                                    item['valorGasto'][0]] for item in result['gastosDeputado']]
+                deputy_expenses = list(chain.from_iterable(deputy_expenses))
+
+                return {'ranges': ranges, 'deputy_expenses': deputy_expenses}
+            else:
+                print('No result found in the DB.')
+                return None
+
+        except Exception as e:
+            print(e)
 
 
 
