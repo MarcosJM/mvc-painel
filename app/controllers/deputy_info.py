@@ -37,17 +37,17 @@ class DeputyInfo:
 
         # ======= periods of active exercise
         query = {'$and': [{'ideCadastro': str(self.deputy.id_register)},
-                          {'numLegislatura': str(legislature_number)}]}, {'periodosExercicio': 1, '_id': 0}
+                          {'numLegislatura': str(legislature_number)}]}
+        query_field = {'periodosExercicio': 1, '_id': 0}
 
-        result = list(self._collection_deputy.find(query))
+        result = next(self._collection_deputy.find(query, query_field), None)
 
-        period_in_exercise = result[0]['periodosExercicio']['periodoExercicio']
+        period_in_exercise = result['periodosExercicio']['periodoExercicio']
 
         if isinstance(period_in_exercise, dict):
             periods_of_exercise_deputy = [period_in_exercise]
 
         dates_in_exercise = [(item['dataInicio'], item['dataFim']) for item in periods_of_exercise_deputy]
-
         # ======= recover all events
         query_event = {'legislatura': legislature_number}
         result_event = list(dbConn.build_collection(event_collection_name).find(query_event))
@@ -56,8 +56,7 @@ class DeputyInfo:
         # filter all public audiences by the period of availability of the deputy
         filtered_events = utils.get_records_by_intervals(all_events, dates_in_exercise, date_key_name)
         total_events = len(filtered_events)  # number of votings happened in the period observed
-
-        presences = list(chain.from_iterable([voting[presence_key_name] for voting in total_events]))
+        presences = list(chain.from_iterable([voting[presence_key_name] for voting in filtered_events]))
         presences_by_deputy = Counter(presences)
         mean_presence = np.mean(list(presences_by_deputy.values()))
         deputy_presence = presences_by_deputy[self.deputy.id_register]

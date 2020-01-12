@@ -25,10 +25,10 @@ class Main:
         @app.route("/explore/deputados/deputado", methods=['GET', 'POST'])
         def deputadoPersonalInfo():
             depId = request.args['depId']
-            print('depId', depId)
-            deputy = DeputyInfo(depId)
-            print('deputy ', deputy.getDeputyPersonalInfo)
-            return render_template("deputado.html", personalInfo=deputy.getDeputyPersonalInfo)
+            deputy = DeputyInfo('74847')
+            print('deputy ', deputy.getDeputyPersonalInfo())
+            presencyEvents = deputy.getPresenceInEvent('votacao', 'presentes', 'data', 53)
+            return render_template("deputado.html", personalInfo=deputy.getDeputyPersonalInfo(), presencyEvents=presencyEvents)
 
 
 
