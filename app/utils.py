@@ -3,14 +3,17 @@ from datetime import datetime
 
 def dateformats():
     """ Possible date formats. Both of them are used by the Camara dos Deputados data API. """
-    return ['%Y-%m-%d', '%d/%m/%Y']
+    return ['%Y-%m-%d', '%Y-%m-%dT%H:%M:%S', '%d/%m/%Y']
 
 
 def str2date(string):
     """Parse a string into a datetime object."""
     for fmt in dateformats():
         try:
-            return datetime.strptime(string, fmt)
+            date = datetime.strptime(string, fmt)
+            # making sure ignoring time
+            date = date.replace(year=date.year, month=date.month, day=date.day, hour=0, minute=0)
+            return date
         except ValueError:
             pass
     raise ValueError("'%s' is not a recognized date/time" % string)
