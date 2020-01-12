@@ -18,9 +18,9 @@ class DeputyInfo:
     def _set_up_deputy(self, id_register):
         """ recover all information from the last legislature"""
         query = {'ideCadastro': str(id_register)}
-        result = list(self._collection_deputy.find(query).limit(1).sort({"$natural": -1}))[0]
+        result = list(self._collection_deputy.find(query).limit(1).sort("numLegislatura", -1))[0]
 
-        deputy_instance = Deputy(result['ideCadastro'], result['nomeParlamentarAtual'], result['nomeCivil'],
+        deputy_instance = Deputy(result['urlFoto'], result['ideCadastro'], result['nomeParlamentarAtual'], result['nomeCivil'],
                                  result['sexo'], result['dataNascimento'], result['dataFalecimento'],
                                  result['nomeProfissao'], result['escolaridade'], result['email'],
                                  result['ufRepresentacaoAtual'], result['partidoAtual'],
@@ -29,7 +29,6 @@ class DeputyInfo:
 
         return deputy_instance
 
-    @app.route("/deputy_personal_info", methods=['GET', 'POST'])
     def getDeputyPersonalInfo(self):
         return self.deputy
 
@@ -74,9 +73,9 @@ class DeputyInfo:
                 if total_num_events > 0:
                     presences = list(chain.from_iterable([voting[presence_key_name] for voting in filtered_events]))
                     presences_by_deputy = Counter(presences)
-                    median_presence = np.median(list(presences_by_deputy.values()))
+                    mean_presence = np.mean(list(presences_by_deputy.values()))
                     deputy_presence = presences_by_deputy[self.deputy.id_register]
-                    return {'presence': deputy_presence, 'median-presence': median_presence, 'all-events': total_num_events}
+                    return {'presence': deputy_presence, 'mean-presence': mean_presence, 'all-events': total_num_events}
                 else:
                     print('0 events')
                     return None

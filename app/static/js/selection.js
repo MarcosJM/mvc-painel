@@ -5,4 +5,16 @@ $(document).ready(function(){
       window.location.assign('/explore/camara');
     }
   );
+  $('#anchor-deputy-page').click(
+    function()
+    {
+      window.location.assign('/explore/deputados');
+    }
+  );
+  $('#anchor-comparison-page').click(
+    function()
+    {
+      window.location.assign('/explore/camara');
+    }
+  );
 });

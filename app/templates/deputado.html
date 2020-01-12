@@ -1,39 +1,46 @@
 <!DOCTYPE html>
-<html lang="en"> 
+<html lang="en">
 <head>
     <title>Pillar - Bootstrap 4 Resume/CV Template for Developers</title>
-    
+
     <!-- Meta -->
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Responsive Resume Template">
     <meta name="author" content="Xiaoying Riley at 3rd Wave Media">
-    
+
     <!-- Google Font -->
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900" rel="stylesheet">
-    
+
+    <!-- jquery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <!-- FontAwesome JS-->
-    <script defer src="https://use.fontawesome.com/releases/v5.1.1/js/all.js" integrity="sha384-BtvRZcyfv4r0x/phJt9Y9HhnN5ur1Z+kZbKVgzVBAlQZX4jvAuImlIz+bG7TS00a" crossorigin="anonymous"></script>
-       
-    <!-- Theme CSS -->  
-    <link id="theme-style" rel="stylesheet" href="../static/css/deputado.css">
+    <script defer src="https://use.fontawesome.com/releases/v5.1.1/js/all.j" integrity="sha384-BtvRZcyfv4r0x/phJt9Y9HhnN5ur1Z+kZbKVgzVBAlQZX4jvAuImlIz+bG7TS00a" crossorigin="anonymous"></script>
+    <script src="{{ url_for('static', filename='js/deputado.js') }}"></script>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/export-data.js"></script>
+    <script src="https://code.highcharts.com/modules/accessibility.js"></script>
 
-</head> 
+    <!-- Theme CSS -->
+    <link id="theme-style" rel="stylesheet" href="{{ url_for('static', filename='css/deputado.css') }}">
 
-<body>	
+</head>
+
+<body>
 
     <article class="resume-wrapper text-center position-relative">
 	    <div class="resume-wrapper-inner mx-auto text-left bg-white shadow-lg">
 		    <header class="resume-header pt-4 pt-md-0">
 			    <div class="media flex-column flex-md-row">
-				    <img class="mr-3 img-fluid picture mx-auto" src="assets/images/profile.jpg" alt="">
+				    <img class="mr-3 img-fluid picture mx-auto deputy-picture" src="{{ personalInfo.picture_url }}" alt="foto do(a) deputado(a) {{ personalInfo.parliamentary_name }}">
 				    <div class="media-body p-4 d-flex flex-column flex-md-row mx-auto mx-lg-0">
 					    <div class="primary-info">
-						    <h1 class="name mt-0 mb-1 text-white text-uppercase text-uppercase">Fulano</h1>
-						    <div class="title mb-3">PTA</div>
+						    <h1 class="name mt-0 mb-1 text-white text-uppercase text-uppercase">{{ personalInfo.parliamentary_name }}</h1>
+						    <div class="title mb-3"> {{ personalInfo.party['sigla'] }} </div>
 						    <ul class="list-unstyled">
-								<li class="mb-2"><a href="#"><i class="far fa-envelope fa-fw mr-2" data-fa-transform="grow-3"></i>fulano@gov.br</a></li>
+								<li class="mb-2"><a href="#"><i class="far fa-envelope fa-fw mr-2" data-fa-transform="grow-3"></i>{{ personalInfo.email }}</a></li>
 						    </ul>
 					    </div>
 				    </div>
@@ -44,32 +51,37 @@
 				    <h2 class="resume-section-title text-uppercase font-weight-bold pb-3 mb-3">Informações Pessoais</h2>
 				    <div class="row resume-section-content">
 						<div class="col-lg-6">
-							<p class="info-item"><span class="title">Nome Civil:</span> Placeholder</p>
-							<p class="info-item"><span class="title">Data de Nascimento:</span> Placeholder</p>
-							<p class="info-item"><span class="title">Data de Falecimento:</span> Placeholder</p>
-							<p class="info-item"><span class="title">Sexo:</span> Placeholder</p>
-							<p class="info-item"><span class="title">Escolaridade:</span> Placeholder</p>
+							<p class="info-item"><span class="title">Nome Civil:</span> {{ personalInfo.name }}</p>
+							<p class="info-item"><span class="title">Data de Nascimento:</span> {{ personalInfo.born_in }}</p>
+							<p class="info-item"><span class="title">Data de Falecimento:</span> {{ personalInfo.died_in }}</p>
+							<p class="info-item"><span class="title">Sexo:</span> {{ personalInfo.sex }}</p>
+							<p class="info-item"><span class="title">Escolaridade:</span> {{ personalInfo.schooling }}</p>
 						</div>
-						
+
 						<div class="col-lg-6">
-							<p class="info-item"><span class="title">Profissão:</span> Placeholder</p>
-							<p class="info-item"><span class="title">UF:</span> Placeholder</p>
-							<p class="info-item"><span class="title">Partido Atual:</span> Placeholder</p>
-							<p class="info-item"><span class="title">Partidos Anteriores:</span> Placeholder</p>
-							<p class="info-item"><span class="title">Tempo de Câmara:</span> Placeholder</p>
+							<p class="info-item"><span class="title">Profissão:</span> {{ personalInfo.profession }}</p>
+							<p class="info-item"><span class="title">UF:</span> {{ personalInfo.state }}</p>
+							<p class="info-item"><span class="title">Partido Atual:</span> {{ personalInfo.party.sigla }}</p>
+							<p class="info-item"><span class="title">Partidos Anteriores:</span> {{ personalInfo.party_affiliations}}</p>
+							<!-- <p class="info-item"><span class="title">Tempo de Câmara:</span> {{ personalInfo.periods_in_exercise }}</p> -->
 						</div>
 				</section>
-				
+
 				    <div class="row">
 					    <section class="resume-section experience-section mb-5">
 						    <h2 class="resume-section-title text-uppercase font-weight-bold pb-3 mb-3">Presenças em Eventos na Câmara</h2>
 						    <div class="resume-section-content">
-								<article class="resume-timeline-item position-relative pb-5">    
+								<article class="resume-timeline-item position-relative pb-5">
 									<div class="resume-timeline-item-desc">
 										<p>Role description goes here ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Donec pede justo, fringilla vel.</p>
-										<h6 class="font-weight-bold">Mais sobre as Comissões Permanentes</h6>
+                    <h6 class="font-weight-bold">Votações</h6>
+                    <div id="votingPrecencesChart">
+
+                    </div>
+                    <h6 class="font-weight-bold">Mais sobre as Comissões Permanentes</h6>
 										<h6 class="font-weight-bold">Mais sobre as Comissões de Inquérito</h6>
 									</div>
+
 								</article>
 						    </div>
 					    </section>
@@ -79,7 +91,7 @@
 							<section class="resume-section experience-section mb-5">
 								<h2 class="resume-section-title text-uppercase font-weight-bold pb-3 mb-3">Autorias (sancionadas)</h2>
 								<div class="resume-section-content">
-									<article class="resume-timeline-item position-relative pb-5">    
+									<article class="resume-timeline-item position-relative pb-5">
 										<div class="resume-timeline-item-desc">
 											<p>Role description goes here ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Donec pede justo, fringilla vel.</p>
 										</div>
@@ -92,9 +104,9 @@
 							<section class="resume-section experience-section mb-5">
 								<h2 class="resume-section-title text-uppercase font-weight-bold pb-3 mb-3">Histórico de Gastos (Cota Parlamentar)</h2>
 								<div class="resume-section-content">
-									<article class="resume-timeline-item position-relative pb-5">    
+									<article class="resume-timeline-item position-relative pb-5">
 										<div class="resume-timeline-item-desc">
-											<p>Role description goes here ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Donec pede justo, fringilla vel.</p>										    
+											<p>Role description goes here ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Donec pede justo, fringilla vel.</p>
 											<h6 class="font-weight-bold">Categorias de Gastos</h6>
 										</div>
 									</article>
@@ -102,22 +114,21 @@
 							</section>
 					</div>
 
-					
+
 			    </div>
 		    </div>
-		    
-		    
-	    </div>
-    </article>  
 
-    
+
+	    </div>
+    </article>
+
+
     <footer class="footer text-center pt-2 pb-5">
 	     <!--/* This template is released under the Creative Commons Attribution 3.0 License. Please keep the attribution link below when using for your own project. Thank you for your support. :) If you'd like to use the template without the attribution, you can buy the commercial license via our website: themes.3rdwavemedia.com */-->
             <small class="copyright">Template desenvolvido por <a href="http://themes.3rdwavemedia.com" target="_blank">Xiaoying Riley</a></small>
     </footer>
 
-    
+
 
 </body>
-</html> 
-
+</html>

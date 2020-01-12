@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block headblock %}
+  <link rel='stylesheet' href="{{ url_for('static', filename='css/deputados.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <script src="{{ url_for('static', filename='js/deputados.js') }}"></script>
+{% endblock %}
+{% block content %}
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-12 input-search-area">
+        <input type="text" placeholder="pesquise por um deputado">
+        <button type="button" class="btn btn-dark" id="btn-search-deputies">Pesquisar</button>
+      </div>
+    </div>
+  </div>
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-12 deputy-listing" id="deputy-listing">
+
+      </div>
+    </div>
+  </div>
+{% endblock %}

@@ -13,7 +13,7 @@ class Db:
 
     def getCollectionsNames(self):
         """ Returns all collections available in the database """
-        return self.connection.getCollectionNames()
+        return self.connection.collection_names(include_system_collections=False)
 
     def build_collection(self, collection_name):
         """ Access a particular collection given its name """
