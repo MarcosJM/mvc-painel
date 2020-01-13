@@ -20,9 +20,7 @@ class DeputyInfo:
         """ recover all information from the last legislature"""
         query = {'ideCadastro': str(id_register)}
         result = list(self._collection_deputy.find(query))[-1]
-
         if len(result) > 0:
-            result = result[0]
             deputy_instance = Deputy(result['urlFoto'], result['ideCadastro'], result['nomeParlamentarAtual'], result['nomeCivil'],
                                      result['sexo'], result['dataNascimento'], result['dataFalecimento'],
                                      result['nomeProfissao'], result['escolaridade'], result['email'],
@@ -111,7 +109,7 @@ class DeputyInfo:
                     all_propositions_authors = [authoring['idDeputadoAutor'] for authoring in filtered_events]
                     authoring_by_deputy = Counter(all_propositions_authors)
                     median_authoring = np.median(list(authoring_by_deputy.values()))
-                    deputy_authoring = authoring_by_deputy[self.deputy.id_register]
+                    deputy_authoring = authoring_by_deputy[float(str(self.deputy.id_register)+'.0')]
 
                     return {'authoring': deputy_authoring, 'median-authoring': median_authoring,
                             'all-authorings': total_num_events}
@@ -136,7 +134,7 @@ class DeputyInfo:
                             "intervalos": [{'$group': {'_id': {'mes': "$_id.mes", 'ano': "$_id.ano"},
                                                        'gastoMaximo': {'$max': "$totalGasto"},
                                                        'gastoMinimo': {'$min': "$totalGasto"}}}],
-                            "gastosDeputado": [{'$match': {"_id.deputado": self.deputy.id_register}},
+                            "gastosDeputado": [{'$match': {"_id.deputado": float(str(self.deputy.id_register)+'.0')}},
                                                {'$group': {'_id': {'mes': "$_id.mes", 'ano': "$_id.ano",
                                                                    'deputado': "$_id.deputado"},
                                                            'valorGasto': {'$push': "$totalGasto"}}},
@@ -152,8 +150,6 @@ class DeputyInfo:
                                     item['valorGasto'][0]] for item in result['gastosDeputado']]
 
                 if (len(ranges) > 0) & (len(deputy_expenses) > 0):
-                    ranges = list(chain.from_iterable(ranges))
-                    deputy_expenses = list(chain.from_iterable(deputy_expenses))
                     return {'ranges': ranges, 'deputy_expenses': deputy_expenses}
                 else:
                     print('No ranges or no deputy expenses.')

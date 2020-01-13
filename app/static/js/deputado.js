@@ -6,7 +6,8 @@ $(document).ready(function(){
     displayNoneCharts();
     $('#eventPrecencesChart'+thisId).attr('style', 'display:initial');
   });
-
+  loadExpensesHistory();
+  loadDeputyAuthorships();
 
 });
 
@@ -48,7 +49,46 @@ function loadVotingPresence()
   });
 }
 
+function loadExpensesHistory()
+{
+  let depId = window.location.href.split("=")[1];
+  $.ajax({
+    type: 'POST',
+    url: '/deputy_expenses_history',
+    data: {'depId': depId},
+    success: function(response){
+      console.log(response);
+      expensesHistory = response.expensesHistory;
+      years = Object.keys(expensesHistory);
+      for(iterator=0; iterator<years.length; iterator++)
+      {
+        let divId = 'expensesHistoryChart'+String(years[iterator]);
+        $('#expensesChartArea').append(`<div id="${divId}"></div>`);
+        generateExpensesHistoryChart(divId, years[iterator], expensesHistory[years[iterator]]['deputy_expenses'], expensesHistory[years[iterator]]['range']);
+      }
+      $('#expensesHistoryChart'+String(years[0])).attr('style', 'display:initial');
+    },
+    error: function(error){
+      console.log(error);
+    }
+  });
+}
 
+function loadDeputyAuthorships()
+{
+  let depId = window.location.href.split("=")[1];
+  $.ajax({
+    type: 'POST',
+    url: '/deputy_authorships',
+    data: {'depId': depId},
+    success: function(response){
+      console.log(response);
+    },
+    error: function(error){
+      console.log(error);
+    }
+  });
+}
 
 // PLOT FUNCTIONS ===================================================================================================
 function generateVotingPresenceChart(chartDivId, eventNames, allEvents, allPresences, allAverages)
@@ -100,6 +140,58 @@ function generateVotingPresenceChart(chartDivId, eventNames, allEvents, allPrese
         data: allAverages,
         pointPadding: 0.3,
         pointPlacement: 0.0
+    }]
+  });
+}
+
+function generateExpensesHistoryChart(chartDivId, year, expenses, range)
+{
+  Highcharts.chart(chartDivId, {
+
+    title: {
+        text: 'Gastos em' + String(year)
+    },
+
+    xAxis: {
+        type: 'datetime',
+        accessibility: {
+            rangeDescription: 'Range: Jul 1st 2009 to Jul 31st 2009.'
+        }
+    },
+
+    yAxis: {
+        title: {
+            text: null
+        }
+    },
+
+    tooltip: {
+        crosshairs: true,
+        shared: true,
+        valueSuffix: 'R$'
+    },
+
+    series: [{
+        name: 'Gastos',
+        data: expenses,
+        zIndex: 1,
+        marker: {
+            fillColor: 'white',
+            lineWidth: 2,
+            lineColor: Highcharts.getOptions().colors[0]
+        }
+    }, {
+        name: 'Intervalo',
+        data: range,
+        type: 'arearange',
+        lineWidth: 0,
+        linkedTo: ':previous',
+        color: Highcharts.getOptions().colors[0],
+        fillOpacity: 0.3,
+        zIndex: 0,
+        marker: {
+            enabled: false
+        }
     }]
   });
 }

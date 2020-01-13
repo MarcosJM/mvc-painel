@@ -2,6 +2,7 @@ from datetime import datetime
 
 
 LEGISLATURES = [53, 54, 55, 56]
+YEARS = [2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019]
 
 def dateformats():
     """ Possible date formats. Both of them are used by the Camara dos Deputados data API. """
