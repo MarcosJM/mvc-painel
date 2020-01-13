@@ -19,16 +19,20 @@ class DeputyInfo:
     def _set_up_deputy(self, id_register):
         """ recover all information from the last legislature"""
         query = {'ideCadastro': str(id_register)}
-        result = list(self._collection_deputy.find(query).limit(1).sort("numLegislatura", -1))[0]
+        result = list(self._collection_deputy.find(query))[-1]
 
-        deputy_instance = Deputy(result['urlFoto'], result['ideCadastro'], result['nomeParlamentarAtual'], result['nomeCivil'],
-                                 result['sexo'], result['dataNascimento'], result['dataFalecimento'],
-                                 result['nomeProfissao'], result['escolaridade'], result['email'],
-                                 result['ufRepresentacaoAtual'], result['partidoAtual'],
-                                 result['situacaoNaLegislaturaAtual'], result['filiacoesPartidarias'],
-                                 result['periodosExercicio'])
+        if len(result) > 0:
+            result = result[0]
+            deputy_instance = Deputy(result['urlFoto'], result['ideCadastro'], result['nomeParlamentarAtual'], result['nomeCivil'],
+                                     result['sexo'], result['dataNascimento'], result['dataFalecimento'],
+                                     result['nomeProfissao'], result['escolaridade'], result['email'],
+                                     result['ufRepresentacaoAtual'], result['partidoAtual'],
+                                     result['situacaoNaLegislaturaAtual'], result['filiacoesPartidarias'],
+                                     result['periodosExercicio'])
 
-        return deputy_instance
+            return deputy_instance
+        else:
+            return None
 
     def getDeputyPersonalInfo(self):
         return self.deputy
@@ -46,9 +50,9 @@ class DeputyInfo:
             period_in_exercise = result['periodosExercicio']['periodoExercicio']
 
             if isinstance(period_in_exercise, dict):
-                periods_of_exercise = [period_in_exercise]
+                period_in_exercise = [period_in_exercise]
 
-            dates_in_exercise = [(item['dataInicio'], item['dataFim']) for item in periods_of_exercise]
+            dates_in_exercise = [(item['dataInicio'], item['dataFim']) for item in period_in_exercise]
             return dates_in_exercise
         else:
             return None
@@ -63,16 +67,16 @@ class DeputyInfo:
 
             # ======= recover all events
             query_event = {'legislatura': int(legislature_number)}
-            all_events = next(dbConn.build_collection(event_collection_name).find(query_event), None)
+            all_events = list(dbConn.build_collection(event_collection_name).find(query_event))
 
-            if (dates_in_exercise is not None) & (all_events is not None):
+            if (dates_in_exercise is not None) & (len(all_events) > 0):
 
                 # filter all events by the period of availability of the deputy
                 filtered_events = utils.get_records_by_intervals(all_events, dates_in_exercise, date_key_name)
                 total_num_events = len(filtered_events)
 
                 if total_num_events > 0:
-                    presences = list(chain.from_iterable([voting[presence_key_name] for voting in filtered_events]))
+                    presences = list(chain.from_iterable([event[presence_key_name] for event in filtered_events]))
                     presences_by_deputy = Counter(presences)
                     mean_presence = np.mean(list(presences_by_deputy.values()))
                     deputy_presence = presences_by_deputy[self.deputy.id_register]
@@ -95,9 +99,9 @@ class DeputyInfo:
 
             # ======= recover all authors
             query_authors = {'legislatura': int(legislature_number)}
-            all_authors = next(self._collection_authors.find(query_authors), None)
+            all_authors = list(self._collection_authors.find(query_authors))
 
-            if (dates_in_exercise is not None) & (all_authors is not None):
+            if (dates_in_exercise is not None) & (len(all_authors) > 0):
 
                 # filter all events by the period of availability of the deputy
                 filtered_events = utils.get_records_by_intervals(all_authors, dates_in_exercise, 'dataApresentacao')
@@ -122,10 +126,11 @@ class DeputyInfo:
             print(e)
 
     def getExpenses(self, year_number=2018):
-        """  """
+        """ Return two arrays, one with the ranges (max, min) for each month given the year and the
+         date (1/m/y) as timestamp; the other with all the values spent by the deputy for each month."""
         try:
             pipeline = [{'$group': {'_id': {'legislatura': "$codLegislatura", 'ano': "$numAno", 'mes': "$numMes",
-                                            'deputado': "$ideCadastro"}, 'totalGasto': { '$sum': "$vlrLiquido"}}},
+                                            'deputado': "$ideCadastro"}, 'totalGasto': {'$sum': "$vlrLiquido"}}},
                         {'$match': {"_id.ano": year_number}},
                         {'$facet': {
                             "intervalos": [{'$group': {'_id': {'mes': "$_id.mes", 'ano': "$_id.ano"},
@@ -140,21 +145,50 @@ class DeputyInfo:
             result = next(self._collection_expenses.aggregate(pipeline), None)
 
             if result is not None:
-                ranges = [[utils.date2timestamp('1/'+str(item['_id']['mes']+'/'+str(item['_id']['ano']))),
+                ranges = [[utils.date2timestamp('1/'+str(item['_id']['mes'])+'/'+str(item['_id']['ano'])),
                            item['gastoMinimo'], item['gastoMaximo']] for item in result['intervalos']]
-                ranges = list(chain.from_iterable(ranges))
 
-                deputy_expenses = [[utils.date2timestamp('1/'+str(item['_id']['mes']+'/'+str(item['_id']['ano']))),
+                deputy_expenses = [[utils.date2timestamp('1/'+str(item['_id']['mes'])+'/'+str(item['_id']['ano'])),
                                     item['valorGasto'][0]] for item in result['gastosDeputado']]
-                deputy_expenses = list(chain.from_iterable(deputy_expenses))
 
-                return {'ranges': ranges, 'deputy_expenses': deputy_expenses}
+                if (len(ranges) > 0) & (len(deputy_expenses) > 0):
+                    ranges = list(chain.from_iterable(ranges))
+                    deputy_expenses = list(chain.from_iterable(deputy_expenses))
+                    return {'ranges': ranges, 'deputy_expenses': deputy_expenses}
+                else:
+                    print('No ranges or no deputy expenses.')
+                    return None
             else:
                 print('No result found in the DB.')
                 return None
 
         except Exception as e:
             print(e)
+
+    def getExpensesCategory(self, year_number=2018):
+        """ Return the expense category and its value spent by the deputy in a year """
+        try:
+            pipeline = [{'$match': {'$and': [{"ideCadastro": self.deputy.id_register}, {"numAno": year_number}]}},
+                        {'$group': {'_id': {'legislatura': "$codLegislatura", 'ano': "$numAno", 'deputado': "$ideCadastro",
+                                            'categoria': "$txtDescricao"}, 'totalGasto': {'$sum': "$vlrLiquido"}}},
+                        {'$sort': {"_id.ano": 1}}]
+
+            result = list(self._collection_expenses.aggregate(pipeline))
+
+            if len(result) > 0:
+                categories = [{'name': item["_id"]["categoria"], 'value': item["totalGasto"]} for item in result]
+                return categories
+            else:
+                return None
+        except Exception as e:
+            print(e)
+
+
+
+
+
+
+
 
 
 
