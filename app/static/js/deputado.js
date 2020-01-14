@@ -1,15 +1,20 @@
 $(document).ready(function(){
   loadVotingPresence();
-  $("[id^='event-leg-']").on('click', function(){
-    let thisId =  $(this).attr('id').split('-');
-    thisId = thisId[thisId.length -1];
-    displayNoneCharts();
-    $('#eventPrecencesChart'+thisId).attr('style', 'display:initial');
-  });
+  initEventListener('event-leg-', 'eventPrecencesChart');
   loadExpensesHistory();
   loadDeputyAuthorships();
 
 });
+
+function initEventListener(btnIdPrefix, targetDivPrefix)
+{
+  $(`[id^='${btnIdPrefix}']`).on('click', function(){
+    let thisId =  $(this).attr('id').split('-');
+    thisId = thisId[thisId.length -1];
+    displayNoneCharts();
+    $(`#${targetDivPrefix}`+thisId).attr('style', 'display:initial');
+  });
+}
 
 function displayNoneCharts()
 {
@@ -39,7 +44,7 @@ function loadVotingPresence()
             allPresences.push(eventPresences[legislatures[iterator]][eventNames[iterator2]]['presence'])
             allAverages.push(eventPresences[legislatures[iterator]][eventNames[iterator2]]['mean-presence'])
           }
-          generateVotingPresenceChart('eventPrecencesChart'+String(legislatures[iterator]), eventNames, allEvents, allPresences, allAverages);
+          generateVotingPresenceChart('eventPrecencesChart'+String(legislatures[iterator]), String(legislatures[iterator]), eventNames, allEvents, allPresences, allAverages);
         }
         $('#eventPrecencesChart'+String(legislatures[0])).attr('style', 'display:initial');
       },
@@ -82,7 +87,18 @@ function loadDeputyAuthorships()
     url: '/deputy_authorships',
     data: {'depId': depId},
     success: function(response){
-      console.log(response);
+      let authorships = response.authorships;
+      let legislatures = Object.keys(authorships);
+      for(iterator=0; iterator<legislatures.length; iterator++)
+      {
+        let divId = 'deputyAuthorship'+String(legislatures[iterator]);
+        $('#deputyAuthorshipArea').append(`<div id="${divId}" class="row"></div>`);
+        generateAuthorshipContainer(divId, legislatures[iterator], authorships[legislatures[iterator]]['authoring'], authorships[legislatures[iterator]]['median-authoring']);
+      }
+      for(iterator=1; iterator<legislatures.length; iterator++)
+      {
+          $('#deputyAuthorship'+String(legislatures[iterator])).attr('style', 'display:none');
+      }
     },
     error: function(error){
       console.log(error);
@@ -90,15 +106,56 @@ function loadDeputyAuthorships()
   });
 }
 
+
+function generateAuthorshipContainer(divId, legislature, authoring, megianAuthoring)
+{
+  $('#'+divId).append(
+    `<div class='col-sm-6 authorship-left-block'>
+      <div class='container'>
+        <div class='row'>
+          <div class='col-sm-12'>
+            <p class='authoringNumber'>${authoring}</p>
+          </div>
+        </div>
+      </div>
+      <div class='container'>
+        <div class='row'>
+          <div class='col-sm-12'>
+            <p class='authoringDescription'>Essa é a quantidade de proposições nas quais o deputado participou
+            como autor durante a legislatura ${legislature}.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class='col-sm-6' authorship-right-block>
+      <div class='container'>
+        <div class='row'>
+          <div class='col-sm-12'>
+            <p class='medianAuthoringNumber'>${megianAuthoring}</p>
+          </div>
+        </div>
+      </div>
+      <div class='container'>
+        <div class='row'>
+          <div class='col-sm-12'>
+            <p class='medianAuthoringDescription'>Essa é a mediana de participações em autorias durante o mesmo período.</p>
+          </div>
+        </div>
+      </div>
+    </div>`
+  );
+}
+
 // PLOT FUNCTIONS ===================================================================================================
-function generateVotingPresenceChart(chartDivId, eventNames, allEvents, allPresences, allAverages)
+function generateVotingPresenceChart(chartDivId, legislature, eventNames, allEvents, allPresences, allAverages)
 {
   Highcharts.chart(chartDivId, {
     chart: {
         type: 'column'
     },
     title: {
-        text: 'Presenças em Votações Nominais'
+        text: 'Presenças em Votações Nominais na Legislatura '+legislature
     },
     xAxis: {
         categories: eventNames
