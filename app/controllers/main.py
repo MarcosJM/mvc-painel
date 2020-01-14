@@ -3,7 +3,7 @@ from flask import render_template, request, redirect, url_for, session, flash, j
 from app.models.deputy_history import DeputyHistory
 from app import dbConn
 from app.controllers.deputy_info import DeputyInfo
-from app.utils import LEGISLATURES
+from app.utils import LEGISLATURES, YEARS
 
 class Main:
     def __init__(self):
@@ -28,13 +28,6 @@ class Main:
             depId = request.args['depId']
             deputy = DeputyInfo(depId)
             personalInfo = deputy.getDeputyPersonalInfo()
-            if isinstance(personalInfo.party_affiliations['filiacaoPartidaria'], dict):
-                personalInfo.party_affiliations = personalInfo.party_affiliations['filiacaoPartidaria']['siglaPartidoAnterior']
-            else:
-                affiliations = ''
-                for affiliation in personalInfo.party_affiliations['filiacaoPartidaria']:
-                    affiliations += affiliation['siglaPartidoAnterior'] + ','
-                personalInfo.party_affiliations = affiliations[: -1]
             return render_template("deputado.html", personalInfo=personalInfo)
 
 
@@ -46,18 +39,50 @@ class MainReqs:
         def returnGenterCount():
             return get_count_deputies_by_gender()
 
-        @app.route("/deputy_voting_presence", methods=['POST'])
-        def getPresenceInVotings():
+        @app.route("/deputy_event_presence", methods=['POST'])
+        def getPresenceInEvents():
             depId = request.form['depId']
             deputy = DeputyInfo(depId)
-            votingPresences = {}
+            eventPresences = {}
             for legislature in LEGISLATURES:
                 votingPresenceInLegislature = deputy.getPresenceInEvent('votacao', 'presentes', 'data', legislature)
-                if votingPresenceInLegislature is not None:
-                    votingPresences.update({legislature: votingPresenceInLegislature})
-            return {'votingPresences': votingPresences}
+                audiencePresenceInLegislature = deputy.getPresenceInEvent('reuniao_audiencia_publica', 'presencas',
+                                                                          'data', legislature)
+                cpiPresenceInLegislature = deputy.getPresenceInEvent('reuniao_comissao_inquerito', 'presencas', 'data',
+                                                                     legislature)
+                cpPresenceInLegislature = deputy.getPresenceInEvent('reuniao_comissao_permanente', 'presencas', 'data',
+                                                                    legislature)
+                if (votingPresenceInLegislature is not None) or (audiencePresenceInLegislature is not None) or (cpiPresenceInLegislature is not None) or (cpPresenceInLegislature is not None):
+                    eventPresences.update({legislature:
+                                            {'votacoes': votingPresenceInLegislature,
+                                            'audiencias': audiencePresenceInLegislature,
+                                            'comissao_inquerito': cpiPresenceInLegislature,
+                                            'comissao_permanente': cpPresenceInLegislature}
+                                            })
 
+            return {'eventPresences': eventPresences}
 
+        @app.route('/deputy_expenses_history', methods=['POST'])
+        def getDeputyExpenses():
+            depId = request.form['depId']
+            deputy = DeputyInfo(depId)
+            expensesHistory = {}
+            for year in YEARS:
+                expenses = deputy.getExpenses(year)
+                if expenses is not None:
+                    expensesHistory.update({year: expenses})
+            return {'expensesHistory': expensesHistory}
+
+        @app.route('/deputy_authorships', methods=['POST'])
+        def getDeputyAuthorships():
+            depId = request.form['depId']
+            deputy = DeputyInfo(depId)
+            allAuthorships = {}
+            for legislature in LEGISLATURES:
+                authorships = deputy.getPropositionsAuthored(legislature)
+                if authorships is not None:
+                    allAuthorships.update({legislature: authorships})
+            return {'authorships': allAuthorships}
 
 def get_count_deputies_by_gender():
     genderCount = {}

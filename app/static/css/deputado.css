@@ -8708,8 +8708,15 @@ a.theme-btn-on-bg:hover, a.theme-btn-on-bg:focus, a.theme-btn-on-bg:active, .the
     border-radius: 4px;
   }
 }
-
-
 .info-item .title {
   font-weight: bold;
+}
+div[id^="eventPrecencesChart"] {
+  display: none;
+}
+div[id^="expensesHistoryChart"] {
+  display: none;
+}
+.legislature-select {
+  text-align: center;
 }
