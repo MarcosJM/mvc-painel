@@ -11,19 +11,19 @@ class Main:
         def homepage():
             return render_template("home.html")
 
-        @app.route("/explore/")
+        @app.route("/explorar/")
         def exploreSelect():
             return render_template("selectionPage.html")
 
-        @app.route("/explore/camara")
+        @app.route("/explorar/camara")
         def exploreGeneral():
             return render_template("camara.html")
 
-        @app.route("/explore/deputados")
+        @app.route("/explorar/deputados")
         def exploreDeputados():
             return render_template("deputados.html")
 
-        @app.route("/explore/deputados/deputado", methods=['GET', 'POST'])
+        @app.route("/explorar/deputados/deputado", methods=['GET', 'POST'])
         def deputadoPersonalInfo():
             depId = request.args['depId']
             deputy = DeputyInfo(depId)

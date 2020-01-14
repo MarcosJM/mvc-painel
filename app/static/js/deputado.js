@@ -1,6 +1,5 @@
 $(document).ready(function(){
   loadVotingPresence();
-  initEventListener('event-leg-', 'eventPrecencesChart');
   loadExpensesHistory();
   loadDeputyAuthorships();
 
@@ -11,14 +10,14 @@ function initEventListener(btnIdPrefix, targetDivPrefix)
   $(`[id^='${btnIdPrefix}']`).on('click', function(){
     let thisId =  $(this).attr('id').split('-');
     thisId = thisId[thisId.length -1];
-    displayNoneCharts();
+    displayNoneCharts(targetDivPrefix);
     $(`#${targetDivPrefix}`+thisId).attr('style', 'display:initial');
   });
 }
 
-function displayNoneCharts()
+function displayNoneCharts(targetDivPrefix)
 {
-  $("[id^='eventPrecencesChart']").attr('style', 'display:none');
+  $(`[id^='${targetDivPrefix}']`).attr('style', 'display:none');
 }
 
 function loadVotingPresence()
@@ -47,6 +46,7 @@ function loadVotingPresence()
           generateVotingPresenceChart('eventPrecencesChart'+String(legislatures[iterator]), String(legislatures[iterator]), eventNames, allEvents, allPresences, allAverages);
         }
         $('#eventPrecencesChart'+String(legislatures[0])).attr('style', 'display:initial');
+        initEventListener('event-leg-', 'eventPrecencesChart');
       },
       error: function(error){
           console.log(error);
@@ -89,16 +89,26 @@ function loadDeputyAuthorships()
     success: function(response){
       let authorships = response.authorships;
       let legislatures = Object.keys(authorships);
+      let authorshipButtonGroup = $('<div class="btn-group" />');
       for(iterator=0; iterator<legislatures.length; iterator++)
       {
+        // creating the button to select this instance
+        authorshipButtonGroup.append(`
+        <button class="btn btn-dark" 
+          type="button" 
+          name="select-authorship-${legislatures[iterator]}" 
+          id="authorship-leg-${legislatures[iterator]}">Legislatura ${legislatures[iterator]}</button>`);
+        // populating with data
         let divId = 'deputyAuthorship'+String(legislatures[iterator]);
-        $('#deputyAuthorshipArea').append(`<div id="${divId}" class="row"></div>`);
+        $('#authorshipArea').append(`<div id="${divId}" class="row"></div>`);
         generateAuthorshipContainer(divId, legislatures[iterator], authorships[legislatures[iterator]]['authoring'], authorships[legislatures[iterator]]['median-authoring']);
       }
       for(iterator=1; iterator<legislatures.length; iterator++)
       {
           $('#deputyAuthorship'+String(legislatures[iterator])).attr('style', 'display:none');
       }
+      $('#authorship-legislature-select').append(authorshipButtonGroup);
+      initEventListener('authorship-leg-', 'deputyAuthorship');
     },
     error: function(error){
       console.log(error);
@@ -128,7 +138,7 @@ function generateAuthorshipContainer(divId, legislature, authoring, megianAuthor
       </div>
     </div>
 
-    <div class='col-sm-6' authorship-right-block>
+    <div class='col-sm-6 authorship-right-block'>
       <div class='container'>
         <div class='row'>
           <div class='col-sm-12'>
