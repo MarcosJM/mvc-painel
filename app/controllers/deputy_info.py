@@ -151,7 +151,8 @@ class DeputyInfo:
                         {'$facet': {
                             "intervalos": [{'$group': {'_id': {'mes': "$_id.mes", 'ano': "$_id.ano"},
                                                        'gastoMaximo': {'$max': "$totalGasto"},
-                                                       'gastoMinimo': {'$min': "$totalGasto"}}}],
+                                                       'gastoMinimo': {'$min': "$totalGasto"}}},
+                                           {'$sort': {"_id.mes": 1}}],
                             "gastosDeputado": [{'$match': {"_id.deputado": float(str(self.deputy.id_register)+'.0')}},
                                                {'$group': {'_id': {'mes': "$_id.mes", 'ano': "$_id.ano",
                                                                    'deputado': "$_id.deputado"},

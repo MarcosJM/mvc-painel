@@ -5,6 +5,7 @@ from app import dbConn
 from app.controllers.deputy_info import DeputyInfo
 from app.utils import LEGISLATURES, YEARS
 
+
 class Main:
     def __init__(self):
         @app.route("/")
@@ -29,8 +30,6 @@ class Main:
             deputy = DeputyInfo(depId)
             personalInfo = deputy.getDeputyPersonalInfo()
             return render_template("deputado.html", personalInfo=personalInfo)
-
-
 
 
 class MainReqs:
@@ -73,6 +72,39 @@ class MainReqs:
                     expensesHistory.update({year: expenses})
             return {'expensesHistory': expensesHistory}
 
+        @app.route('/deputy_expenses_history', methods=['POST'])
+        def getDeputyExpensesCategory():
+            depId = request.form['depId']
+            deputy = DeputyInfo(depId)
+            expensesCategory = {}
+            for year in YEARS:
+                categories = deputy.getExpensesCategory(year)
+                if categories is not None:
+                    sorted_categories = sorted(categories, key=lambda x: x['value'], reverse=True)
+
+                    totalSpent = sum(item['value'] for item in categories)
+                    others_threshold = totalSpent*0.15  # if category is below 15% of total spent, goes to "Others"
+                    inner_circle_name = 'Gastos'  # the name inside white middle part of the sunburst
+
+                    has_other = False  # a flag to indicate if creates or not the "Others" category
+                    others_ids = []  # the category indices that goes to "Others"
+                    for i, category in enumerate(sorted_categories):
+                        print(category)
+                        if category['value'] > others_threshold:
+                            category.update({'id': '1.'+str(i+1), 'parent': '0.0'})  # needed to plot
+                        else:
+                            has_other = True
+                            others_ids.append(i)
+                            category.update({'id': '2.'+str(i-others_ids[0]+1), 'parent': '1.'+str(others_ids[0]+1)})
+
+                    sorted_categories.append({'id': '0.0', 'parent': '', 'name': inner_circle_name})
+                    if has_other:
+                        sorted_categories.append({'id': '1.'+str(others_ids[0]+1), 'parent': '0.0',
+                                                  'name': 'Outros'})
+
+                    expensesCategory.update({year: sorted_categories})
+            return {'expensesCategory': expensesCategory}
+
         @app.route('/deputy_authorships', methods=['POST'])
         def getDeputyAuthorships():
             depId = request.form['depId']
@@ -83,6 +115,7 @@ class MainReqs:
                 if authorships is not None:
                     allAuthorships.update({legislature: authorships})
             return {'authorships': allAuthorships}
+
 
 def get_count_deputies_by_gender():
     genderCount = {}
