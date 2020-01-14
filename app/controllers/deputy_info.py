@@ -18,15 +18,33 @@ class DeputyInfo:
 
     def _set_up_deputy(self, id_register):
         """ recover all information from the last legislature"""
+        all_party_affiliations = []
+        last_result = {}
         query = {'ideCadastro': str(id_register)}
-        result = list(self._collection_deputy.find(query))[-1]
-        if len(result) > 0:
-            deputy_instance = Deputy(result['urlFoto'], result['ideCadastro'], result['nomeParlamentarAtual'], result['nomeCivil'],
-                                     result['sexo'], result['dataNascimento'], result['dataFalecimento'],
-                                     result['nomeProfissao'], result['escolaridade'], result['email'],
-                                     result['ufRepresentacaoAtual'], result['partidoAtual'],
-                                     result['situacaoNaLegislaturaAtual'], result['filiacoesPartidarias'],
-                                     result['periodosExercicio'])
+        result = list(self._collection_deputy.find(query))
+
+        if len(result) > 0:  # the deputy exists in the DB
+
+            if len(result) > 1:  # more than one register (legislature) for the deputy
+                for item in result:
+                    if item['filiacoesPartidarias'] is not None:
+                        all_party_affiliations.append(item['filiacoesPartidarias']['filiacaoPartidaria'])
+
+                last_result = sorted(result, key=lambda k: int(k['numLegislatura']))[-1]  # most recent info
+
+            elif len(result) == 1:  # just one register (legislature) for the deputy
+                last_result = result[0]
+                all_party_affiliations = last_result['filiacoesPartidarias']
+
+            all_party_affiliations_dict = {'filiacaoPartidaria': all_party_affiliations}
+
+            deputy_instance = Deputy(last_result['urlFoto'], last_result['ideCadastro'],
+                                     last_result['nomeParlamentarAtual'], last_result['nomeCivil'],
+                                     last_result['sexo'], last_result['dataNascimento'], last_result['dataFalecimento'],
+                                     last_result['nomeProfissao'], last_result['escolaridade'], last_result['email'],
+                                     last_result['ufRepresentacaoAtual'], last_result['partidoAtual'],
+                                     last_result['situacaoNaLegislaturaAtual'], all_party_affiliations_dict,
+                                     last_result['periodosExercicio'])
 
             return deputy_instance
         else:
@@ -178,24 +196,3 @@ class DeputyInfo:
                 return None
         except Exception as e:
             print(e)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

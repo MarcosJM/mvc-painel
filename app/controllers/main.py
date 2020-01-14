@@ -28,14 +28,6 @@ class Main:
             depId = request.args['depId']
             deputy = DeputyInfo(depId)
             personalInfo = deputy.getDeputyPersonalInfo()
-            if personalInfo.party_affiliations:
-                if isinstance(personalInfo.party_affiliations['filiacaoPartidaria'], dict):
-                    personalInfo.party_affiliations = personalInfo.party_affiliations['filiacaoPartidaria']['siglaPartidoAnterior']
-                else:
-                    affiliations = ''
-                    for affiliation in personalInfo.party_affiliations['filiacaoPartidaria']:
-                        affiliations += affiliation['siglaPartidoAnterior'] + ','
-                    personalInfo.party_affiliations = affiliations[: -1]
             return render_template("deputado.html", personalInfo=personalInfo)
 
 
