@@ -8717,6 +8717,27 @@ div[id^="eventPrecencesChart"] {
 div[id^="expensesHistoryChart"] {
   display: none;
 }
+/*div[id^="deputyAuthorship"] {
+  display: none;
+}*/
 .legislature-select {
+  text-align: center;
+}
+.authoringNumber, .medianAuthoringNumber
+{
+  background-color: #FFAA1D;
+  color: #FFFFFF;
+  text-align: center;
+}
+.authorship-right-block
+{
+  border-left:0.5px solid #8D9AAD;
+}
+.authorship-left-block
+{
+  border-right:0.5px solid #8D9AAD;
+}
+#eventPresence-legislature-select, #expenses-legislature-select, #authorship-legislature-select
+{
   text-align: center;
 }

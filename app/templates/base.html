@@ -4,6 +4,7 @@
         <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script type='text/javascript' src="{{ url_for('static', filename='js/base.js') }}"></script>
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
         <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
         <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
@@ -15,18 +16,18 @@
           <div class='container-fluid black-div page-header'>
             <header>
                 <div class='header-name'>
-                    <h1>Dashboard</h1>
+                    <h1>Câmara Interativa</h1>
                 </div>
             </header>
             <ul class="header-ul">
                 <li class="header-li">
-                  <a class="anchor-headerstyle" href="#">Inicio</a>
+                  <a class="anchor-headerstyle header-link-home" href='/'>Inicio</a>
                 </li>
                 <li class="header-li">
-                  <a class="anchor-headerstyle" href="#">Metodologia</a>
+                  <a class="anchor-headerstyle header-link-deputados" href='/explorar/deputados'>Deputados</a>
                 </li>
                 <li class="header-li">
-                  <a class="anchor-headerstyle" href="#">Explore</a>
+                  <a class="anchor-headerstyle header-link-selectionPage" href='/explorar'>Explorar</a>
                 </li>
               </ul>
               {% block camaraimage %}
