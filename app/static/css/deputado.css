@@ -8737,7 +8737,7 @@ div[id^="expensesHistoryChart"] {
 {
   border-right:0.5px solid #8D9AAD;
 }
-.authorship-container
+#eventPresence-legislature-select, #expenses-legislature-select, #authorship-legislature-select
 {
-  min-width: 940px;
+  text-align: center;
 }

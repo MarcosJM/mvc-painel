@@ -11,7 +11,10 @@ function initEventListener(btnIdPrefix, targetDivPrefix)
     let thisId =  $(this).attr('id').split('-');
     thisId = thisId[thisId.length -1];
     displayNoneCharts(targetDivPrefix);
-    $(`#${targetDivPrefix}`+thisId).attr('style', 'display:initial');
+    if (targetDivPrefix != 'deputyAuthorship')
+      $(`#${targetDivPrefix}`+thisId).attr('style', 'display:initial')
+    else 
+      $(`#${targetDivPrefix}`+thisId).attr('style', 'display:flex')
   });
 }
 
@@ -30,8 +33,17 @@ function loadVotingPresence()
       success: function(response){
         let eventPresences = response.eventPresences
         let legislatures = Object.keys(eventPresences)
+        let eventPresenceButtonGroup = $('<div class="btn-group" />');
         for(iterator=0; iterator<legislatures.length; iterator++)
         {
+          // creating the button to select this instance
+          eventPresenceButtonGroup.append(`
+          <button class="btn btn-dark" 
+          type="button" 
+          name="select-${legislatures[iterator]}" 
+          id="event-leg-${legislatures[iterator]}">Legislatura ${legislatures[iterator]}</button>`);
+          
+
           $('#event-leg-'+legislatures[iterator]).prop("disabled", false);
           let allEvents = [];
           let allPresences = [];
@@ -46,6 +58,7 @@ function loadVotingPresence()
           generateVotingPresenceChart('eventPrecencesChart'+String(legislatures[iterator]), String(legislatures[iterator]), eventNames, allEvents, allPresences, allAverages);
         }
         $('#eventPrecencesChart'+String(legislatures[0])).attr('style', 'display:initial');
+        $('#eventPresence-legislature-select').append(eventPresenceButtonGroup);
         initEventListener('event-leg-', 'eventPrecencesChart');
       },
       error: function(error){
@@ -65,13 +78,24 @@ function loadExpensesHistory()
       console.log(response);
       expensesHistory = response.expensesHistory;
       years = Object.keys(expensesHistory);
+      let expensesButtonGroup = $('<div class="btn-group" />');
+
       for(iterator=0; iterator<years.length; iterator++)
       {
+        // creating the button to select this instance
+        expensesButtonGroup.append(`
+        <button class="btn btn-dark" 
+          type="button" 
+          name="select-expenses-${years[iterator]}" 
+          id="expenses-leg-${years[iterator]}">${years[iterator]}</button>`);
+        // populating with data
         let divId = 'expensesHistoryChart'+String(years[iterator]);
         $('#expensesChartArea').append(`<div id="${divId}"></div>`);
         generateExpensesHistoryChart(divId, years[iterator], expensesHistory[years[iterator]]['deputy_expenses'], expensesHistory[years[iterator]]['range']);
       }
       $('#expensesHistoryChart'+String(years[0])).attr('style', 'display:initial');
+      $('#expenses-legislature-select').append(expensesButtonGroup);
+      initEventListener('expenses-leg-', 'expensesHistoryChart');
     },
     error: function(error){
       console.log(error);
@@ -216,7 +240,7 @@ function generateExpensesHistoryChart(chartDivId, year, expenses, range)
   Highcharts.chart(chartDivId, {
 
     title: {
-        text: 'Gastos em' + String(year)
+        text: 'Gastos em ' + String(year)
     },
 
     xAxis: {
