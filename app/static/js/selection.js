@@ -2,19 +2,19 @@ $(document).ready(function(){
   $('#anchor-camara-page').click(
     function()
     {
-      window.location.assign('/explore/camara');
+      window.location.assign('/explorar/camara');
     }
   );
   $('#anchor-deputy-page').click(
     function()
     {
-      window.location.assign('/explore/deputados');
+      window.location.assign('/explorar/deputados');
     }
   );
   $('#anchor-comparison-page').click(
     function()
     {
-      window.location.assign('/explore/camara');
+      window.location.assign('/explorar/camara');
     }
   );
 });
