@@ -1,0 +1,18 @@
+.evaluation-component-header
+{
+  text-align: center;
+}
+.component-adjustment-container
+{
+  margin: 0 auto;
+}
+.component-adjustment-area, .slidecontainer
+{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.weightcontainer
+{
+  margin-top: 5px;
+}
