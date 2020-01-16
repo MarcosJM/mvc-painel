@@ -51,7 +51,12 @@
         </div>
         <div class='container'>
             <div class='row'>
-                    <div id="map"></div>
+                <div class='col-sm-12' id='mapChartArea'>
+
+                </div>
+            </div>
+            <div id='mapLegislatureSelect' class='legislature-select'>
+
             </div>
         </div>
         <div class='container'>
@@ -70,10 +75,10 @@
                             <div id= 'genderChart'></div>
                             <div class="legislature-select">
                               <div class="btn-group">
-                                <button class="btn btn-dark" type="button" name="select-53" id="gender-leg-53">Legislatura 53</button>
-                                <button class="btn btn-dark" type="button" name="select-54" id="gender-leg-54">Legislatura 54</button>
-                                <button class="btn btn-dark" type="button" name="select-55" id="gender-leg-55">Legislatura 55</button>
-                                <button class="btn btn-dark" type="button" name="select-56" id="gender-leg-56">Legislatura 56</button>
+                                <button class="btn btn-dark btn-time-select" type="button" name="select-53" id="gender-leg-53">Legislatura 53</button>
+                                <button class="btn btn-dark btn-time-select" type="button" name="select-54" id="gender-leg-54">Legislatura 54</button>
+                                <button class="btn btn-dark btn-time-select" type="button" name="select-55" id="gender-leg-55">Legislatura 55</button>
+                                <button class="btn btn-dark btn-time-select" type="button" name="select-56" id="gender-leg-56">Legislatura 56</button>
                               </div>
                             </div>
                         </div>
@@ -129,14 +134,30 @@
                 <div class='container'>
                     <div class='row'>
                         <div class='col-sm-4'>
-                            Foram gastos <span id="total_spent"></span> no total.
+                            Aqui são somadas todas as despesas feitas pelas deputados
+                            utilizando a cota parlamentar para cada legislatura
                         </div>
                         <div class='col-sm-8'>
+                            <div class='container'>
+                                <div class='row'>
+                                    <div class='col-sm-12'>
+                                        <div class='container total-spent-centered' id='totalSpentContainer'>
+                                           
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class='container'>
+                                    <div class='row total-spent-centered'>
+                                        <div id='spentLegislatureSelect'>
 
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
+
                 </div>
-            </div>
         </div>
     </div>
 {% endblock %}

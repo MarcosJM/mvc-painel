@@ -8717,9 +8717,6 @@ div[id^="eventPrecencesChart"] {
 div[id^="expensesHistoryChart"] {
   display: none;
 }
-/*div[id^="deputyAuthorship"] {
-  display: none;
-}*/
 .legislature-select {
   text-align: center;
 }
