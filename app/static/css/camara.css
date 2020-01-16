@@ -1,4 +1,26 @@
+.btn
+{
+  border-radius: 0.25rem;
+}
 .legislature-select
 {
   text-align: center;
+}
+div[id^="valueMapChart"] {
+  display: none;
+}
+div[id^="spentTotal"] {
+  display: none;
+}
+.total-spent-centered
+{
+  display: flex;
+  justify-content: center;
+}
+.spent-value
+{
+  background-color: #FFAA1D;
+  color: #FFFFFF;
+  padding: 0.25rem 0.5rem;
+  margin: 0.2rem auto;
 }

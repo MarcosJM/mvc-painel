@@ -5,6 +5,7 @@ $(document).ready(function(){
     loadSchooling();
     loadTotalSpent();
 
+
     $("[id^='gender-leg-']").on('click', function(){
       let thisId =  $(this).attr('id').split('-');
       let legislature = thisId[thisId.length -1];
@@ -20,6 +21,21 @@ $(document).ready(function(){
       }
     });
 });
+
+
+
+    function initEventListener(btnIdPrefix, targetDivPrefix)
+    {
+      $(`[id^='${btnIdPrefix}']`).on('click', function(){
+        let thisId =  $(this).attr('id').split('-');
+        thisId = thisId[thisId.length -1];
+        $(`[id^='${targetDivPrefix}']`).attr('style', 'display:none');
+        if(targetDivPrefix != 'spentTotal')
+          $(`#${targetDivPrefix}`+thisId).attr('style', 'display:initial')
+        else
+          $(`#${targetDivPrefix}`+thisId).attr('style', 'display:flex');
+      });
+    }
 
 
 
@@ -126,40 +142,6 @@ $(document).ready(function(){
             type: 'POST',
             url: '/schooling',
             success: function(response){
-               Highcharts.chart('schooling', {
-                  chart: {
-                    type: 'funnel',
-                    height: '500'
-                  },
-                  title: {
-                    text: 'Escolaridade'
-                  },
-                  plotOptions: {
-                    funnel: {
-                      depth: 100
-                    },
-                    series: {
-                      dataLabels: {
-                        enabled: true,
-                        format: '<b>{point.name}</b> <br/>{point.y:,.0f} ({point.yPercentage} %)',
-                        softConnector: true,
-                        crop: false
-                      },
-                      center: ['50%', '50%'],
-                      neckWidth: '30%',
-                      neckHeight: '25%',
-                      width: '80%',
-                    }
-                  },
-                  legend: {
-                    enabled: true
-                  },
-                  series: [{
-                      name: 'Deputados',
-                      data: response['data']
-                    }
-                  ]
-                });
             },
             error: function(error){
                 console.log(error);
@@ -167,77 +149,34 @@ $(document).ready(function(){
         });
     };
 
-    function loadValuesByState() {
-        $.ajax({
-            type: 'POST',
-            url: '/values_by_state',
-            success: function(response) {
-                Highcharts.mapChart('map', {
-                  chart: {
-                    map: 'countries/br/br-all'
-                  },
-                  title: {
-                    text: 'Highmaps basic demo'
-                  },
-                  subtitle: {
-                    text: 'Source map: <a href="http://code.highcharts.com/mapdata/countries/br/br-all.js">Brazil</a>'
-                  },
-                  series: {
-                    dataLabels: {
-                      enabled: true,
-                      format: '<b>{point.name}</b> <br/>{point.y:,.0f} ({point.yPercentage} %)',
-                      softConnector: true,
-                      crop: false
-                    },
-                    center: ['50%', '50%'],
-                    neckWidth: '30%',
-                    neckHeight: '25%',
-                    width: '80%',
-                  },
-                  legend: {
-                    enabled: true
-                  },
-                  series: [{
-                    name: 'Deputados',
-                    data: response['data']
-                  }]
-                });
-        },
-        error: function(error){
-            console.log(error);
-        }
-    });
-}
 
 function loadValuesByState() {
     $.ajax({
         type: 'POST',
         url: '/values_by_state',
         success: function(response) {
-            Highcharts.mapChart('map', {
-            chart: {
-                map: 'countries/br/br-all'
-            },
-            title: {
-                text: 'Highmaps basic demo'
-            },
-            subtitle: {
-                text: 'Source map: <a href="http://code.highcharts.com/mapdata/countries/br/br-all.js">Brazil</a>'
-            },
-            series: [{
-                data: response['data'],
-                showInLegend: false,
-                states: {
-                    hover: {
-                        color: '#BADA55'
-                    }
-                },
-                dataLabels: {
-                    enabled: true,
-                    format: '{point.name}'
-                }
-            }]
-         });
+          valuesByState = response.data;
+          legislatures = Object.keys(valuesByState);
+          let valuesButtonGroup = $('<div class="btn-group" />');
+          for(iterator=0;iterator<legislatures.length;iterator++)
+          {
+            // creating the time selection button
+            valuesButtonGroup.append(`
+            <button class="btn btn-dark"
+              type="button"
+              name="select-map-${legislatures[iterator]}"
+              id="map-leg-${legislatures[iterator]}">Legislatura ${legislatures[iterator]}</button>`); 
+              
+              // creating the div element to render the chart
+              let divId = 'valueMapChart'+String(legislatures[iterator]);
+              $('#mapChartArea').append(`<div id="${divId}"></div>`);
+
+              // calling the chart render function
+              generateValueByStateChart(divId, legislatures[iterator], valuesByState[legislatures[iterator]]);
+          }
+          $('#valueMapChart'+String(legislatures[0])).attr('style', 'display:initial');
+          $('#mapLegislatureSelect').append(valuesButtonGroup);
+          initEventListener('map-leg-', 'valueMapChart');
         },
         error: function(error){
             console.log(error);
@@ -250,10 +189,109 @@ function loadTotalSpent() {
         type: 'POST',
         url: '/total_spent',
         success: function(response) {
-            $('#total_spent').text(response['data']);
+            let totalSpent = response.allSpent;
+            let legislatures = Object.keys(totalSpent);
+            let spentButtonGroup = $('<div class="btn-group" />');
+            for(iterator=0; iterator<legislatures.length; iterator++)
+            {
+              spentButtonGroup.append(`
+              <button class="btn btn-dark"
+                type="button"
+                name="select-spent-${legislatures[iterator]}"
+                id="spent-leg-${legislatures[iterator]}">Legislatura ${legislatures[iterator]}</button>`); 
+                
+              let divId = 'spentTotal'+String(legislatures[iterator]);
+              $('#totalSpentContainer').append(`<div class="row spent-value" id=${divId} />`);
+
+              generateTotalSpentContainer(divId, totalSpent[legislatures[iterator]])
+            }
+            $('#spentTotal'+legislatures[0]).attr('style', 'display:flex');
+            $('#spentLegislatureSelect').append(spentButtonGroup);
+            initEventListener('spent-leg', 'spentTotal');
+
         },
         error: function(error){
             console.log(error);
         }
     });
+}
+
+
+
+
+
+// chart functions ===========================================================
+
+function generateSchoolingChart(divId, time, data)
+{
+  Highcharts.chart('schooling', {
+    chart: {
+      type: 'funnel',
+      height: '500'
+    },
+    title: {
+      text: 'Escolaridade'
+    },
+    plotOptions: {
+      funnel: {
+        depth: 100
+      },
+      series: {
+        dataLabels: {
+          enabled: true,
+          format: '<b>{point.name}</b> <br/>{point.y:,.0f} ({point.yPercentage} %)',
+          softConnector: true,
+          crop: false
+        },
+        center: ['50%', '50%'],
+        neckWidth: '30%',
+        neckHeight: '25%',
+        width: '80%',
+      }
+    },
+    legend: {
+      enabled: true
+    },
+    series: [{
+        name: 'Deputados',
+        data: response['data']
+      }
+    ]
+  });
+
+}
+
+function generateValueByStateChart(divId, time, data)
+{
+  Highcharts.mapChart(divId, {
+    chart: {
+        map: 'countries/br/br-all'
+    },
+    title: {
+        text: 'Cota Parlamentar por Estado na Legislatura '+time
+    },
+    subtitle: {
+        text: 'Source map: <a href="http://code.highcharts.com/mapdata/countries/br/br-all.js">Brazil</a>'
+    },
+    series: [{
+        data: data,
+        showInLegend: false,
+        states: {
+            hover: {
+                color: '#BADA55'
+            }
+        },
+        dataLabels: {
+            enabled: true,
+            format: '{point.dname}'
+        }
+    }]
+ });
+
+}
+
+function generateTotalSpentContainer(divId, totalSpent)
+{
+$(`#${divId}`).append(
+  `<div class='col-sm-4'>${totalSpent}</div>`);
 }

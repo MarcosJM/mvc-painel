@@ -51,7 +51,12 @@
         </div>
         <div class='container'>
             <div class='row'>
-                    <div id="map"></div>
+                <div class='col-sm-12' id='mapChartArea'>
+
+                </div>
+            </div>
+            <div id='mapLegislatureSelect' class='legislature-select'>
+
             </div>
         </div>
         <div class='container'>
@@ -129,14 +134,30 @@
                 <div class='container'>
                     <div class='row'>
                         <div class='col-sm-4'>
-                            Foram gastos <span id="total_spent"></span> no total.
+                            Aqui são somadas todas as despesas feitas pelas deputados
+                            utilizando a cota parlamentar para cada legislatura
                         </div>
                         <div class='col-sm-8'>
+                            <div class='container'>
+                                <div class='row'>
+                                    <div class='col-sm-12'>
+                                        <div class='container total-spent-centered' id='totalSpentContainer'>
+                                           
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class='container'>
+                                    <div class='row total-spent-centered'>
+                                        <div id='spentLegislatureSelect'>
 
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
+
                 </div>
-            </div>
         </div>
     </div>
 {% endblock %}

@@ -88,6 +88,7 @@ class MainReqs:
                     allAuthorships.update({legislature: authorships})
             return {'authorships': allAuthorships}
 
+
 def get_count_deputies_by_gender():
     genderCount = {}
     result = list(dbConn.build_collection('deputado').aggregate(

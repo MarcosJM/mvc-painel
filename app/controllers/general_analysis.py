@@ -3,6 +3,7 @@ from flask import render_template, request, redirect, url_for, session, flash, j
 from app import dbConn
 from collections import Counter
 from itertools import chain
+from app.utils import LEGISLATURES
 import math
 # =================================================
 
@@ -49,20 +50,23 @@ class GeneralAnalysis:
             return result_counter_fmt
 
         @app.route("/total_spent", methods=['POST'])
-        def getTotalSpentChartData(legislature_number=55):
-            query = [{'$match': {'codLegislatura': legislature_number}},
-                     {'$group': {'_id': 0, 'sum': {'$sum': '$vlrLiquido'}}}]
-            result = list(self._collection_expense.aggregate(query))
-            result = result[0]['sum']
-            result_fmt = {'data': format_number(result)}
-            return result_fmt
+        def getTotalSpentChartData():
+            allSpent = {}
+            for legislature in LEGISLATURES:
+                query = [{'$match': {'codLegislatura': legislature}},
+                         {'$group': {'_id': 0, 'sum': {'$sum': '$vlrLiquido'}}}]
+                result = list(self._collection_expense.aggregate(query))
+                if result:
+                    result = result[0]['sum']
+                    allSpent.update({legislature: format_number(result)})
+            return {'allSpent': allSpent}
 
         @app.route("/values_by_state", methods=['POST'])
         def getValuesByState():
             query = {'sigla': 1, 'cotaParlamentar': 1, '_id': 0}
             result = list(self._collection_uf.find({}, query))
             result_fmt = [['br-'+item['sigla'].lower(), item['cotaParlamentar']] for item in result]
-            return {'data': result_fmt}
+            return {'data': {'55': result_fmt}}
 
         @app.route("/deputies_quantity", methods=['POST'])
         def getDeputiesQuantity():
