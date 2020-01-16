@@ -36,19 +36,21 @@ class GeneralAnalysis:
             return result_counter_fmt
 
         @app.route("/schooling", methods=['POST'])
-        def getSchoolingChartData(legislature_number='56'):  # TODO: create a constant for legs numbers
-            query_search = {'numLegislatura': legislature_number}
-            query_field = {'escolaridade': 1, '_id': 0}
-            result = list(self._collection_deputy.find(query_search, query_field))
-
-            result_values = [item['escolaridade'] if item['escolaridade'] is not None else "Não informado" for
-                             item in result]
-            result_counter = dict(Counter(result_values))
-            result_counter_sorted = {key: value for key, value in sorted(result_counter.items(),
-                                                                         key=lambda item: item[1], reverse=True)}
-            result_counter_fmt = {'data': [[key, value] for key, value in result_counter_sorted.items()]}
-            return result_counter_fmt
-
+        def getSchoolingChartData():  # TODO: create a constant for legs numbers
+            allSchoolingData = {}
+            for legislature in LEGISLATURES:
+                query_search = {'numLegislatura': str(legislature)}
+                query_field = {'escolaridade': 1, '_id': 0}
+                result = list(self._collection_deputy.find(query_search, query_field))
+                if result:
+                    result_values = [item['escolaridade'] if item['escolaridade'] is not None else "Não informado" for
+                                     item in result]
+                    result_counter = dict(Counter(result_values))
+                    result_counter_sorted = {key: value for key, value in sorted(result_counter.items(),
+                                                                                 key=lambda item: item[1], reverse=True)}
+                    result_counter_fmt = {'data': [[key, value] for key, value in result_counter_sorted.items()]}
+                    allSchoolingData.update({str(legislature): result_counter_fmt['data']})
+            return {'schoolingData': allSchoolingData}
         @app.route("/total_spent", methods=['POST'])
         def getTotalSpentChartData():
             allSpent = {}

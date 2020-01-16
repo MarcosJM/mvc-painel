@@ -142,7 +142,29 @@ $(document).ready(function(){
             type: 'POST',
             url: '/schooling',
             success: function(response){
-              generateSchoolingChart(response['data']);
+              console.log(response.schoolingData);
+              let schoolingData = response.schoolingData;
+              let legislatures = Object.keys(schoolingData);
+              let schoolingButtonGroup = $('<div class="btn-group" />');
+              for(iterator = 0; iterator<legislatures.length; iterator++)
+              {
+                schoolingButtonGroup.append(`
+                <button class="btn btn-dark btn-time-select"
+                  type="button"
+                  name="select-schooling-${legislatures[iterator]}"
+                  id="schooling-leg-${legislatures[iterator]}">Legislatura ${legislatures[iterator]}</button>`); 
+                
+                let divId = 'chamberSchooling'+String(legislatures[iterator]);
+                $('#schoolingChartData').append(`<div id="${divId}"></div>`);    
+
+                generateSchoolingChart(divId, legislatures[iterator], schoolingData[legislatures[iterator]]);
+
+              }
+
+              $('#chamberSchooling'+String(legislatures[0])).attr('style', 'display:initial');
+              $('#schooling-select').append(schoolingButtonGroup);
+              initEventListener('schooling-leg-', 'chamberSchooling');
+    
             },
             error: function(error){
                 console.log(error);
@@ -223,15 +245,15 @@ function loadTotalSpent() {
 
 // chart functions ===========================================================
 
-function generateSchoolingChart(data)
+function generateSchoolingChart(divId, legislature, data)
 {
-  Highcharts.chart('schooling', {
+  Highcharts.chart(divId, {
     chart: {
       type: 'funnel',
-      height: '500'
+      height: '600'
     },
     title: {
-      text: 'Escolaridade'
+      text: 'Escolaridade na Legislatura '+ legislature
     },
     plotOptions: {
       funnel: {
@@ -248,6 +270,7 @@ function generateSchoolingChart(data)
         neckWidth: '30%',
         neckHeight: '25%',
         width: '80%',
+        height:'500',
       }
     },
     legend: {
@@ -294,5 +317,5 @@ function generateValueByStateChart(divId, time, data)
 function generateTotalSpentContainer(divId, totalSpent)
 {
 $(`#${divId}`).append(
-  `<div class='col-sm-4'>${totalSpent}</div>`);
+  `<div class='col-sm-12'><p class='value-display'>${totalSpent}<p></div>`);
 }
