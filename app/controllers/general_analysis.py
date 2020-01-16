@@ -66,7 +66,7 @@ class GeneralAnalysis:
             query = {'sigla': 1, 'cotaParlamentar': 1, '_id': 0}
             result = list(self._collection_uf.find({}, query))
             result_fmt = [['br-'+item['sigla'].lower(), item['cotaParlamentar']] for item in result]
-            return {'data': {'55': result_fmt}}
+            return {'data': {'56': result_fmt}}
 
         @app.route("/deputies_quantity", methods=['POST'])
         def getDeputiesQuantity():

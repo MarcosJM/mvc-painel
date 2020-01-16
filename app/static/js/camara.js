@@ -142,6 +142,7 @@ $(document).ready(function(){
             type: 'POST',
             url: '/schooling',
             success: function(response){
+              generateSchoolingChart(response['data']);
             },
             error: function(error){
                 console.log(error);
@@ -162,7 +163,7 @@ function loadValuesByState() {
           {
             // creating the time selection button
             valuesButtonGroup.append(`
-            <button class="btn btn-dark"
+            <button class="btn btn-dark btn-time-select"
               type="button"
               name="select-map-${legislatures[iterator]}"
               id="map-leg-${legislatures[iterator]}">Legislatura ${legislatures[iterator]}</button>`); 
@@ -195,7 +196,7 @@ function loadTotalSpent() {
             for(iterator=0; iterator<legislatures.length; iterator++)
             {
               spentButtonGroup.append(`
-              <button class="btn btn-dark"
+              <button class="btn btn-dark btn-time-select"
                 type="button"
                 name="select-spent-${legislatures[iterator]}"
                 id="spent-leg-${legislatures[iterator]}">Legislatura ${legislatures[iterator]}</button>`); 
@@ -222,7 +223,7 @@ function loadTotalSpent() {
 
 // chart functions ===========================================================
 
-function generateSchoolingChart(divId, time, data)
+function generateSchoolingChart(data)
 {
   Highcharts.chart('schooling', {
     chart: {
@@ -254,7 +255,7 @@ function generateSchoolingChart(divId, time, data)
     },
     series: [{
         name: 'Deputados',
-        data: response['data']
+        data: data
       }
     ]
   });
