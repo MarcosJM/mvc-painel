@@ -72,7 +72,7 @@ class MainReqs:
                     expensesHistory.update({year: expenses})
             return {'expensesHistory': expensesHistory}
 
-        @app.route('/deputy_expenses_history', methods=['POST'])
+        @app.route('/deputy_expenses_category', methods=['POST'])
         def getDeputyExpensesCategory():
             depId = request.form['depId']
             deputy = DeputyInfo(depId)

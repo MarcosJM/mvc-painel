@@ -2,6 +2,7 @@ $(document).ready(function(){
   loadVotingPresence();
   loadExpensesHistory();
   loadDeputyAuthorships();
+  loadExpensesCategory();
 
 });
 
@@ -96,6 +97,26 @@ function loadExpensesHistory()
       $('#expensesHistoryChart'+String(years[0])).attr('style', 'display:initial');
       $('#expenses-legislature-select').append(expensesButtonGroup);
       initEventListener('expenses-leg-', 'expensesHistoryChart');
+    },
+    error: function(error){
+      console.log(error);
+    }
+  });
+}
+
+function loadExpensesCategory()
+{
+  let depId = window.location.href.split("=")[1];
+  $.ajax({
+    type: 'POST',
+    url: '/deputy_expenses_category',
+    data: {'depId': depId},
+    success: function(response){
+      console.log(response);
+      expensesCategory = response.expensesCategory;
+      let divId = 'expensesCategoryChartArea'
+      generateExpensesCategoryChart(divId, 2013, expensesCategory[2013]);
+      console.log('passou');
     },
     error: function(error){
       console.log(error);
@@ -285,4 +306,67 @@ function generateExpensesHistoryChart(chartDivId, year, expenses, range)
         }
     }]
   });
+}
+
+function generateExpensesCategoryChart(chartDivId, year, data)
+{
+  Highcharts.chart(chartDivId, {
+
+    chart: {
+        height: '100%'
+    },
+
+    title: {
+        text: 'Tipos de gastos do deputado no ano '+str(year)
+    },
+    subtitle: {
+        text: 'Esse gráfico exibe com o que o deputado gastou ao longo do ano.'
+    },
+    series: [{
+        type: "sunburst",
+        data: data,
+        allowDrillToNode: true,
+        cursor: 'pointer',
+        dataLabels: {
+            format: '{point.name}',
+            filter: {
+                property: 'innerArcLength',
+                operator: '>',
+                value: 16
+            }
+        },
+        levels: [{
+            level: 1,
+            levelIsConstant: false,
+            dataLabels: {
+                filter: {
+                    property: 'outerArcLength',
+                    operator: '>',
+                    value: 64
+                }
+            }
+        }, {
+            level: 2,
+            colorByPoint: true
+        },
+        {
+            level: 3,
+            colorVariation: {
+                key: 'brightness',
+                to: -0.5
+            }
+        }, {
+            level: 4,
+            colorVariation: {
+                key: 'brightness',
+                to: 0.5
+            }
+        }]
+
+    }],
+    tooltip: {
+        headerFormat: "",
+        pointFormat: 'Foram gastos <b>{point.value}</b> com <b>{point.name}</b>'
+    }
+   });
 }
