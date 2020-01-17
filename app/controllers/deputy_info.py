@@ -6,6 +6,7 @@ import app.utils as utils
 from itertools import chain
 from collections import Counter
 import numpy as np
+from datetime import date
 
 
 class DeputyInfo:
@@ -68,7 +69,7 @@ class DeputyInfo:
             if isinstance(period_in_exercise, dict):
                 period_in_exercise = [period_in_exercise]
 
-            dates_in_exercise = [(item['dataInicio'], item['dataFim']) for item in period_in_exercise]
+            dates_in_exercise = [(item['dataInicio'], item['dataFim']) if item['dataFim'] else (item['dataInicio'], '{}/{}/{}'.format(str(date.today().day),str(date.today().month),str(date.today().year))) for item in period_in_exercise]
             return dates_in_exercise
         else:
             return None
