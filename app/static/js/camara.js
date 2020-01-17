@@ -63,7 +63,7 @@ $(document).ready(function(){
         },
 
         title: {
-            text: 'Highcharts item chart'
+            text: 'Representatividade de Gênero na Legislatura '+ legislature
         },
 
         subtitle: {
@@ -104,7 +104,7 @@ $(document).ready(function(){
            url: '/gender_count',
            success: function(response){
              localStorage.setItem('genderResponse', JSON.stringify(response));
-             genderChart('55');
+             genderChart('53');
            },
            error: function(error){
                console.log(error);
@@ -117,19 +117,29 @@ $(document).ready(function(){
             type: 'POST',
             url: '/professions',
             success: function(response){
-                Highcharts.chart('chart', {
-                    series: [{
-                        type: 'treemap',
-                        layoutAlgorithm: 'squarified',
-                        data: response['data']
-                    }],
-                    title: {
-                        text: 'Profissões na Câmara'
-                    },
-                    subtitle: {
-                        text: 'Frequência de cada profissão.'
-                    }
-                });
+              let professionData = response.professionData;
+              let legislatures = Object.keys(professionData);
+              professionButtonGroup = $('<div class="btn-group" />');
+
+              for(iterator = 0; iterator<legislatures.length; iterator++)
+              {
+                professionButtonGroup.append(`
+                <button class="btn btn-dark btn-time-select"
+                  type="button"
+                  name="select-profession-${legislatures[iterator]}"
+                  id="profession-leg-${legislatures[iterator]}">Legislatura ${legislatures[iterator]}</button>`); 
+                
+                let divId = 'chamberProfession'+String(legislatures[iterator]);
+                $('#professionChartData').append(`<div id="${divId}"></div>`);    
+
+                generateprofessionChart(divId, legislatures[iterator], professionData[legislatures[iterator]]);
+
+              }
+
+              $('#chamberProfession'+String(legislatures[0])).attr('style', 'display:initial');
+              $('#profession-select').append(professionButtonGroup);
+              initEventListener('profession-leg-', 'chamberProfession');
+
             },
             error: function(error){
                 console.log(error);
@@ -142,7 +152,28 @@ $(document).ready(function(){
             type: 'POST',
             url: '/schooling',
             success: function(response){
-              generateSchoolingChart(response['data']);
+              let schoolingData = response.schoolingData;
+              let legislatures = Object.keys(schoolingData);
+              let schoolingButtonGroup = $('<div class="btn-group" />');
+              for(iterator = 0; iterator<legislatures.length; iterator++)
+              {
+                schoolingButtonGroup.append(`
+                <button class="btn btn-dark btn-time-select"
+                  type="button"
+                  name="select-schooling-${legislatures[iterator]}"
+                  id="schooling-leg-${legislatures[iterator]}">Legislatura ${legislatures[iterator]}</button>`); 
+                
+                let divId = 'chamberSchooling'+String(legislatures[iterator]);
+                $('#schoolingChartData').append(`<div id="${divId}"></div>`);    
+
+                generateSchoolingChart(divId, legislatures[iterator], schoolingData[legislatures[iterator]]);
+
+              }
+
+              $('#chamberSchooling'+String(legislatures[0])).attr('style', 'display:initial');
+              $('#schooling-select').append(schoolingButtonGroup);
+              initEventListener('schooling-leg-', 'chamberSchooling');
+    
             },
             error: function(error){
                 console.log(error);
@@ -204,7 +235,7 @@ function loadTotalSpent() {
               let divId = 'spentTotal'+String(legislatures[iterator]);
               $('#totalSpentContainer').append(`<div class="row spent-value" id=${divId} />`);
 
-              generateTotalSpentContainer(divId, totalSpent[legislatures[iterator]])
+              generateTotalSpentContainer(divId, legislatures[iterator], totalSpent[legislatures[iterator]])
             }
             $('#spentTotal'+legislatures[0]).attr('style', 'display:flex');
             $('#spentLegislatureSelect').append(spentButtonGroup);
@@ -223,15 +254,33 @@ function loadTotalSpent() {
 
 // chart functions ===========================================================
 
-function generateSchoolingChart(data)
+function generateprofessionChart(divId, legislature, data)
 {
-  Highcharts.chart('schooling', {
+  Highcharts.chart(divId, {
+    series: [{
+        type: 'treemap',
+        layoutAlgorithm: 'squarified',
+        data: data
+    }],
+    title: {
+        text: 'Profissões na Câmara na Legislatura '+ legislature
+    },
+    subtitle: {
+        text: 'Frequência de cada profissão.'
+    }
+  });  
+}
+
+
+function generateSchoolingChart(divId, legislature, data)
+{
+  Highcharts.chart(divId, {
     chart: {
       type: 'funnel',
-      height: '500'
+      height: '600'
     },
     title: {
-      text: 'Escolaridade'
+      text: 'Escolaridade na Legislatura '+ legislature
     },
     plotOptions: {
       funnel: {
@@ -248,6 +297,7 @@ function generateSchoolingChart(data)
         neckWidth: '30%',
         neckHeight: '25%',
         width: '80%',
+        height:'500',
       }
     },
     legend: {
@@ -291,8 +341,9 @@ function generateValueByStateChart(divId, time, data)
 
 }
 
-function generateTotalSpentContainer(divId, totalSpent)
+function generateTotalSpentContainer(divId, legislature, totalSpent)
 {
 $(`#${divId}`).append(
-  `<div class='col-sm-4'>${totalSpent}</div>`);
+  `<div class='row legislagure-display'>Legislatura ${legislature}</div>
+  <div class='col-sm-12'><p class='value-display'>${totalSpent}<p></div>`);
 }
