@@ -231,6 +231,11 @@ class DeputyInfo:
 
         except Exception as e:
             print(e)
+    def getPropositionsAuthoredDetails(self, legislature_number=56):
+        """"Return a dictionary with the metadata of each proposition that the deputy is credited as an author"""
+        query_authors = {'legislatura': int(legislature_number), 'idDeputadoAutor': float(self.deputy.id_register)}
+        allauthorshipData = list(self._collection_authors.find(query_authors, {"_id":0, "idProposicao":1, "siglaTipo":1, "numero":1,"ano":1}))
+        return{'authorshipMetadata': allauthorshipData}
 
     def getExpenses(self, year_number=2018):
         """ Return two arrays, one with the ranges (max, min) for each month given the year and the
@@ -274,7 +279,7 @@ class DeputyInfo:
     def getExpensesCategory(self, year_number=2018):
         """ Return the expense category and its value spent by the deputy in a year """
         try:
-            pipeline = [{'$match': {'$and': [{"ideCadastro": self.deputy.id_register}, {"numAno": year_number}]}},
+            pipeline = [{'$match': {'$and': [{"ideCadastro": float(str(self.deputy.id_register))}, {"numAno": year_number}]}},
                         {'$group': {'_id': {'legislatura': "$codLegislatura", 'ano': "$numAno", 'deputado': "$ideCadastro",
                                             'categoria': "$txtDescricao"}, 'totalGasto': {'$sum': "$vlrLiquido"}}},
                         {'$sort': {"_id.ano": 1}}]

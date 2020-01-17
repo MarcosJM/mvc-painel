@@ -122,7 +122,6 @@ class MainReqs:
                     has_other = False  # a flag to indicate if creates or not the "Others" category
                     others_ids = []  # the category indices that goes to "Others"
                     for i, category in enumerate(sorted_categories):
-                        print(category)
                         if category['value'] > others_threshold:
                             category.update({'id': '1.'+str(i+1), 'parent': '0.0'})  # needed to plot
                         else:
@@ -148,7 +147,8 @@ class MainReqs:
             for legislature in LEGISLATURES:
                 authorships = deputy.getPropositionsAuthored(legislature)
                 if authorships is not None:
-                    allAuthorships.update({legislature: authorships})
+                    authorshipData = deputy.getPropositionsAuthoredDetails(legislature)
+                    allAuthorships.update({legislature: {'authorshipQuantity': authorships, 'authorshipData': authorshipData['authorshipMetadata']}})
             return {'authorships': allAuthorships}
 
 
