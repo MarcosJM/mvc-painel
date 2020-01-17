@@ -7,6 +7,19 @@ import app.utils as utils
 # =================================================
 
 
+def getLegislativeBody(body_name):
+    """  """
+    try:
+        body = list(dbConn.build_collection('orgao').find({"tipoOrgao": body_name}, {'_id': 0, 'sigla': 1}))
+        if len(body) > 0:
+            body_initials = [item['sigla'] for item in body]
+            return body_initials
+        else:
+            return None
+    except Exception as e:
+        print(e)
+
+
 class ScoreSystem:
     def __init__(self):
         self._collections = dbConn.initialize_collections()
@@ -97,9 +110,14 @@ class ScoreSystem:
                                {'$group': {'_id': '$idDeputadoAutor', 'count': {'$sum': 1}}}]
 
             result = list(self._collections['autoria'].aggregate(query_authoring))
-            best_result = max(result, key=lambda d: d['count'])['count']
-            deputy_result = next((item['count'] for item in result if item['_id'] == deputy_id), None)
-            score_authoring = (deputy_result / best_result) * 10
+
+            if len(list) > 0:
+                best_result = max(result, key=lambda d: d['count'])['count']
+                deputy_result = next((item['count'] for item in result if item['_id'] == deputy_id), None)
+                score_authoring = (deputy_result / best_result) * 10
+            else:
+                print('No authoring data.')
+                score_authoring = 0
 
             # ============ presence in votings
             query_all_events = {'legislatura': legislature_number}
@@ -128,9 +146,21 @@ class ScoreSystem:
                 score_voting = (deputy_presences / total_votings) * 10
 
             # ============ presence in commissions
-            query_deputy_commissions = {'numLegislatura': str(legislature_number)}
+
+            permanent_comissions_initials = getLegislativeBody('Comissão Permanente')
+
+            # recover all commissions that the deputy is member of
+            query_deputy_comissions = {'numLegislatura': str(legislature_number), 'ideCadastro': str(deputy_id)}
             query_field = {'comissoes': 1, '_id': 0}
-            result_commissions = next(self._collections['deputado'].find(query_deputy_commissions, query_field), None)
+            result_member_comissions = next(self._collections['deputado'].find(query_deputy_comissions, query_field),
+                                            None)
+
+            # if result_member_comissions is not None:
+            #     # filtering only for permanent commissions
+            #     permanent_comissions = [{item['siglaComissao']:} for item in result_member_comissions['comissoes']['comissao']
+            #                             if item['siglaComissao'] in permanent_comissions_initials]
+            #
+            #     #
 
             # todo finish
 

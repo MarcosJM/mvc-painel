@@ -3,7 +3,6 @@ $(document).ready(function(){
   loadExpensesHistory();
   loadDeputyAuthorships();
   loadExpensesCategory();
-
 });
 
 function initEventListener(btnIdPrefix, targetDivPrefix)
@@ -114,9 +113,25 @@ function loadExpensesCategory()
     success: function(response){
       console.log(response);
       expensesCategory = response.expensesCategory;
-      let divId = 'expensesCategoryChartArea'
-      generateExpensesCategoryChart(divId, 2013, expensesCategory[2013]);
-      console.log('passou');
+      years = Object.keys(expensesCategory);
+      let expensesButtonGroup = $('<div class="btn-group" />');
+
+      for(iterator=0; iterator<years.length; iterator++)
+      {
+        // creating the button to select this instance
+        expensesButtonGroup.append(`
+        <button class="btn btn-dark"
+          type="button"
+          name="select-expenses-${years[iterator]}"
+          id="expenses-leg-${years[iterator]}">${years[iterator]}</button>`);
+        // populating with data
+        let divId = 'expensesCategoryChart'+String(years[iterator]);
+        $('#expensesCategoryChartArea').append(`<div id="${divId}"></div>`);
+        generateExpensesCategoryChart(divId, years[iterator], expensesCategory[years[iterator]]);
+      }
+      $('#expensesCategoryChart'+String(years[0])).attr('style', 'display:initial');
+      $('#expenses-legislature-select').append(expensesButtonGroup);
+      initEventListener('expenses-leg-', 'expensesCategoryChart');
     },
     error: function(error){
       console.log(error);
@@ -317,7 +332,7 @@ function generateExpensesCategoryChart(chartDivId, year, data)
     },
 
     title: {
-        text: 'Tipos de gastos do deputado no ano '+str(year)
+        text: 'Tipos de gastos do deputado no ano '+String(year)
     },
     subtitle: {
         text: 'Esse gráfico exibe com o que o deputado gastou ao longo do ano.'
