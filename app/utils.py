@@ -1,8 +1,42 @@
 from datetime import datetime
+import math
+import json
+import seaborn as sns
+import random
 
 
 LEGISLATURES = [53, 54, 55, 56]
 YEARS = [2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019]
+
+with open('app/party_colors.json') as f:
+    PARTY_COLORS = json.load(f)
+
+
+def format_number(number, units=['', 'K', 'M', 'G', 'T', 'P']):
+    """ function for formatting big numbers """
+    k = 1000.0
+    magnitude = int(math.log10(number) // 3)
+    return '%.2f%s' % (number / k**magnitude, units[magnitude])
+
+
+def color_party(party_initials):
+    """ get a party color """
+    try:
+        initials = party_initials.lower()
+        auxiliary_pallete = sns.color_palette("cubehelix", 10).as_hex()  # when a party does not have a color
+
+        symbols = "!@#$*-/"
+        for char in symbols:
+            initials = initials.replace(char, "")  # removing some symbols
+
+        if initials in PARTY_COLORS.keys():
+            color = PARTY_COLORS[initials]
+            return color
+        else:
+            return random.choice(auxiliary_pallete)
+    except Exception as e:
+        print(e)
+
 
 def dateformats():
     """ Possible date formats. Both of them are used by the Camara dos Deputados data API. """

@@ -3,15 +3,8 @@ from flask import render_template, request, redirect, url_for, session, flash, j
 from app import dbConn
 from collections import Counter
 from itertools import chain
-import math
+from app.utils import *
 # =================================================
-
-
-# function for formatting big numbers
-def format_number(number, units=['', 'K', 'M', 'G', 'T', 'P']):
-    k = 1000.0
-    magnitude = int(math.log10(number) // 3)
-    return '%.2f%s' % (number / k**magnitude, units[magnitude])
 
 
 class GeneralAnalysis:
@@ -53,9 +46,12 @@ class GeneralAnalysis:
             query = [{'$match': {'codLegislatura': legislature_number}},
                      {'$group': {'_id': 0, 'sum': {'$sum': '$vlrLiquido'}}}]
             result = list(self._collection_expense.aggregate(query))
-            result = result[0]['sum']
-            result_fmt = {'data': format_number(result)}
-            return result_fmt
+            if len(result) > 0:
+                result = result[0]['sum']
+                result_fmt = {'data': format_number(result)}
+                return result_fmt
+            else:
+                return None
 
         @app.route("/values_by_state", methods=['POST'])
         def getValuesByState():
@@ -70,3 +66,16 @@ class GeneralAnalysis:
             result = list(self._collection_uf.find({}, query))
             result_fmt = [['br-' + item['sigla'].lower(), item['cotaParlamentar']] for item in result]
             return {'data': result_fmt}
+
+        @app.route("/party_representation", methods=['POST'])
+        def getPartiesRepresentation(legislature_number=55):
+            query = [{'$match': {'numLegislatura': str(legislature_number)}},
+                     {'$group': {'_id': '$partidoAtual.sigla', 'count': {'$sum': 1}}}]
+            result = list(self._collection_deputy.aggregate(query))
+            if len(result) > 0:
+                result_fmt = {'data': [[item['_id'], item['count'], item['_id'], color_party(item['_id'])]
+                                       for item in result]}
+                return result_fmt
+            else:
+                print('No query results.')
+                return None

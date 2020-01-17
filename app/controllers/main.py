@@ -103,6 +103,8 @@ class MainReqs:
                                                   'name': 'Outros'})
 
                     expensesCategory.update({year: sorted_categories})
+                else:
+                    print('No categories.')
             return {'expensesCategory': expensesCategory}
 
         @app.route('/deputy_authorships', methods=['POST'])

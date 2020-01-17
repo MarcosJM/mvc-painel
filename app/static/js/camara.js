@@ -4,6 +4,7 @@ $(document).ready(function(){
     loadValuesByState();
     loadSchooling();
     loadTotalSpent();
+    loadPartyRepresentation();
 
     $("[id^='gender-leg-']").on('click', function(){
       let thisId =  $(this).attr('id').split('-');
@@ -219,10 +220,10 @@ function loadValuesByState() {
                 map: 'countries/br/br-all'
             },
             title: {
-                text: 'Highmaps basic demo'
+                text: 'Valores da Cota Parlamentar pelos Estados Brasileiros'
             },
             subtitle: {
-                text: 'Source map: <a href="http://code.highcharts.com/mapdata/countries/br/br-all.js">Brazil</a>'
+                text: 'Pouse o mouse sobre um estado para ver o valor da Cota.'
             },
             series: [{
                 data: response['data'],
@@ -256,4 +257,48 @@ function loadTotalSpent() {
             console.log(error);
         }
     });
+}
+
+function loadPartyRepresentation() {
+    $.ajax({
+        type: 'POST',
+        url: '/party_representation',
+        success: function(response) {
+            Highcharts.mapChart('partyChart', {
+            chart: {
+            type: 'item'
+            },
+
+            title: {
+                text: 'Highcharts item chart'
+            },
+
+            subtitle: {
+                text: 'Parliament visualization'
+            },
+
+            legend: {
+                labelFormat: '{name} <span style="opacity: 0.4">{y}</span>'
+            },
+
+            series: [{
+                name: 'Representantes',
+                keys: ['name', 'y', 'label', 'color'],
+                data: response['data'],
+                dataLabels: {
+                    enabled: true,
+                    format: '{point.label}'
+                },
+
+                // Circular options
+                center: ['50%', '88%'],
+                size: '170%',
+                startAngle: -100,
+                endAngle: 100
+            }],
+        error: function(error){
+            console.log(error);
+        }
+    });
+    }});
 }
