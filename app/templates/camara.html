@@ -2,11 +2,13 @@
 {% block headblock %}
     <link rel='stylesheet' href="{{ url_for('static', filename='css/camara.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <title>A Câmara</title>
 
     <!-- HIGHCHARTS LIBRARY -->
     <script src="https://code.highcharts.com/highcharts.js"></script>
     <script src="https://code.highcharts.com/modules/heatmap.js"></script>
     <script src="https://code.highcharts.com/modules/treemap.js"></script>
+    <script src="https://code.highcharts.com/modules/item-series.js"></script>
     <script src="https://code.highcharts.com/modules/accessibility.js"></script>
     <script src="https://code.highcharts.com/maps/modules/map.js"></script>
     <script src="https://code.highcharts.com/maps/modules/data.js"></script>
@@ -15,9 +17,7 @@
     <script src="https://code.highcharts.com/mapdata/countries/br/br-all.js"></script>
     <script src="https://code.highcharts.com/modules/series-label.js"></script>
     <script src="https://code.highcharts.com/modules/export-data.js"></script>
-    <script src="https://code.highcharts.com/modules/item-series.js"></script>
     <script src="https://code.highcharts.com/modules/funnel.js"></script>
-
 
     <!-- HIGHCHARTS LIBRARY -->
 
@@ -49,10 +49,15 @@
                         discutir e propor novas leis em benefício à população e a seu estado.
                         <br>
                         Os benefícios concedidos aos deputados que dão suporte às suas atividades são salário mensal de R$ 33.763,00, 
-                        auxílio-moradia de R$ 4.253,00 ou apartamento gratuito para morar, verba mensal de R$ 111.675,59 para contratar até 25 funcionários, 
-                        de R$ 30.788,66 a R$ 45.612,53 mensais (dependendo do estado) referentes à Cota para o Exercício da Atividade Parlamentar, 
-                        para gastos com alimentação, aluguel de veículo e escritório, divulgação do mandato, entre outras despesas.
+                        auxílio-moradia de R$ 4.253,00 ou apartamento gratuito para morar, verba mensal de R$ 111.675,59 para contratar até 25 funcionários e
+                        de R$ 30.788,66 a R$ 45.612,53 mensais (dependendo do estado) referentes à Cota para o Exercício da Atividade Parlamentar.
+                        <br>
+                        A Cota para o Exercício da Atividade Parlamentar – CEAP (antiga verba indenizatória) é uma cota única mensal destinada
+                        a custear os gastos dos deputados exclusivamente vinculados ao exercício da atividade parlamentar. Gastos com alimentação, aluguel de veículo e escritório,
+                        divulgação do mandato, entre outras despesas. Esse valor varia por estado por causa das passagens aéreas e está relacionada ao valor do trecho entre Brasília e o Estado que o deputado representa.
                         No mapa abaixo, são mostrados os montantes de cota parlamentar que os deputados de cada estado têm direito.
+                        <br>
+                        Passe o mouse por cima dos estados para saber quanto cada um tem disponível para o valor da Cota Parlamentar.
                     </div>
                 </div>
             </div>
@@ -77,8 +82,8 @@
                 <div class='container'>
                     <div class='row'>
                         <div class='col-sm-4'>
-                            a representatividade por gênero é exibida no gráfico ao lado. Ao passar o mouse por cima dos ícones,
-                            é exibida a quantidade de deputados para cada sexo.
+                            A representatividade de sexo é exibida no gráfico ao lado. Ao passar o mouse por cima dos ícones,
+                            é exibida a quantidade de deputados para cada sexo. Quanto mais ícones azuis, maior é a quantidade de homens quando comparada a de mulheres, e o contrário ocorre quando os ícones em maioria são vermelhos.
                         </div>
                         <div class='col-sm-8' id='gender-chart-container'>
                             <div id= 'genderChart'></div>
@@ -138,17 +143,13 @@
                 <div class='container'>
                     <div class='row'>
                         <div class='col-sm-4'>
-                                São vários os partidos políticos brasileiros. O gráfico ao lado representa como os deputados encontram-se distribuídos dentre esses partidos, ao evidenciar quantos deputados cada partido contém. Essa visualização também permite identificar o partido mais popular e aquele menos representativo.
+                                São vários os partidos políticos brasileiros. O gráfico ao lado representa como os deputados encontram-se distribuídos dentre esses partidos, ao evidenciar quantos deputados
+                            cada partido contém. Cada bolinha colorida ao lado representa um partido. Logo, quanto maior for a quantidade de um bolinha de uma cor, maior é a quantidade de deputados deste partido.
+                            Essa visualização também permite identificar o partido mais popular e aquele menos representativo.
                         </div>
                         <div class='col-sm-8' id='party-chart-container'>
                             <div id= 'partyChart'></div>
-                            <div class="legislature-select">
-                              <div class="btn-group">
-                                <button class="btn btn-dark" type="button" name="select-53" id="gender-leg-53">Legislatura 53</button>
-                                <button class="btn btn-dark" type="button" name="select-54" id="gender-leg-54">Legislatura 54</button>
-                                <button class="btn btn-dark" type="button" name="select-55" id="gender-leg-55">Legislatura 55</button>
-                                <button class="btn btn-dark" type="button" name="select-56" id="gender-leg-56">Legislatura 56</button>
-                              </div>
+                            <div id="party-legislature-select">
                             </div>
                         </div>
                     </div>
@@ -165,8 +166,8 @@
                 <div class='container'>
                     <div class='row'>
                         <div class='col-sm-4'>
-                            O gráfico ao lado exibe a distribuição do grau de escolaridade dos deputados. Esse cone é 
-                            ordenado de cima para baixo, estando no topo o grau de escolaridade da maioria dos deputados.
+                            O gráfico ao lado exibe a distribuição do grau de escolaridade dos deputados. Esse cone representa cada escolariadade e é
+                            ordenado de cima para baixo, estando no topo o grau de escolaridade da maioria dos deputados. Passe o mouse por cima para ver mais detalhes.
                         </div>
                         <div class='col-sm-8'>
                             <div class='container'>
@@ -198,8 +199,7 @@
                 <div class='container'>
                     <div class='row'>
                         <div class='col-sm-4'>
-                            Aqui são somadas todas as despesas feitas pelas deputados
-                            utilizando a cota parlamentar para cada legislatura
+                            Aqui são somadas todas as despesas da Câmara com a Cota Parlamentar de todos os deputados federais para cada legislatura.
                         </div>
                         <div class='col-sm-8'>
                             <div class='container'>

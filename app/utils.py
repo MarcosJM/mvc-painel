@@ -3,6 +3,7 @@ import math
 import json
 import seaborn as sns
 import random
+from app import dbConn
 
 
 LEGISLATURES = [53, 54, 55, 56]
@@ -10,6 +11,19 @@ YEARS = [2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019]
 
 with open('app/party_colors.json') as f:
     PARTY_COLORS = json.load(f)
+
+
+def getLegislativeBody(body_name):
+    """  """
+    try:
+        body = list(dbConn.build_collection('orgao').find({"tipoOrgao": body_name}, {'_id': 0, 'sigla': 1}))
+        if len(body) > 0:
+            body_initials = [item['sigla'] for item in body]
+            return body_initials
+        else:
+            return None
+    except Exception as e:
+        print(e)
 
 
 def format_number(number, units=['', 'K', 'M', 'G', 'T', 'P']):

@@ -3,21 +3,8 @@ from flask import request
 from app import dbConn
 from datetime import datetime
 from collections import Counter
-import app.utils as utils
+from app.utils import *
 # =================================================
-
-
-def getLegislativeBody(body_name):
-    """  """
-    try:
-        body = list(dbConn.build_collection('orgao').find({"tipoOrgao": body_name}, {'_id': 0, 'sigla': 1}))
-        if len(body) > 0:
-            body_initials = [item['sigla'] for item in body]
-            return body_initials
-        else:
-            return None
-    except Exception as e:
-        print(e)
 
 
 class ScoreSystem:

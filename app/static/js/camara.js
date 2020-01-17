@@ -67,7 +67,7 @@ $(document).ready(function(){
         },
 
         subtitle: {
-            text: 'With image symbols'
+            text: 'Número de deputados do sexo masculino e feminino representado por ícones.'
         },
         legend: {
             enabled: false
@@ -216,6 +216,7 @@ function loadValuesByState() {
     });
 }
 
+
 function loadTotalSpent() {
     $.ajax({
         type: 'POST',
@@ -249,7 +250,37 @@ function loadTotalSpent() {
 }
 
 
+function loadPartyRepresentation() {
+    $.ajax({
+        type: 'POST',
+        url: '/party_representation',
+        success: function(response) {
+            let data = response.data;
+            let legislatures = Object.keys(data);
+            let partyButtonGroup = $('<div class="btn-group" />');
+            for(iterator=0; iterator<legislatures.length; iterator++)
+            {
+              partyButtonGroup.append(`
+              <button class="btn btn-dark btn-time-select"
+                type="button"
+                name="select-party-${legislatures[iterator]}"
+                id="party-leg-${legislatures[iterator]}">Legislatura ${legislatures[iterator]}</button>`);
 
+              let divId = 'subchart-party'+String(legislatures[iterator]);
+              $('#partyChart').append(`<div class="row party" id=${divId} />`);
+
+              generatePartyRepresentationChart(divId, legislatures[iterator], data[legislatures[iterator]]);
+            }
+            $('#subchart-party'+legislatures[0]).attr('style', 'display:initial');
+            $('#party-legislature-select').append(partyButtonGroup);
+            initEventListener('party-leg-', 'subchart-party');
+
+        },
+        error: function(error){
+            console.log(error);
+        }
+    });
+}
 
 
 // chart functions ===========================================================
@@ -266,7 +297,7 @@ function generateprofessionChart(divId, legislature, data)
         text: 'Profissões na Câmara na Legislatura '+ legislature
     },
     subtitle: {
-        text: 'Frequência de cada profissão.'
+        text: 'Número de deputados para cada profissão.'
     }
   });
 }
@@ -281,6 +312,9 @@ function generateSchoolingChart(divId, legislature, data)
     },
     title: {
       text: 'Escolaridade na Legislatura '+ legislature
+    },
+    subtitle: {
+        text: 'Número de deputados para cada escolaridade.'
     },
     plotOptions: {
       funnel: {
@@ -309,7 +343,6 @@ function generateSchoolingChart(divId, legislature, data)
       }
     ]
   });
-
 }
 
 function generateValueByStateChart(divId, time, data)
@@ -322,9 +355,10 @@ function generateValueByStateChart(divId, time, data)
         text: 'Cota Parlamentar por Estado na Legislatura '+time
     },
     subtitle: {
-        text: 'Source map: <a href="http://code.highcharts.com/mapdata/countries/br/br-all.js">Brazil</a>'
+        text: 'Passe o mouse por cima dos estados para ver o valor da Cota.'
     },
     series: [{
+        name: 'Valor da Cota Parlamentar',
         data: data,
         showInLegend: false,
         states: {
@@ -345,21 +379,21 @@ function generateTotalSpentContainer(divId, legislature, totalSpent)
 {
 $(`#${divId}`).append(
   `<div class='row legislagure-display'>Legislatura ${legislature}</div>
-  <div class='col-sm-12'><p class='value-display'>${totalSpent}<p></div>`);
+  <div class='col-sm-12'><p class='value-display'>R$ ${totalSpent}<p></div>`);
 }
 
-function loadPartyRepresentation() {
+function generatePartyRepresentationChart(divId, legislature, data) {
     $.ajax({
         type: 'POST',
         url: '/party_representation',
         success: function(response) {
-            Highcharts.mapChart('partyChart', {
+            Highcharts.mapChart(divId, {
             chart: {
             type: 'item'
             },
 
             title: {
-                text: 'Partidos na Câmara na Legislatura '
+                text: 'Partidos na Legislatura '+ legislature
             },
 
             legend: {
@@ -369,7 +403,7 @@ function loadPartyRepresentation() {
             series: [{
                 name: 'Representantes',
                 keys: ['name', 'y', 'label', 'color'],
-                data: response['data'],
+                data: data,
                 dataLabels: {
                     enabled: true,
                     format: '{point.label}'
