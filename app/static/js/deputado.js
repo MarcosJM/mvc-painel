@@ -77,23 +77,15 @@ function loadExpensesHistory()
     success: function(response){
       expensesHistory = response.expensesHistory;
       years = Object.keys(expensesHistory);
-      let expensesButtonGroup = $('<div class="btn-group" />');
 
       for(iterator=0; iterator<years.length; iterator++)
       {
-        // creating the button to select this instance
-        expensesButtonGroup.append(`
-        <button class="btn btn-dark"
-          type="button"
-          name="select-expenses-${years[iterator]}"
-          id="expenses-leg-${years[iterator]}">${years[iterator]}</button>`);
         // populating with data
         let divId = 'expensesHistoryChart'+String(years[iterator]);
         $('#expensesChartArea').append(`<div id="${divId}"></div>`);
         generateExpensesHistoryChart(divId, years[iterator], expensesHistory[years[iterator]]['deputy_expenses'], expensesHistory[years[iterator]]['range']);
       }
       $('#expensesHistoryChart'+String(years[0])).attr('style', 'display:initial');
-      $('#expenses-legislature-select').append(expensesButtonGroup);
       initEventListener('expenses-leg-', 'expensesHistoryChart');
     },
     error: function(error){
@@ -110,7 +102,6 @@ function loadExpensesCategory()
     url: '/deputy_expenses_category',
     data: {'depId': depId},
     success: function(response){
-      console.log(response);
       expensesCategory = response.expensesCategory;
       years = Object.keys(expensesCategory);
       let expensesButtonGroup = $('<div class="btn-group" />');
@@ -125,7 +116,7 @@ function loadExpensesCategory()
           id="expenses-leg-${years[iterator]}">${years[iterator]}</button>`);
         // populating with data
         let divId = 'expensesCategoryChart'+String(years[iterator]);
-        $('#expensesCategoryChartArea').append(`<div id="${divId}"></div>`);
+        $('#areaExpensesCategoryChart').append(`<div id="${divId}"></div>`);
         generateExpensesCategoryChart(divId, years[iterator], expensesCategory[years[iterator]]);
       }
       $('#expensesCategoryChart'+String(years[0])).attr('style', 'display:initial');
