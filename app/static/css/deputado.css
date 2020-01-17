@@ -8735,3 +8735,7 @@ div[id^="eventPrecencesChart"], div[id^="expensesHistoryChart"], div[id^="expens
 {
   text-align: center;
 }
+.btn-container
+{
+  margin: 10px auto;
+}

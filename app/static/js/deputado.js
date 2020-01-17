@@ -34,7 +34,7 @@ function loadVotingPresence()
         let eventPresences = response.eventPresences
         let legislatures = Object.keys(eventPresences)
         let eventPresenceButtonGroup = $('<div class="btn-group" />');
-        for(iterator=0; iterator<legislatures.length; iterator++)
+        for(let iterator=0; iterator<legislatures.length; iterator++)
         {
           // creating the button to select this instance
           eventPresenceButtonGroup.append(`
@@ -49,7 +49,7 @@ function loadVotingPresence()
           let allPresences = [];
           let allAverages = [];
           let eventNames = Object.keys(eventPresences[legislatures[iterator]]);
-          for(iterator2=0; iterator2<eventNames.length; iterator2++)
+          for(let iterator2=0; iterator2<eventNames.length; iterator2++)
           {
             allEvents.push(eventPresences[legislatures[iterator]][eventNames[iterator2]]['all-events'])
             allPresences.push(eventPresences[legislatures[iterator]][eventNames[iterator2]]['presence'])
@@ -78,7 +78,7 @@ function loadExpensesHistory()
       expensesHistory = response.expensesHistory;
       years = Object.keys(expensesHistory);
 
-      for(iterator=0; iterator<years.length; iterator++)
+      for(let iterator=0; iterator<years.length; iterator++)
       {
         // populating with data
         let divId = 'expensesHistoryChart'+String(years[iterator]);
@@ -106,7 +106,7 @@ function loadExpensesCategory()
       years = Object.keys(expensesCategory);
       let expensesButtonGroup = $('<div class="btn-group" />');
 
-      for(iterator=0; iterator<years.length; iterator++)
+      for(let iterator=0; iterator<years.length; iterator++)
       {
         // creating the button to select this instance
         expensesButtonGroup.append(`
@@ -137,10 +137,11 @@ function loadDeputyAuthorships()
     url: '/deputy_authorships',
     data: {'depId': depId},
     success: function(response){
+      console.log(response.authorships);
       let authorships = response.authorships;
       let legislatures = Object.keys(authorships);
       let authorshipButtonGroup = $('<div class="btn-group" />');
-      for(iterator=0; iterator<legislatures.length; iterator++)
+      for(let iterator=0; iterator<legislatures.length; iterator++)
       {
         // creating the button to select this instance
         authorshipButtonGroup.append(`
@@ -151,9 +152,11 @@ function loadDeputyAuthorships()
         // populating with data
         let divId = 'deputyAuthorship'+String(legislatures[iterator]);
         $('#authorshipArea').append(`<div id="${divId}" class="row"></div>`);
-        generateAuthorshipContainer(divId, legislatures[iterator], authorships[legislatures[iterator]]['authoring'], authorships[legislatures[iterator]]['median-authoring']);
+        generateAuthorshipContainer(divId, legislatures[iterator], authorships[legislatures[iterator]]['authorshipQuantity']['authoring'], authorships[legislatures[iterator]]['authorshipQuantity']['median-authoring']);
+        if (authorships[legislatures[iterator]]['authorshipData'].length > 0) 
+          generateAuthorshipMetadataContainer(divId, legislatures[iterator], authorships[legislatures[iterator]]['authorshipData']);
       }
-      for(iterator=1; iterator<legislatures.length; iterator++)
+      for(let iterator=1; iterator<legislatures.length; iterator++)
       {
           $('#deputyAuthorship'+String(legislatures[iterator])).attr('style', 'display:none');
       }
@@ -205,6 +208,34 @@ function generateAuthorshipContainer(divId, legislature, authoring, megianAuthor
       </div>
     </div>`
   );
+}
+
+function generateAuthorshipMetadataContainer(divId, legislature, authoringArray)
+{
+  let metadataDivId = 'metadata-auth-'+ legislature;
+  $(`#${divId}`).append(
+    `<div class="container">
+        <div class="row">
+          <div class="col-sm-12" id='${metadataDivId}'>
+          </div>
+        </div>
+      </div>`);
+
+  for(let iterator3=0;iterator3<authoringArray.length;iterator3++)
+  {
+    $(`#${metadataDivId}`).append(
+      `<div class='container btn-container'>
+        <div class='row'>
+          <div class='col-sm-12'>
+            <a href="https://www.camara.leg.br/proposicoesWeb/fichadetramitacao?idProposicao=${authoringArray[iterator3]['idProposicao']}" 
+              class="btn btn-secondary btn-lg active" 
+              role="button" 
+              aria-pressed="true">${authoringArray[iterator3]['siglaTipo']} 
+              ${authoringArray[iterator3]['numero']}/${authoringArray[iterator3]['ano']}</a>
+          </div>
+        </div>
+      </div>`);
+  }
 }
 
 // PLOT FUNCTIONS ===================================================================================================

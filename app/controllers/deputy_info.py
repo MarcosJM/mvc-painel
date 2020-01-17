@@ -141,6 +141,11 @@ class DeputyInfo:
 
         except Exception as e:
             print(e)
+    def getPropositionsAuthoredDetails(self, legislature_number=56):
+        """"Return a dictionary with the metadata of each proposition that the deputy is credited as an author"""
+        query_authors = {'legislatura': int(legislature_number), 'idDeputadoAutor': float(self.deputy.id_register)}
+        allauthorshipData = list(self._collection_authors.find(query_authors, {"_id":0, "idProposicao":1, "siglaTipo":1, "numero":1,"ano":1}))
+        return{'authorshipMetadata': allauthorshipData}
 
     def getExpenses(self, year_number=2018):
         """ Return two arrays, one with the ranges (max, min) for each month given the year and the
