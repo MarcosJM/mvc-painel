@@ -5,6 +5,7 @@ from collections import Counter
 from itertools import chain
 from app.utils import LEGISLATURES
 import math
+from app.utils import *
 # =================================================
 
 
@@ -79,3 +80,16 @@ class GeneralAnalysis:
             result = list(self._collection_uf.find({}, query))
             result_fmt = [['br-' + item['sigla'].lower(), item['cotaParlamentar']] for item in result]
             return {'data': result_fmt}
+
+        @app.route("/party_representation", methods=['POST'])
+        def getPartiesRepresentation(legislature_number=55):
+            query = [{'$match': {'numLegislatura': str(legislature_number)}},
+                     {'$group': {'_id': '$partidoAtual.sigla', 'count': {'$sum': 1}}}]
+            result = list(self._collection_deputy.aggregate(query))
+            if len(result) > 0:
+                result_fmt = {'data': [[item['_id'], item['count'], item['_id'], color_party(item['_id'])]
+                                       for item in result]}
+                return result_fmt
+            else:
+                print('No query results.')
+                return None
