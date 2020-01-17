@@ -117,19 +117,29 @@ $(document).ready(function(){
             type: 'POST',
             url: '/professions',
             success: function(response){
-                Highcharts.chart('chart', {
-                    series: [{
-                        type: 'treemap',
-                        layoutAlgorithm: 'squarified',
-                        data: response['data']
-                    }],
-                    title: {
-                        text: 'Profissões na Câmara'
-                    },
-                    subtitle: {
-                        text: 'Frequência de cada profissão.'
-                    }
-                });
+              let professionData = response.professionData;
+              let legislatures = Object.keys(professionData);
+              professionButtonGroup = $('<div class="btn-group" />');
+
+              for(iterator = 0; iterator<legislatures.length; iterator++)
+              {
+                professionButtonGroup.append(`
+                <button class="btn btn-dark btn-time-select"
+                  type="button"
+                  name="select-profession-${legislatures[iterator]}"
+                  id="profession-leg-${legislatures[iterator]}">Legislatura ${legislatures[iterator]}</button>`); 
+                
+                let divId = 'chamberProfession'+String(legislatures[iterator]);
+                $('#professionChartData').append(`<div id="${divId}"></div>`);    
+
+                generateprofessionChart(divId, legislatures[iterator], professionData[legislatures[iterator]]);
+
+              }
+
+              $('#chamberProfession'+String(legislatures[0])).attr('style', 'display:initial');
+              $('#profession-select').append(professionButtonGroup);
+              initEventListener('profession-leg-', 'chamberProfession');
+
             },
             error: function(error){
                 console.log(error);
@@ -142,7 +152,6 @@ $(document).ready(function(){
             type: 'POST',
             url: '/schooling',
             success: function(response){
-              console.log(response.schoolingData);
               let schoolingData = response.schoolingData;
               let legislatures = Object.keys(schoolingData);
               let schoolingButtonGroup = $('<div class="btn-group" />');
@@ -244,6 +253,24 @@ function loadTotalSpent() {
 
 
 // chart functions ===========================================================
+
+function generateprofessionChart(divId, legislature, data)
+{
+  Highcharts.chart(divId, {
+    series: [{
+        type: 'treemap',
+        layoutAlgorithm: 'squarified',
+        data: data
+    }],
+    title: {
+        text: 'Profissões na Câmara na Legislatura '+ legislature
+    },
+    subtitle: {
+        text: 'Frequência de cada profissão.'
+    }
+  });  
+}
+
 
 function generateSchoolingChart(divId, legislature, data)
 {

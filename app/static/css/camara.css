@@ -3,10 +3,10 @@
 {
   text-align: center;
 }
-div[id^="valueMapChart"], div[id^="spentTotal"], div[id^="chamberSchooling"] {
+div[id^="valueMapChart"], div[id^="spentTotal"], div[id^="chamberSchooling"], div[id^="chamberProfession"] {
   display: none;
 }
-.total-spent-centered, .centered-shooling
+.total-spent-centered, .centered-shooling, .centered-profession
 {
   display: flex;
   justify-content: center;
