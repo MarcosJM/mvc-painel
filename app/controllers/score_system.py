@@ -65,39 +65,66 @@ class ScoreSystem:
                 return score
 
         def calculateIndicatorTwoScore(deputy_id, legislature_number=56):
-            """
-            this method calculates the score of a deputy in the fiscalizador indicator perspective
-            :param deputy_id: String - the deputy's identifier
-            :param legislature_number: String - the legislature to be considered
-            :return: float - a value between 0 and 10
-            """
-            pipeline = [{"$match": {"legislatura": legislature_number}},
-                        {"$group": {"_id": "$sigla", "count": {"$sum": 1}}}]
+                """
+                this method calculates the score of a deputy in the fiscalizador indicator perspective
+                :param deputy_id: String - the deputy's identifier
+                :param legislature_number: String - the legislature to be considered
+                :return: float - a value between 0 and 10
+                """
+                pipeline = [{"$match": {"legislatura": legislature_number}},
+                            {"$group": {"_id": "$sigla", "count": {"$sum": 1}}}]
 
-            # getting the number of reunions in each cpi
-            cpiReunions = list(self._collections['reuniao_comissao_inquerito'].aggregate(pipeline))
-            cpiReunionsFormatted = {}
-            for cpi in cpiReunions:
-                valuesOnly = list(cpi.values())
-                cpiReunionsFormatted.update({valuesOnly[0]: valuesOnly[1]})
-            pipeline[0]['$match'] = dict(pipeline[0]['$match'], **{'presencas': deputy_id})
+                # getting the number of reunions in each cpi
+                cpiReunions = list(self._collections['reuniao_comissao_inquerito'].aggregate(pipeline))
+                cpiReunionsFormatted = {}
+                for cpi in cpiReunions:
+                    valuesOnly = list(cpi.values())
+                    cpiReunionsFormatted.update({valuesOnly[0]: valuesOnly[1]})
 
-            # getting the presences of the deputy in the reunions he attended
-            cpiPresences = list(self._collections['reuniao_comissao_inquerito'].aggregate(pipeline))
-            cpiPresencesFormatted = {}
-            for cpi in cpiPresences:
-                valuesOnly = list(cpi.values())
-                cpiPresencesFormatted.update({valuesOnly[0]: valuesOnly[1]})
+                print(cpiReunionsFormatted)
 
-            # for each cpi the deputy attended, we compare his attendances to the total number of meetings
-            indicatorScore = 0
-            for cpi in cpiPresencesFormatted.items():
-                print('cpi formatted', cpiPresencesFormatted)
-                print('cpi reunions', cpiReunionsFormatted)
-                indicatorScore += (cpi[1] / cpiReunionsFormatted[cpi[0]])
 
-            return str((indicatorScore / len(cpiPresencesFormatted)) * 10)
+                # recover all commissions that the deputy is member of
+                query_deputy_comissions = {'numLegislatura': str(legislature_number), 'ideCadastro': str(deputy_id)}
+                query_field = {'comissoes': 1, '_id': 0}
+                result_member_comissions = next(self._collections['deputado'].find(query_deputy_comissions, query_field),
+                                                None)
+                siglas = [result['siglaComissao'] for result in result_member_comissions['comissoes']['comissao']]
 
+                # get presence in those commissions
+                query_commissions_presence = {'legislatura': int(legislature_number)}
+                result_comissions_presence = list(self._collections['reuniao_comissao_inquerito'].find(query_commissions_presence))
+
+                deputy_presences = [item for item in result_comissions_presence if item['sigla'] in siglas]
+                if deputy_presences:
+
+                    presencesGroup= {}
+
+                    for presence in deputy_presences:
+                        if presence['sigla'] in presencesGroup:
+                            presencesGroup[presence['sigla']] += presence['presencas']
+                        else:
+                            presencesGroup.update({presence['sigla']: presence['presencas']})
+
+
+                    deputyPresences = {}
+
+                    for sigla in presencesGroup.keys():
+                        deputyPresences.update({sigla: presencesGroup[sigla].count(deputy_id)})
+
+
+                    #correction factor
+                    cf = max(list(cpiReunionsFormatted.values()))
+
+                    # for each cpi the deputy attended, we compare his attendances to the total number of meetings
+
+                    indicatorScore = 0
+                    for cpi in deputyPresences.items():
+                        indicatorScore += (cpi[1] / cpiReunionsFormatted[cpi[0]]) * (cpi[1] / cf)
+
+                    return {'indicatorTwo': str((indicatorScore / len(presencesGroup)) * 10)}
+                else:
+                    return {'indicatorTwo':None}
         def calculateIndicatorOneScore(deputy_id, legislature_number=56):
             """
             this method calculates the score of a deputy in the fiscalizador indicator perspective
@@ -160,7 +187,7 @@ class ScoreSystem:
             #     permanent_comissions = [{item['siglaComissao']:} for item in result_member_comissions['comissoes']['comissao']
             #                             if item['siglaComissao'] in permanent_comissions_initials]
             #
-            #     #
+            #     #AA
 
             # todo finish
 
