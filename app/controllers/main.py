@@ -24,6 +24,14 @@ class Main:
         def exploreDeputados():
             return render_template("deputados.html")
 
+        @app.route("/explorar/avaliacao")
+        def exploreAvaliation():
+            return render_template("avaliacao.html")
+
+        @app.route("/explorar/avaliacao/ranking")
+        def exploreRanking():
+            return render_template("ranking.html")
+
         @app.route("/explorar/deputados/deputado", methods=['GET', 'POST'])
         def deputadoPersonalInfo():
             depId = request.args['depId']

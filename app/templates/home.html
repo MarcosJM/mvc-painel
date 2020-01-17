@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block headblock %}
+  <title>Câmara Interativa</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
   <script type="text/javascript" src= "{{ url_for('static', filename='js/home.js') }}"></script>
 {% endblock %}
@@ -28,7 +29,7 @@
         </div>
       </div>
     </div>
-    <!-- <div class="container">
+    <div class="container">
       <div class="row">
         <div class="container">
           <div class="row">
@@ -40,12 +41,22 @@
         <div class="container">
           <div class="row">
             <div class="col-sm-12">
-              Suspendisse eget placerat enim, at porttitor orci. Integer feugiat ipsum eu erat lacinia, sit amet venenatis justo sagittis. Vestibulum tempus purus et suscipit auctor. Cras porta, odio et posuere mollis, lectus ante tincidunt enim, vehicula tempus justo metus auctor quam. Sed erat dolor, placerat sed mi non, ultrices scelerisque lectus. Donec rhoncus dui ut interdum luctus. Nulla rutrum molestie mi, sed tempor eros ullamcorper vel. Quisque eget quam ac lectus finibus dapibus nec vitae leo. Mauris viverra est ligula, et semper justo scelerisque id. Suspendisse posuere cursus magna, ultrices consectetur felis luctus ac. Maecenas eget nunc eget nisi rutrum posuere. Pellentesque porttitor orci ut massa tristique hendrerit. Mauris turpis arcu, porttitor nec malesuada non, varius et odio. Quisque dictum, libero eget blandit tincidunt, ex mauris rhoncus leo, et varius ante sem in orci. Phasellus vel urna quis nisi sollicitudin posuere vel quis sem.
+              A nota final do deputado é obtida através da média ponderada de três componentes. Os indicadores Legislador, Fiscalizador e Transparente. Os dois primeiros indicadores foram escolhidos, pois configuram-se de uma obrigação constitucional do parlamentar, devendo constar na avaliação [Dantas 2013] enquanto a motivação do terceiro indicador dá-se pelo papel representativo do deputado: como voz do povo, estar próximo do cidadão,
+              consolidando um canal direto capaz de apresentar aquilo que de fato está sendo feito, é bastante necessário.
+              Porém, cabe a você dicidir os pesos desses indicadores no cálculo da nota final. Contudo, os indicadores Legislador e Fiscalizador devem ter, no mínimo cada, peso de 30% da nota final enquanto o indicador Transparente deve ter, no mínimo, peso de 20%. Sobram então 20% para serem distribuir entre os indicadores.
+              <br><br>
+              Para o indicador Legislador, são consideradas três componentes: produção legislativa, presença em votações nominais e presenças em reuniões ordinárias de comissões permanentes;<br>
+              Para o indicador Fiscalizador, considera-se um componente: adesão a comissões de inquérito efetivamente instaladas; e<br>
+              Para o indicador Transparente, considera-se também um componente: presença em reuniões de audiências públicas;<br>
+              Esses conceitos e a base dessa metodologia foram retirados do livro <a href="http://www.votoconsciente.org.br/wp-content/uploads/2013/02/LIVRO-FINAL-_-MVC-KAS.pdf">"De olho no Legislativo: Um método para aocmpanhar mandatos parlamentares"</a> de Dantas.
+
+              <br><br>
+              Para mais detalhes sobre o cálculo e justificativas, por favor acessar este <a href="https://docs.google.com/document/d/1OdkHfcbsitMhOKh3rqmb5eK26mz8Sww2TAQ2wz_YzvI/edit?usp=sharing">documento</a>.
             </div>
           </div>
         </div>
       </div>
-    </div> -->
+    </div>
     <div class="container">
       <div class="row">
         <div class="container">

@@ -6,8 +6,9 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
   <!-- FontAwesome JS-->
   <script defer src="https://use.fontawesome.com/releases/v5.1.1/js/all.j" integrity="sha384-BtvRZcyfv4r0x/phJt9Y9HhnN5ur1Z+kZbKVgzVBAlQZX4jvAuImlIz+bG7TS00a" crossorigin="anonymous"></script>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/avaliacao.css') }}">
   <link id="theme-style" rel="stylesheet" href="{{ url_for('static', filename='css/deputado.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/avaliacao.css') }}">
+  <title>Cálculo Interativo Nota</title>
   <script type="text/javascript" src= "{{ url_for('static', filename='js/avaliacao.js') }}"></script>
 {% endblock %}
 {% block content %}
@@ -21,8 +22,9 @@
               <div class="resume-section-content">
                 <article class="resume-timeline-item position-relative pb-5">
                   <div class="resume-timeline-item-desc">
-                    <p>Aqui você pode ajustar os pesos dos indicadores de desempenho. Dessa forma,
-                    o cálculo da nota final refletirá o que é mais importante para você. </p>
+                    <p>Aqui você irá compor a nota final para a avaliação do desempenho dos deputados federais. Escolha com sabedoria!
+                      Você pode ajustar os pesos dos indicadores de desempenho, respeitando o valor mínimo de cada um.
+                      Dessa forma, o cálculo da nota final refletirá o que é mais importante para você. </p>
                   </div>
                   <div class="resume-timeline-item-desc">
                     <div class="container">
@@ -106,6 +108,7 @@
                     </div>
                   </div>
                 </article>
+                <div id="div-anchor-ranking-page"><button type="button" id="anchor-ranking-page">Gerar cálculo!</button></div>
               </div>
             </section>
           </div>
