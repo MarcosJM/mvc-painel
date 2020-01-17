@@ -43,3 +43,34 @@ body
 {
   border-radius: 0.25rem;
 }
+
+.loading
+{
+  width: 100px;
+  height: 100px;
+  background-color: #FFAA1D;
+  animation-name: isLoading;
+  animation-duration: 3.5s;
+  animation-iteration-count: infinite;
+  border-radius: 100px;;
+}
+#loadingArea
+{
+  display: flex;
+  justify-content: center;
+}
+/* Safari 4.0 - 8.0 */
+@-webkit-keyframes isLoading {
+  0%   {background-color: #FFAA1D;}
+  25%  {background-color: rgba(126,86,134);}
+  50%  {background-color: #666666;}
+  100% {background-color: #FFAA1D;}
+}
+
+/* Standard syntax */
+@keyframes isLoading {
+  0%   {background-color: #FFAA1D;}
+  25%  {background-color: rgba(126,86,134);}
+  50%  {background-color: #666666;}
+  100% {background-color: #FFAA1D;}
+}

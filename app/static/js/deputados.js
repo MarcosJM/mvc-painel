@@ -1,15 +1,27 @@
-let isLoading = true;
-
 
 $(document).ready(function(){
+  isLoadingTrue();
   loadDeputyListing();
-
+  
   $('#btn-search-deputies').click(function(){
 
   });
 
 });
 
+function isLoadingTrue()
+{
+  $('#loadingArea').attr('display:block');
+  $('.display-info').attr('style', 'display:none');
+  
+}
+
+function isLoadingFalse()
+{
+  $('#loadingArea').attr('style', 'display:none');
+  $('.display-info').attr('style', 'display:initial');
+
+}
 function loadDeputyListing()
 {
    $.ajax({
@@ -17,8 +29,6 @@ function loadDeputyListing()
        url: '/deputy_listing',
        success: function(response){
          listDeputies(response.allDeputies);
-         localStorage.setItem('allDeputies', response.allDeputies);
-         isLoading = false;
        },
        error: function(error){
            console.log(error);
@@ -47,4 +57,5 @@ function listDeputies(deputyList)
     let thisId =  $(this).attr('id').split('&')[1];
     window.location.assign('/explore/deputados/deputado?depId='+thisId);
   });
+  isLoadingFalse();
 }
