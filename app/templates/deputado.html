@@ -23,6 +23,7 @@
     <script src="https://code.highcharts.com/modules/exporting.js"></script>
     <script src="https://code.highcharts.com/modules/export-data.js"></script>
     <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+	<script src="https://code.highcharts.com/modules/sunburst.js"></script>
 
     <!-- Theme CSS -->
     <link id="theme-style" rel="stylesheet" href="{{ url_for('static', filename='css/deputado.css') }}">
@@ -125,12 +126,12 @@
 									<article class="resume-timeline-item position-relative pb-5">
 										<div class="resume-timeline-item-desc">
 											<p>Role description goes here ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Donec pede justo, fringilla vel.</p>
-											<h6 class="font-weight-bold">Categorias de Gastos</h6>
                       						<div id="expensesChartArea">
-
+					 						</div>
+											<h6 class="font-weight-bold">Categorias de Gastos</h6>
+											<div id="expensesCategoryChartArea">
 					 						</div>
 					  						<div id="expenses-legislature-select">
-
 											</div>
 										</div>
 									</article>
