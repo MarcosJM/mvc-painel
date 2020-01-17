@@ -63,7 +63,7 @@ $(document).ready(function(){
         },
 
         title: {
-            text: 'Highcharts item chart'
+            text: 'Representatividade de Gênero na Legislatura '+ legislature
         },
 
         subtitle: {
@@ -104,7 +104,7 @@ $(document).ready(function(){
            url: '/gender_count',
            success: function(response){
              localStorage.setItem('genderResponse', JSON.stringify(response));
-             genderChart('55');
+             genderChart('53');
            },
            error: function(error){
                console.log(error);
@@ -235,7 +235,7 @@ function loadTotalSpent() {
               let divId = 'spentTotal'+String(legislatures[iterator]);
               $('#totalSpentContainer').append(`<div class="row spent-value" id=${divId} />`);
 
-              generateTotalSpentContainer(divId, totalSpent[legislatures[iterator]])
+              generateTotalSpentContainer(divId, legislatures[iterator], totalSpent[legislatures[iterator]])
             }
             $('#spentTotal'+legislatures[0]).attr('style', 'display:flex');
             $('#spentLegislatureSelect').append(spentButtonGroup);
@@ -341,8 +341,9 @@ function generateValueByStateChart(divId, time, data)
 
 }
 
-function generateTotalSpentContainer(divId, totalSpent)
+function generateTotalSpentContainer(divId, legislature, totalSpent)
 {
 $(`#${divId}`).append(
-  `<div class='col-sm-12'><p class='value-display'>${totalSpent}<p></div>`);
+  `<div class='row legislagure-display'>Legislatura ${legislature}</div>
+  <div class='col-sm-12'><p class='value-display'>${totalSpent}<p></div>`);
 }
