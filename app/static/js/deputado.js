@@ -13,7 +13,7 @@ function initEventListener(btnIdPrefix, targetDivPrefix)
     displayNoneCharts(targetDivPrefix);
     if (targetDivPrefix != 'deputyAuthorship')
       $(`#${targetDivPrefix}`+thisId).attr('style', 'display:initial')
-    else 
+    else
       $(`#${targetDivPrefix}`+thisId).attr('style', 'display:flex')
   });
 }
@@ -38,11 +38,11 @@ function loadVotingPresence()
         {
           // creating the button to select this instance
           eventPresenceButtonGroup.append(`
-          <button class="btn btn-dark" 
-          type="button" 
-          name="select-${legislatures[iterator]}" 
+          <button class="btn btn-dark"
+          type="button"
+          name="select-${legislatures[iterator]}"
           id="event-leg-${legislatures[iterator]}">Legislatura ${legislatures[iterator]}</button>`);
-          
+
 
           $('#event-leg-'+legislatures[iterator]).prop("disabled", false);
           let allEvents = [];
@@ -75,7 +75,6 @@ function loadExpensesHistory()
     url: '/deputy_expenses_history',
     data: {'depId': depId},
     success: function(response){
-      console.log(response);
       expensesHistory = response.expensesHistory;
       years = Object.keys(expensesHistory);
       let expensesButtonGroup = $('<div class="btn-group" />');
@@ -84,9 +83,9 @@ function loadExpensesHistory()
       {
         // creating the button to select this instance
         expensesButtonGroup.append(`
-        <button class="btn btn-dark" 
-          type="button" 
-          name="select-expenses-${years[iterator]}" 
+        <button class="btn btn-dark"
+          type="button"
+          name="select-expenses-${years[iterator]}"
           id="expenses-leg-${years[iterator]}">${years[iterator]}</button>`);
         // populating with data
         let divId = 'expensesHistoryChart'+String(years[iterator]);
@@ -154,9 +153,9 @@ function loadDeputyAuthorships()
       {
         // creating the button to select this instance
         authorshipButtonGroup.append(`
-        <button class="btn btn-dark" 
-          type="button" 
-          name="select-authorship-${legislatures[iterator]}" 
+        <button class="btn btn-dark"
+          type="button"
+          name="select-authorship-${legislatures[iterator]}"
           id="authorship-leg-${legislatures[iterator]}">Legislatura ${legislatures[iterator]}</button>`);
         // populating with data
         let divId = 'deputyAuthorship'+String(legislatures[iterator]);

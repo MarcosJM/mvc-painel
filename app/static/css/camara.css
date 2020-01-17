@@ -1,4 +1,31 @@
+
 .legislature-select
 {
   text-align: center;
+}
+div[id^="valueMapChart"], div[id^="spentTotal"], div[id^="chamberSchooling"], div[id^="chamberProfession"] {
+  display: none;
+}
+.total-spent-centered, .centered-shooling, .centered-profession
+{
+  display: flex;
+  justify-content: center;
+}
+.spent-value
+{
+  background-color: #FFAA1D;
+  color: #FFFFFF;
+  padding: 0.25rem 0.5rem;
+  margin: 0.2rem auto;
+  height: 90px;
+  width: 200px;
+  font-size: 20;
+  font-weight: bold;
+  text-align: center;
+  justify-content: center;
+}
+.value-display
+{
+  text-align: center;
+  margin: 30px auto;
 }

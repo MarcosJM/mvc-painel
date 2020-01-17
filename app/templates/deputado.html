@@ -39,10 +39,10 @@
 				    <img class="mr-3 img-fluid picture mx-auto deputy-picture" src="{{ personalInfo.picture_url }}" alt="foto do(a) deputado(a) {{ personalInfo.parliamentary_name }}">
 				    <div class="media-body p-4 d-flex flex-column flex-md-row mx-auto mx-lg-0">
 					    <div class="primary-info">
-						    <h1 class="name mt-0 mb-1 text-white text-uppercase text-uppercase">{{ personalInfo.parliamentary_name }}</h1>
-						    <div class="title mb-3"> {{ personalInfo.party['sigla'] }} </div>
+						   {% if personalInfo.parliamentary_name %} <h1 class="name mt-0 mb-1 text-white text-uppercase text-uppercase">{{ personalInfo.parliamentary_name }}</h1> {% endif %}
+						   {% if personalInfo.party['sigla']  %} <div class="title mb-3"> {{ personalInfo.party['sigla'] }} </div> {% endif %}
 						    <ul class="list-unstyled">
-								<li class="mb-2"><a href="#"><i class="far fa-envelope fa-fw mr-2" data-fa-transform="grow-3"></i>{{ personalInfo.email }}</a></li>
+								{% if personalInfo.email  %} <li class="mb-2"><a href="#"><i class="far fa-envelope fa-fw mr-2" data-fa-transform="grow-3"></i>{{ personalInfo.email }}</a></li>{% endif %}
 						    </ul>
 					    </div>
 				    </div>
@@ -53,19 +53,19 @@
 				    <h2 class="resume-section-title text-uppercase font-weight-bold pb-3 mb-3">Informações Pessoais</h2>
 				    <div class="row resume-section-content">
 						<div class="col-lg-6">
-							<p class="info-item"><span class="title">Nome Civil:</span> {{ personalInfo.name }}</p>
-							<p class="info-item"><span class="title">Data de Nascimento:</span> {{ personalInfo.born_in }}</p>
-							<p class="info-item"><span class="title">Data de Falecimento:</span> {{ personalInfo.died_in }}</p>
-							<p class="info-item"><span class="title">Sexo:</span> {{ personalInfo.sex }}</p>
-							<p class="info-item"><span class="title">Escolaridade:</span> {{ personalInfo.schooling }}</p>
+							{% if personalInfo.name %}<p class="info-item"><span class="title">Nome Civil:</span> {{ personalInfo.name }}</p>{% endif %}
+							{% if personalInfo.born_in %}<p class="info-item"><span class="title">Data de Nascimento:</span> {{ personalInfo.born_in }}</p>{% endif %}
+							{% if personalInfo.died_in  %}<p class="info-item"><span class="title">Data de Falecimento:</span> {{ personalInfo.died_in }}</p>{% endif %}
+							{% if personalInfo.sex %}<p class="info-item"><span class="title">Sexo:</span> {{ personalInfo.sex }}</p>{% endif %}
+							{% if personalInfo.schooling %}<p class="info-item"><span class="title">Escolaridade:</span> {{ personalInfo.schooling }}</p>{% endif %}
 						</div>
 
 						<div class="col-lg-6">
-							<p class="info-item"><span class="title">Profissão:</span> {{ personalInfo.profession }}</p>
-							<p class="info-item"><span class="title">UF:</span> {{ personalInfo.state }}</p>
-							<p class="info-item"><span class="title">Partido Atual:</span> {{ personalInfo.party.sigla }}</p>
-							<p class="info-item"><span class="title">Partidos Anteriores:</span> {{ personalInfo.party_affiliations}}</p>
-							<p class="info-item"><span class="title">Tempo de Câmara:</span> {{ personalInfo.periods_in_exercise }}</p>
+							{% if personalInfo.profession %}<p class="info-item"><span class="title">Profissão:</span> {{ personalInfo.profession }}</p>{% endif %}
+							{% if personalInfo.state %}<p class="info-item"><span class="title">UF:</span> {{ personalInfo.state }}</p>{% endif %}
+							{% if personalInfo.party.sigla %}<p class="info-item"><span class="title">Partido Atual:</span> {{ personalInfo.party.sigla }}</p>{% endif %}
+							{% if personalInfo.party_affiliations %}<p class="info-item"><span class="title">Partidos Anteriores:</span> {{ personalInfo.party_affiliations }}</p>{% endif %}
+							{% if personalInfo.periods_in_exercise %}<p class="info-item"><span class="title">Tempo de Câmara:</span> {{ personalInfo.periods_in_exercise }}</p>{% endif %}
 						</div>
 				</section>
 

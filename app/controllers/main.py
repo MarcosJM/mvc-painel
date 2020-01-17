@@ -31,6 +31,10 @@ class Main:
             personalInfo = deputy.getDeputyPersonalInfo()
             return render_template("deputado.html", personalInfo=personalInfo)
 
+        @app.route('/evaluation')
+        def evaluationBuild():
+            return render_template("avaliacao.html")
+
 
 class MainReqs:
     def __init__(self):
@@ -62,7 +66,7 @@ class MainReqs:
             return {'eventPresences': eventPresences}
 
         @app.route('/deputy_expenses_history', methods=['POST'])
-        def getDeputyExpenses():
+        def getDeputyExpensesgetDeputyExpenses():
             depId = request.form['depId']
             deputy = DeputyInfo(depId)
             expensesHistory = {}

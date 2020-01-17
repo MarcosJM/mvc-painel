@@ -44,14 +44,27 @@
                 </div>
                 <div class='container'>
                     <div class='row'>
-                        Suspendisse eget placerat enim, at porttitor orci. Integer feugiat ipsum eu erat lacinia, sit amet venenatis justo sagittis. Vestibulum tempus purus et suscipit auctor. Cras porta, odio et posuere mollis, lectus ante tincidunt enim, vehicula tempus justo metus auctor quam. Sed erat dolor, placerat sed mi non, ultrices scelerisque lectus. Donec rhoncus dui ut interdum luctus. Nulla rutrum molestie mi, sed tempor eros ullamcorper vel. Quisque eget quam ac lectus finibus dapibus nec vitae leo. Mauris viverra est ligula, et semper justo scelerisque id. Suspendisse posuere cursus magna, ultrices consectetur felis luctus ac. Maecenas eget nunc eget nisi rutrum posuere. Pellentesque porttitor orci ut massa tristique hendrerit. Mauris turpis arcu, porttitor nec malesuada non, varius et odio. Quisque dictum, libero eget blandit tincidunt, ex mauris rhoncus leo, et varius ante sem in orci. Phasellus vel urna quis nisi sollicitudin posuere vel quis sem.
+                        Cabe aos deputados federais, portanto, as responsabilidades de representar os interesses do povo ao participar de votações de proposições no Plenário, 
+                        comparecer aos eventos da Câmara (sessões ordinárias, audiências públicas, etc.), fiscalizar a aplicação adequada dos recursos públicos, discutir e votar o orçamento da União, 
+                        discutir e propor novas leis em benefício à população e a seu estado.
+                        <br>
+                        Os benefícios concedidos aos deputados que dão suporte às suas atividades são salário mensal de R$ 33.763,00, 
+                        auxílio-moradia de R$ 4.253,00 ou apartamento gratuito para morar, verba mensal de R$ 111.675,59 para contratar até 25 funcionários, 
+                        de R$ 30.788,66 a R$ 45.612,53 mensais (dependendo do estado) referentes à Cota para o Exercício da Atividade Parlamentar, 
+                        para gastos com alimentação, aluguel de veículo e escritório, divulgação do mandato, entre outras despesas.
+                        No mapa abaixo, são mostrados os montantes de cota parlamentar que os deputados de cada estado têm direito.
                     </div>
                 </div>
             </div>
         </div>
         <div class='container'>
             <div class='row'>
-                    <div id="map"></div>
+                <div class='col-sm-12' id='mapChartArea'>
+
+                </div>
+            </div>
+            <div id='mapLegislatureSelect' class='legislature-select'>
+
             </div>
         </div>
         <div class='container'>
@@ -64,16 +77,17 @@
                 <div class='container'>
                     <div class='row'>
                         <div class='col-sm-4'>
-                                Suspendisse eget placerat enim, at porttitor orci. Integer feugiat ipsum eu erat lacinia, sit amet venenatis justo sagittis. Vestibulum tempus purus et suscipit auctor. Cras porta, odio et posuere mollis, lectus ante tincidunt enim, vehicula tempus justo metus auctor quam. Sed erat dolor, placerat sed mi non, ultrices scelerisque lectus. Donec rhoncus dui ut interdum luctus. Nulla rutrum molestie mi, sed tempor eros ullamcorper vel. Quisque eget quam ac lectus finibus dapibus nec vitae leo. Mauris viverra est ligula, et semper justo scelerisque id. Suspendisse posuere cursus magna, ultrices consectetur felis luctus ac. Maecenas eget nunc eget nisi rutrum posuere. Pellentesque porttitor orci ut massa tristique hendrerit. Mauris turpis arcu, porttitor nec malesuada non, varius et odio. Quisque dictum, libero eget blandit tincidunt, ex mauris rhoncus leo, et varius ante sem in orci. Phasellus vel urna quis nisi sollicitudin posuere vel quis sem.
+                            a representatividade por gênero é exibida no gráfico ao lado. Ao passar o mouse por cima dos ícones,
+                            é exibida a quantidade de deputados para cada sexo.
                         </div>
                         <div class='col-sm-8' id='gender-chart-container'>
                             <div id= 'genderChart'></div>
                             <div class="legislature-select">
                               <div class="btn-group">
-                                <button class="btn btn-dark" type="button" name="select-53" id="gender-leg-53">Legislatura 53</button>
-                                <button class="btn btn-dark" type="button" name="select-54" id="gender-leg-54">Legislatura 54</button>
-                                <button class="btn btn-dark" type="button" name="select-55" id="gender-leg-55">Legislatura 55</button>
-                                <button class="btn btn-dark" type="button" name="select-56" id="gender-leg-56">Legislatura 56</button>
+                                <button class="btn btn-dark btn-time-select" type="button" name="select-53" id="gender-leg-53">Legislatura 53</button>
+                                <button class="btn btn-dark btn-time-select" type="button" name="select-54" id="gender-leg-54">Legislatura 54</button>
+                                <button class="btn btn-dark btn-time-select" type="button" name="select-55" id="gender-leg-55">Legislatura 55</button>
+                                <button class="btn btn-dark btn-time-select" type="button" name="select-56" id="gender-leg-56">Legislatura 56</button>
                               </div>
                             </div>
                         </div>
@@ -91,14 +105,28 @@
                 <div class='container'>
                     <div class='row'>
                         <div class='col-sm-4'>
-                            Suspendisse eget placerat enim, at porttitor orci. Integer feugiat ipsum eu erat lacinia, sit amet venenatis justo sagittis. Vestibulum tempus purus et suscipit auctor. Cras porta, odio et posuere mollis, lectus ante tincidunt enim, vehicula tempus justo metus auctor quam. Sed erat dolor, placerat sed mi non, ultrices scelerisque lectus. Donec rhoncus dui ut interdum luctus. Nulla rutrum molestie mi, sed tempor eros ullamcorper vel. Quisque eget quam ac lectus finibus dapibus nec vitae leo. Mauris viverra est ligula, et semper justo scelerisque id. Suspendisse posuere cursus magna, ultrices consectetur felis luctus ac. Maecenas eget nunc eget nisi rutrum posuere. Pellentesque porttitor orci ut massa tristique hendrerit. Mauris turpis arcu, porttitor nec malesuada non, varius et odio. Quisque dictum, libero eget blandit tincidunt, ex mauris rhoncus leo, et varius ante sem in orci. Phasellus vel urna quis nisi sollicitudin posuere vel quis sem.
+                            Nesse gráfico é exibida a proporção das profissões exercidas pelos deputados da Câmara. O tamanho da caixa indica a 
+                            representatividade de cada profissão. É possível ver a quantidade exata de deputados por profissão ao passar o mouse 
+                            por cima das caixas.
                         </div>
                         <div class='col-sm-8'>
-                                <div id="chart"></div>
+                            <div class='container'>
+                                <div class='row'>
+                                    <div class='col-sm-12' id='professionChartData'>
+
+                                    </div>
+                                </div>
+                                <div class='container'>
+                                    <div class='row centered-profession'>
+                                        <div id='profession-select'>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
         </div>
         <div class='container'>
             <div class='row'>
@@ -137,10 +165,24 @@
                 <div class='container'>
                     <div class='row'>
                         <div class='col-sm-4'>
-                            Suspendisse eget placerat enim, at porttitor orci. Integer feugiat ipsum eu erat lacinia, sit amet venenatis justo sagittis. Vestibulum tempus purus et suscipit auctor. Cras porta, odio et posuere mollis, lectus ante tincidunt enim, vehicula tempus justo metus auctor quam. Sed erat dolor, placerat sed mi non, ultrices scelerisque lectus. Donec rhoncus dui ut interdum luctus. Nulla rutrum molestie mi, sed tempor eros ullamcorper vel. Quisque eget quam ac lectus finibus dapibus nec vitae leo. Mauris viverra est ligula, et semper justo scelerisque id. Suspendisse posuere cursus magna, ultrices consectetur felis luctus ac. Maecenas eget nunc eget nisi rutrum posuere. Pellentesque porttitor orci ut massa tristique hendrerit. Mauris turpis arcu, porttitor nec malesuada non, varius et odio. Quisque dictum, libero eget blandit tincidunt, ex mauris rhoncus leo, et varius ante sem in orci. Phasellus vel urna quis nisi sollicitudin posuere vel quis sem.
+                            O gráfico ao lado exibe a distribuição do grau de escolaridade dos deputados. Esse cone é 
+                            ordenado de cima para baixo, estando no topo o grau de escolaridade da maioria dos deputados.
                         </div>
                         <div class='col-sm-8'>
-                                <div id="schooling"></div>
+                            <div class='container'>
+                                <div class='row'>
+                                    <div class='col-sm-12' id='schoolingChartData'>
+
+                                    </div>
+                                </div>
+                                <div class='container'>
+                                    <div class='row centered-shooling'>
+                                        <div id='schooling-select'>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -156,14 +198,30 @@
                 <div class='container'>
                     <div class='row'>
                         <div class='col-sm-4'>
-                            Foram gastos <span id="total_spent"></span> no total.
+                            Aqui são somadas todas as despesas feitas pelas deputados
+                            utilizando a cota parlamentar para cada legislatura
                         </div>
                         <div class='col-sm-8'>
+                            <div class='container'>
+                                <div class='row'>
+                                    <div class='col-sm-12'>
+                                        <div class='container total-spent-centered' id='totalSpentContainer'>
+                                           
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class='container'>
+                                    <div class='row total-spent-centered'>
+                                        <div id='spentLegislatureSelect'>
 
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
+
                 </div>
-            </div>
         </div>
     </div>
 {% endblock %}

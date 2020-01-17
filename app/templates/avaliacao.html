@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% block headblock %}
+  <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900" rel="stylesheet">
+
+  <!-- jquery -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <!-- FontAwesome JS-->
+  <script defer src="https://use.fontawesome.com/releases/v5.1.1/js/all.j" integrity="sha384-BtvRZcyfv4r0x/phJt9Y9HhnN5ur1Z+kZbKVgzVBAlQZX4jvAuImlIz+bG7TS00a" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/avaliacao.css') }}">
+  <link id="theme-style" rel="stylesheet" href="{{ url_for('static', filename='css/deputado.css') }}">
+  <script type="text/javascript" src= "{{ url_for('static', filename='js/avaliacao.js') }}"></script>
+{% endblock %}
+{% block content %}
+  <article class="resume-wrapper text-center position-relative">
+    <div class="resume-wrapper-inner mx-auto text-left bg-white shadow-lg">
+      <div class="container">
+        <div class="row">
+          <div class="col-sm-12">
+            <section class="resume-section experience-section mb-5">
+              <h2 class="resume-section-title text-uppercase font-weight-bold pb-3 mb-3">Avaliação de Desempenho</h2>
+              <div class="resume-section-content">
+                <article class="resume-timeline-item position-relative pb-5">
+                  <div class="resume-timeline-item-desc">
+                    <p>Aqui você pode ajustar os pesos dos indicadores de desempenho. Dessa forma,
+                    o cálculo da nota final refletirá o que é mais importante para você. </p>
+                  </div>
+                  <div class="resume-timeline-item-desc">
+                    <div class="container">
+                      <div class="row">
+                        <div class="col-sm-12">
+                          <div class="container">
+                            <div class="row">
+                              <div class="col-sm-10 component-adjustment-container">
+                                <div class="container">
+                                  <div class="row">
+                                    <div class="col-sm-4 component-adjustment-area">
+                                      <div class="container">
+                                        <div class="row">
+                                          <div class="col-sm-12 evaluation-component-header">
+                                            <h6>Legislador</h6>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div class="container">
+                                        <div class="row">
+                                          <div class="col-sm-12">
+                                            <div class="slidecontainer">
+                                              <input type="range" min="1" max="100" value="50" class="slider" id="myRange">
+                                            </div>
+                                            <div class="weightcontainer">
+                                              <input type="text" name="" value="">
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div class="col-sm-4 component-adjustment-area">
+                                      <div class="container">
+                                        <div class="row">
+                                          <div class="col-sm-12 evaluation-component-header">
+                                            <h6>Fiscalizador</h6>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div class="container">
+                                        <div class="row">
+                                          <div class="col-sm-12">
+                                            <div class="slidecontainer">
+                                              <input type="range" min="1" max="100" value="50" class="slider" id="myRange">
+                                            </div>
+                                            <div class="weightcontainer">
+                                              <input type="text" name="" value="">
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div class="col-sm-4 component-adjustment-area">
+                                      <div class="container">
+                                        <div class="row">
+                                          <div class="col-sm-12 evaluation-component-header">
+                                            <h6>Transparente</h6>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div class="container">
+                                        <div class="row">
+                                          <div class="col-sm-12">
+                                            <div class="slidecontainer">
+                                              <input type="range" min="1" max="100" value="50" class="slider" id="myRange">
+                                            </div>
+                                            <div class="weightcontainer">
+                                              <input type="text" name="" value="">
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+              </div>
+            </section>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </article>
+{% endblock %}
