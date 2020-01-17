@@ -55,7 +55,7 @@ function listDeputies(deputyList)
   }
   $("[id^='depId']").on('click', function(){
     let thisId =  $(this).attr('id').split('&')[1];
-    window.location.assign('/explore/deputados/deputado?depId='+thisId);
+    window.location.assign('/explorar/deputados/deputado?depId='+thisId);
   });
   isLoadingFalse();
 }

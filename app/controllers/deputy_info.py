@@ -184,7 +184,7 @@ class DeputyInfo:
     def getExpensesCategory(self, year_number=2018):
         """ Return the expense category and its value spent by the deputy in a year """
         try:
-            pipeline = [{'$match': {'$and': [{"ideCadastro": self.deputy.id_register}, {"numAno": year_number}]}},
+            pipeline = [{'$match': {'$and': [{"ideCadastro": float(str(self.deputy.id_register))}, {"numAno": year_number}]}},
                         {'$group': {'_id': {'legislatura': "$codLegislatura", 'ano': "$numAno", 'deputado': "$ideCadastro",
                                             'categoria': "$txtDescricao"}, 'totalGasto': {'$sum': "$vlrLiquido"}}},
                         {'$sort': {"_id.ano": 1}}]
