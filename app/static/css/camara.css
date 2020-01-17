@@ -3,7 +3,8 @@
 {
   text-align: center;
 }
-div[id^="valueMapChart"], div[id^="spentTotal"], div[id^="chamberSchooling"], div[id^="chamberProfession"] {
+div[id^="valueMapChart"], div[id^="spentTotal"], div[id^="chamberSchooling"], div[id^="chamberProfession"],
+div[id^="subchart-party"] {
   display: none;
 }
 .total-spent-centered, .centered-shooling, .centered-profession
@@ -27,5 +28,6 @@ div[id^="valueMapChart"], div[id^="spentTotal"], div[id^="chamberSchooling"], di
 .value-display
 {
   text-align: center;
-  margin: 30px auto;
+  /* margin: 30px auto; */
+  font-size: 20pt;
 }

@@ -24,7 +24,7 @@ class GeneralAnalysis:
         self._collection_expense = dbConn.build_collection('gasto')
 
         @app.route("/professions", methods=['POST'])
-        def getProfessionsChartData():  # TODO: create a constant for legs numbers
+        def getProfessionsChartData():
             allProfessionData= {}
             for legislature in LEGISLATURES:
                 query_search = {'numLegislatura': str(legislature)}
@@ -40,7 +40,7 @@ class GeneralAnalysis:
             return {'professionData': allProfessionData}
 
         @app.route("/schooling", methods=['POST'])
-        def getSchoolingChartData():  # TODO: create a constant for legs numbers
+        def getSchoolingChartData():
             allSchoolingData = {}
             for legislature in LEGISLATURES:
                 query_search = {'numLegislatura': str(legislature)}
@@ -55,6 +55,7 @@ class GeneralAnalysis:
                     result_counter_fmt = {'data': [[key, value] for key, value in result_counter_sorted.items()]}
                     allSchoolingData.update({str(legislature): result_counter_fmt['data']})
             return {'schoolingData': allSchoolingData}
+
         @app.route("/total_spent", methods=['POST'])
         def getTotalSpentChartData():
             allSpent = {}
@@ -82,14 +83,14 @@ class GeneralAnalysis:
             return {'data': result_fmt}
 
         @app.route("/party_representation", methods=['POST'])
-        def getPartiesRepresentation(legislature_number=55):
-            query = [{'$match': {'numLegislatura': str(legislature_number)}},
-                     {'$group': {'_id': '$partidoAtual.sigla', 'count': {'$sum': 1}}}]
-            result = list(self._collection_deputy.aggregate(query))
-            if len(result) > 0:
-                result_fmt = {'data': [[item['_id'], item['count'], item['_id'], color_party(item['_id'])]
-                                       for item in result]}
-                return result_fmt
-            else:
-                print('No query results.')
-                return None
+        def getPartiesRepresentation():
+            data = {}
+            for legislature in LEGISLATURES:
+                query = [{'$match': {'numLegislatura': str(legislature)}},
+                         {'$group': {'_id': '$partidoAtual.sigla', 'count': {'$sum': 1}}}]
+                result = list(self._collection_deputy.aggregate(query))
+                if len(result) > 0:
+                    result_fmt = [[item['_id'], item['count'], item['_id'], color_party(item['_id'])]
+                                  for item in result]
+                    data.update({legislature: result_fmt})
+            return {'data': data}

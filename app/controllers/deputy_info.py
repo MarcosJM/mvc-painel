@@ -3,6 +3,7 @@ from app import app
 from app import dbConn
 from app.models.deputy_history import Deputy
 import app.utils as utils
+from app.utils import *
 from itertools import chain
 from collections import Counter
 import numpy as np
@@ -45,7 +46,7 @@ class DeputyInfo:
                                      last_result['nomeProfissao'], last_result['escolaridade'], last_result['email'],
                                      last_result['ufRepresentacaoAtual'], last_result['partidoAtual'],
                                      last_result['situacaoNaLegislaturaAtual'], all_party_affiliations_dict,
-                                     last_result['periodosExercicio'])
+                                     last_result['periodosExercicio'], last_result['tempoDeCamara'])
 
             return deputy_instance
         else:
@@ -57,8 +58,7 @@ class DeputyInfo:
     def getDeputyDatesExercise(self, legislature_number=56):
         """ Return an array with tuples of dates corresponding to the deputy's active periods of exercise"""
 
-        query = {'$and': [{'ideCadastro': str(self.deputy.id_register)},
-                          {'numLegislatura': str(legislature_number)}]}
+        query = {'numLegislatura': str(legislature_number), 'ideCadastro': str(self.deputy.id_register)}
         query_field = {'periodosExercicio': 1, '_id': 0}
 
         result = next(self._collection_deputy.find(query, query_field), None)
@@ -69,40 +69,130 @@ class DeputyInfo:
             if isinstance(period_in_exercise, dict):
                 period_in_exercise = [period_in_exercise]
 
-            dates_in_exercise = [(item['dataInicio'], item['dataFim']) if item['dataFim'] else (item['dataInicio'], '{}/{}/{}'.format(str(date.today().day),str(date.today().month),str(date.today().year))) for item in period_in_exercise]
+            dates_in_exercise = [(item['dataInicio'], item['dataFim'])
+                                 if item['dataFim'] else (item['dataInicio'],
+                                                          '{}/{}/{}'.format(str(date.today().day),
+                                                                            str(date.today().month),
+                                                                            str(date.today().year)))
+                                 for item in period_in_exercise]
             return dates_in_exercise
         else:
             return None
 
-    def getPresenceInEvent(self, event_collection_name, presence_key_name, date_key_name, legislature_number=56):
+    def getPresenceInEvent(self, event_collection_name, presence_key_name, date_key_name, legislature_number=55):
         """ Given a event collection name and which key is used to identify the presences and the date,
         returns a dictionary w/ the total n of events, the presence of the deputy and the median presence for that
         event (given the deputy's period of exercise)"""
         try:
             # ======= periods of active exercise
-            dates_in_exercise = self.getDeputyDatesExercise(legislature_number)
+            # dates_in_exercise = self.getDeputyDatesExercise(legislature_number)
 
-            # ======= recover all events
-            query_event = {'legislatura': int(legislature_number)}
-            all_events = list(dbConn.build_collection(event_collection_name).find(query_event))
+            if event_collection_name.endswith('comissao_inquerito'):
+                print('CPI')
+                cpi_comissions_initials = getLegislativeBody('Comissão Parlamentar de Inquérito')
 
-            if (dates_in_exercise is not None) & (len(all_events) > 0):
+                # ======= recover all events
+                query = {'ideCadastro': str(self.deputy.id_register), 'numLegislatura': str(legislature_number)}
+                result_member_comissions = list(self._collection_deputy.find(query))
 
-                # filter all events by the period of availability of the deputy
-                filtered_events = utils.get_records_by_intervals(all_events, dates_in_exercise, date_key_name)
-                total_num_events = len(filtered_events)
+                if len(result_member_comissions) > 0:
+                    result_member_comissions = result_member_comissions[0]
 
-                if total_num_events > 0:
-                    presences = list(chain.from_iterable([event[presence_key_name] for event in filtered_events]))
+                    deputy_cpi = [item['siglaComissao'] for item in result_member_comissions['comissoes']['comissao'] if
+                                 item['siglaComissao'] in cpi_comissions_initials]
+
+                    if len(deputy_cpi) > 0:
+
+                        query_event = {'legislatura': int(legislature_number)}
+                        all_events = list(dbConn.build_collection(event_collection_name).find(query_event))
+                        cpi_events = [event for event in all_events if event['sigla'] in deputy_cpi]
+
+                        if len(all_events) > 0:
+                            presences = list(chain.from_iterable([event[presence_key_name] for event in cpi_events]))
+                            presences_by_deputy = Counter(presences)
+                            mean_presence = np.mean(list(presences_by_deputy.values()))
+                            print(presences_by_deputy)
+                            deputy_presence = presences_by_deputy[int(self.deputy.id_register)]
+
+                            print(event_collection_name, deputy_presence, len(cpi_events))
+
+                            return {'presence': deputy_presence, 'mean-presence': mean_presence,
+                                    'all-events': len(cpi_events)}
+                        else:
+                            print('No events')
+                            return None
+                    else:
+                        print('Deputy has no CPI')
+                        return None
+                else:
+                    print('Deputy has no commission field')
+                    return None
+
+            elif event_collection_name.endswith('comissao_permanente'):
+                print('CP')
+                cp_comissions_initials = getLegislativeBody('Comissão Permanente')
+
+                # ======= recover all events
+                query = {'ideCadastro': str(self.deputy.id_register), 'numLegislatura': str(legislature_number)}
+                result_member_comissions = list(self._collection_deputy.find(query))
+
+                if len(result_member_comissions) > 0:
+                    result_member_comissions = result_member_comissions[0]
+
+                    deputy_cp = [item['siglaComissao'] for item in result_member_comissions['comissoes']['comissao'] if
+                                 item['siglaComissao'] in cp_comissions_initials]
+
+                    if len(deputy_cp) > 0:
+
+                        query_event = {'legislatura': int(legislature_number)}
+                        all_events = list(dbConn.build_collection(event_collection_name).find(query_event))
+                        cp_events = [event for event in all_events if event['sigla'] in deputy_cp]
+
+                        if len(all_events) > 0:
+                            presences = list(chain.from_iterable([event[presence_key_name] for event in cp_events]))
+                            presences_by_deputy = Counter(presences)
+                            mean_presence = np.mean(list(presences_by_deputy.values()))
+                            deputy_presence = presences_by_deputy[int(self.deputy.id_register)]
+
+                            print(event_collection_name, deputy_presence, len(cp_events))
+
+                            return {'presence': deputy_presence, 'mean-presence': mean_presence,
+                                    'all-events': len(cp_events)}
+                        else:
+                            print('No events')
+                            return None
+                    else:
+                        print('Deputy has no CP')
+                        return None
+                else:
+                    print('Deputy has no commission field')
+                    return None
+
+            elif event_collection_name.endswith('audiencia_publica') or event_collection_name == "votacao":
+
+                # ======= recover all events
+                print(event_collection_name)
+                query_event = {'legislatura': int(legislature_number)}
+                query_deputy = {'legislatura': int(legislature_number),
+                                presence_key_name: float(self.deputy.id_register)}
+
+                all_events = list(dbConn.build_collection(event_collection_name).find(query_event))
+
+                if len(all_events) > 0:
+                    presences = list(chain.from_iterable([event[presence_key_name] for event in all_events]))
                     presences_by_deputy = Counter(presences)
                     mean_presence = np.mean(list(presences_by_deputy.values()))
-                    deputy_presence = presences_by_deputy[self.deputy.id_register]
-                    return {'presence': deputy_presence, 'mean-presence': mean_presence, 'all-events': total_num_events}
+
+                    if event_collection_name == 'votacao':
+                        deputy_presence = presences_by_deputy[str(self.deputy.id_register)]
+                    elif event_collection_name.endswith('audiencia_publica'):
+                        deputy_presence = dbConn.build_collection(event_collection_name).find(query_deputy).count()
+
+                    print(event_collection_name, deputy_presence, len(all_events))
+                    return {'presence': deputy_presence, 'mean-presence': mean_presence,
+                            'all-events': len(all_events)}
                 else:
-                    print('0 events')
-                    return None
-            else:
-                print('Events or period in exercise not found')
+                    print('No events')
                 return None
         except Exception as e:
             print(e)

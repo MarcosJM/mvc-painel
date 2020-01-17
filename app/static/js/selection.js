@@ -1,4 +1,4 @@
-$(document).ready(function(){
+$(document).ready(function() {
   $('#anchor-camara-page').click(
     function()
     {
@@ -14,7 +14,7 @@ $(document).ready(function(){
   $('#anchor-comparison-page').click(
     function()
     {
-      window.location.assign('/explorar/camara');
+      window.location.assign('/explorar/avaliacao');
     }
   );
 });

@@ -31,6 +31,7 @@ function loadVotingPresence()
       url: '/deputy_event_presence',
       data:{'depId': depId},
       success: function(response){
+        console.log(response)
         let eventPresences = response.eventPresences
         let legislatures = Object.keys(eventPresences)
         let eventPresenceButtonGroup = $('<div class="btn-group" />');
@@ -246,7 +247,7 @@ function generateVotingPresenceChart(chartDivId, legislature, eventNames, allEve
         type: 'column'
     },
     title: {
-        text: 'Presenças em Votações Nominais na Legislatura '+legislature
+        text: 'Presenças nos eventos da Câmara na Legislatura '+legislature
     },
     xAxis: {
         categories: eventNames
@@ -271,21 +272,23 @@ function generateVotingPresenceChart(chartDivId, legislature, eventNames, allEve
         }
     },
     series: [{
-        name: 'Quantidade de reuniões',
-        color: 'rgba(165,170,217,1)',
+        name: 'Quantidade total de reuniões',
+        color: '#556272',
         data: allEvents,
         pointPadding: 0.3,
         pointPlacement: 0.0
-    }, {
-        name: 'Quantidade de presenças',
-        color: 'rgba(126,86,134,1)',
-        data: allPresences,
+    },
+    {
+        name: 'Presença média',
+        color: '#5acec6',
+        data: allAverages,
         pointPadding: 0.3,
         pointPlacement: 0.0
-    }, {
-        name: 'Presença média',
-        color: 'rgba(128, 127, 159,1)',
-        data: allAverages,
+    },
+    {
+        name: 'Quantidade de presenças do deputado',
+        color: '#c1e55c',
+        data: allPresences,
         pointPadding: 0.3,
         pointPlacement: 0.0
     }]

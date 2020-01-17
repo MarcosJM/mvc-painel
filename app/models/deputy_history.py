@@ -21,7 +21,8 @@ class DeputyHistory:
                                                      element['ufRepresentacaoAtual'], element['partidoAtual'],
                                                      element['situacaoNaLegislaturaAtual'],
                                                      element['filiacoesPartidarias'],
-                                                     element['periodosExercicio']) for element in result}
+                                                     element['periodosExercicio'],
+                                                     element['tempoDeCamara']) for element in result}
 
         return history
 

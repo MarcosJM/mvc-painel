@@ -4,7 +4,8 @@ from datetime import date
 class Deputy:
 
     def __init__(self, picture_url, id_register, parliamentary_name, name, sex, born_in, died_in, profession,
-                 schooling, email, state, party, current_status, party_affiliations, periods_in_exercise):
+                 schooling, email, state, party, current_status, party_affiliations, periods_in_exercise,
+                 legislatures_in_house):
 
         self.picture_url = picture_url
         self.id_register = id_register
@@ -21,9 +22,13 @@ class Deputy:
         self.current_status = current_status
         self.party_affiliations = party_affiliations
         self.periods_in_exercise = periods_in_exercise
+        self.legislatures_in_house = legislatures_in_house
 
     # returns deputy age
     def getAge(self):
         today = date.today()
         age = today.year - self.born_in.year - ((today.month, today.day) < (self.born_in.month, self.born_in.day))
         return age
+
+    def setPartyAffiliations(self, data):
+        self.party_affiliations = data

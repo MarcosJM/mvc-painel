@@ -65,7 +65,7 @@
 							{% if personalInfo.state %}<p class="info-item"><span class="title">UF:</span> {{ personalInfo.state }}</p>{% endif %}
 							{% if personalInfo.party.sigla %}<p class="info-item"><span class="title">Partido Atual:</span> {{ personalInfo.party.sigla }}</p>{% endif %}
 							{% if personalInfo.party_affiliations %}<p class="info-item"><span class="title">Partidos Anteriores:</span> {{ personalInfo.party_affiliations }}</p>{% endif %}
-							{% if personalInfo.periods_in_exercise %}<p class="info-item"><span class="title">Tempo de Câmara:</span> {{ personalInfo.periods_in_exercise }}</p>{% endif %}
+							{% if personalInfo.periods_in_exercise %}<p class="info-item"><span class="title">Tempo de Câmara:</span> {{ personalInfo.legislatures_in_house }}</p>{% endif %}
 						</div>
 				</section>
 
@@ -75,9 +75,10 @@
 						    <div class="resume-section-content">
 								<article class="resume-timeline-item position-relative pb-5">
 									<div class="resume-timeline-item-desc">
-										<p>Role description goes here ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Donec pede justo, fringilla vel.</p>
+										<p>É apresentado um gráfico de barras empilhadas, no qual cada barra corresponde a um dos quatro eventos. No eixo y do gráfico, encontra-se a quantidade total de ocorrências dos eventos no período de tempo observado e existem três classes de cores distintas, uma para representar esse valor total, outra para representar o total de presenças do deputado no dado evento e uma terceira para representar a média de presenças dos demais deputados no mesmo contexto.
+										Você pode passar o mouse por cima das barras para ver com mais detalhes as informações. Caso as quantidades apareçam com -1 nas barras de comissões, é o indicativo de que este deputado não era membro de nenhuma comissão.</p>
 										<h6 class="font-weight-bold">Votações</h6>
-										
+
 										<div id="eventChartArea">
                       						<div id="eventPrecencesChart53"></div>
                       						<div id="eventPrecencesChart54"></div>
@@ -88,6 +89,7 @@
 
                     					</div>
 									</div>
+
 								</article>
 						    </div>
 					    </section>
@@ -99,6 +101,7 @@
 								<div class="resume-section-content">
 									<article class="resume-timeline-item position-relative pb-5">
 										<div class="resume-timeline-item-desc">
+											<p>Simplesmente exibe-se o número total de propostas sancionadas de autoria do deputado no período de tempo observado, comparando, ao lado, com a quantidade média dos demais deputados. Uma proposição sancionada é aquela transformada em lei. Logo abaixo, você poderá saber mais sobre as proposições propostas ao clicar na mesma.</p>
                       						<div class="container authorship-container" id="authorshipArea">
 
 					  						</div>
@@ -117,11 +120,11 @@
 								<div class="resume-section-content">
 									<article class="resume-timeline-item position-relative pb-5">
 										<div class="resume-timeline-item-desc">
-											<p>Role description goes here ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Donec pede justo, fringilla vel.</p>
+											<p>São exibidas duas visualizações: a primeira consiste em um gráfico de intervalo de área e linha que exibe os gastos mensais do deputado em um ano. Outra visualização consiste em um gráfico de explosão solar (sunburst), no qual cada categoria corresponde a um tipo de gasto, por exemplo Combustíveis e Lubrificantes, de tamanho proporcional ao valor anual total gasto pelo deputado no dado tipo e intervalo de tempo. As categorias de gasto que totalizam valor inferior a 15% são agrupadas em uma classe “Outras”, na qual o você pode clicar para expandir e observar com detalhes a proporção de cada categoria no valor total gasto pelo deputado.</p>
                       						<div id="expensesChartArea">
 					 						</div>
 											<h6 class="font-weight-bold">Categorias de Gastos</h6>
-											<div id="areaExpensesCategoryChart">
+											<div id="expensesCategoryChartArea">
 					 						</div>
 					  						<div id="expenses-legislature-select">
 											</div>

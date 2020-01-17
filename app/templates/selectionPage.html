@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block headblock %}
   <link rel="stylesheet" href="{{ url_for('static', filename='css/selection.css') }}">
+  <title>Explorar</title>
   <script type="text/javascript" src= "{{ url_for('static', filename='js/selection.js') }}"></script>
 {% endblock %}
 {% block content %}
@@ -39,8 +40,8 @@
         </div>
         <div class="col-sm-3">
           <div class="analysis-selection" id="anchor-comparison-page">
-            <i class="glyphicon fas fa-users fa-4x"></i>
-            <p class="box-label">Comparar</p>
+            <i class="glyphicon fas fa-trophy fa-4x"></i>
+            <p class="box-label">Cálculo Interativo da Nota</p>
           </div>
         </div>
       </div>

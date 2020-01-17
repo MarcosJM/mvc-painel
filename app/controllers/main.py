@@ -24,11 +24,27 @@ class Main:
         def exploreDeputados():
             return render_template("deputados.html")
 
+        @app.route("/explorar/avaliacao")
+        def exploreAvaliation():
+            return render_template("avaliacao.html")
+
+        @app.route("/explorar/avaliacao/ranking")
+        def exploreRanking():
+            return render_template("ranking.html")
+
         @app.route("/explorar/deputados/deputado", methods=['GET', 'POST'])
         def deputadoPersonalInfo():
             depId = request.args['depId']
             deputy = DeputyInfo(depId)
             personalInfo = deputy.getDeputyPersonalInfo()
+
+            temp = personalInfo.party_affiliations
+            temp = temp['filiacaoPartidaria']
+            if len(temp) > 0:
+                temp = [item['siglaPartidoAnterior'] for item in temp]
+
+            personalInfo.setPartyAffiliations(temp)
+
             return render_template("deputado.html", personalInfo=personalInfo)
 
         @app.route('/evaluation')
@@ -55,6 +71,19 @@ class MainReqs:
                                                                      legislature)
                 cpPresenceInLegislature = deputy.getPresenceInEvent('reuniao_comissao_permanente', 'presencas', 'data',
                                                                     legislature)
+
+                if votingPresenceInLegislature is None:
+                    votingPresenceInLegislature = {'all-events': -1, 'mean-presence': -1, 'presence': -1}
+
+                if audiencePresenceInLegislature is None:
+                    audiencePresenceInLegislature = {'all-events': -1, 'mean-presence': -1, 'presence': -1}
+
+                if cpiPresenceInLegislature is None:
+                    cpiPresenceInLegislature = {'all-events': -1, 'mean-presence': -1, 'presence': -1}
+
+                if cpPresenceInLegislature is None:
+                    cpPresenceInLegislature = {'all-events': -1, 'mean-presence': -1, 'presence': -1}
+
                 if (votingPresenceInLegislature is not None) or (audiencePresenceInLegislature is not None) or (cpiPresenceInLegislature is not None) or (cpPresenceInLegislature is not None):
                     eventPresences.update({legislature:
                                             {'votacoes': votingPresenceInLegislature,
