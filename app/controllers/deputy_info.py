@@ -46,7 +46,7 @@ class DeputyInfo:
                                      last_result['nomeProfissao'], last_result['escolaridade'], last_result['email'],
                                      last_result['ufRepresentacaoAtual'], last_result['partidoAtual'],
                                      last_result['situacaoNaLegislaturaAtual'], all_party_affiliations_dict,
-                                     last_result['periodosExercicio'], last_result['tempoDeCamara'])
+                                     last_result['periodosExercicio'], 0)#, last_result['tempoDeCamara'])
 
             return deputy_instance
         else:

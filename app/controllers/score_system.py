@@ -31,7 +31,7 @@ class ScoreSystem:
             query_field = {'periodosExercicio': 1, '_id': 0}
             result = next(self._collections['deputado'].find(query_deputy_availability, query_field), None)
 
-            if result is not None:
+            if result is not None and result['periodosExercicio'] is not None:
                 periods_of_exercise_deputy = result['periodosExercicio']['periodoExercicio']
 
                 if isinstance(periods_of_exercise_deputy, dict):
@@ -39,18 +39,19 @@ class ScoreSystem:
 
                 dates = [(item['dataInicio'], item['dataFim']) for item in
                          periods_of_exercise_deputy]
-
                 # filter all public audiences by the period of availability of the deputy
                 public_audiences_filtered = utils.get_records_by_intervals(public_audiences, dates, 'data')
-
                 # count, for each deputy, how many public audiences attended
                 public_audiences_presences = Counter([dep_id for item in public_audiences_filtered
                                                       for dep_id in item['presencas']])
-                best_result = public_audiences_presences.most_common(1)[0][1]  # max number of presences
-                deputy_result = public_audiences_presences[deputy_id]
+                if len(public_audiences_presences) > 0:
+                    best_result = public_audiences_presences.most_common(1)[0][1]  # max number of presences
+                    deputy_result = public_audiences_presences[deputy_id]
 
-                score = (deputy_result / best_result) * 10
-                return score
+                    score = (deputy_result / best_result) * 10
+                    return score
+                else:
+                    return 0
 
         def calculateIndicatorTwoScore(deputy_id, legislature_number=56):
                 """
@@ -76,15 +77,18 @@ class ScoreSystem:
                 query_field = {'comissoes': 1, '_id': 0}
                 result_member_comissions = next(self._collections['deputado'].find(query_deputy_comissions, query_field),
                                                 None)
-                if result_member_comissions:
-                    siglas = [result['siglaComissao'] for result in result_member_comissions['comissoes']['comissao']]
+                if result_member_comissions is not None and result_member_comissions['comissoes'] is not None:
+                    if isinstance(result_member_comissions['comissoes']['comissao'], dict):
+                        siglas = result_member_comissions['comissoes']['comissao']['siglaComissao']
+                    else:
+                        siglas = [result['siglaComissao'] for result in result_member_comissions['comissoes']['comissao']]
 
                     # get presence in those commissions
                     query_commissions_presence = {'legislatura': int(legislature_number)}
                     result_comissions_presence = list(self._collections['reuniao_comissao_inquerito'].find(query_commissions_presence))
 
                     deputy_presences = [item for item in result_comissions_presence if item['sigla'] in siglas]
-                    if deputy_presences:
+                    if deputy_presences is not None:
 
                         presencesGroup= {}
 
@@ -109,8 +113,10 @@ class ScoreSystem:
                         indicatorScore = 0
                         for cpi in deputyPresences.items():
                             indicatorScore += (cpi[1] / cpiReunionsFormatted[cpi[0]]) * (cpi[1] / cf)
-
-                        return  str((indicatorScore / len(presencesGroup)) * 10)
+                        if len(presencesGroup) > 0:
+                            return str((indicatorScore / len(presencesGroup)) * 10)
+                        else:
+                            return 0
                     else:
                         return None
                 else:
@@ -250,13 +256,15 @@ class ScoreSystem:
                 result = list(
                     collections['deputado'].find({'ideCadastro': depId}, query_fields).sort('numLegislatura', -1))
                 allDeputies.append(result[0])
+            ranking = {}
+            for legislature in utils.LEGISLATURES:
+                ranking.update({legislature: []})
 
-            ranking = []
             for iterator in range(len(allDeputies)):
                 for legislature in utils.LEGISLATURES:
                     # indicatorOneScore = calculateIndicatorOneScore(allDeputies[iterator], 56)
                     indicatorTwoScore = calculateIndicatorTwoScore(int(allDeputies[iterator]['ideCadastro']), legislature)
                     indicatorThreeScore = calculateIndicatorThreeScore(int(allDeputies[iterator]['ideCadastro']), legislature)
                     if (indicatorThreeScore is not None or indicatorTwoScore is not None):
-                        ranking.append({allDeputies[iterator]['ideCadastro']: {'fiscalizador': indicatorTwoScore,'transparente': indicatorThreeScore}})
+                        ranking[legislature].append({allDeputies[iterator]['ideCadastro']: {'fiscalizador': indicatorTwoScore,'transparente': indicatorThreeScore}})
             return {'ranking': ranking}

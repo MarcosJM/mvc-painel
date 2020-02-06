@@ -86,14 +86,20 @@ def get_records_by_intervals(records, dates, data_key):
     """ Given a records with date (accessed by data_key) and dates, recover the events within the dates ranges. """
     if len(dates) == 1:  # if it's only one date
         date_start = str2date(dates[0][0])
-        date_finish = str2date(dates[0][1])
+        if dates[0][1] is not None:
+            date_finish = str2date(dates[0][1])
+        else:
+            date_finish = str2date(datetime.now().date().strftime("%d/%m/%Y"))
         result = [item for item in records if date_start <= str2date(item[data_key]) <= date_finish]
 
     elif len(dates) > 1:  # more than one date to compare
         result = []
         for date in dates:
             date_start = str2date(date[0])
-            date_finish = str2date(date[1])
+            if date[1] is not None:
+                date_finish = str2date(date[1])
+            else:
+                date_finish = str2date(datetime.now().date().strftime("%d/%m/%Y"))
             result += [item for item in records if date_start <= str2date(item[data_key])
                        <= date_finish]
     return result
