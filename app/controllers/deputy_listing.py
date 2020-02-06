@@ -15,13 +15,14 @@ class DeputyListing:
             allDeputiesId = self.getDeputyIdList()
             allDeputies = []
             for depId in allDeputiesId:
-                result = list(self._collection_deputy.find({'ideCadastro': depId}, self._query_fields).sort('numLegislatura', -1))
+                result = list(
+                    self._collection_deputy.find({'ideCadastro': depId}, self._query_fields).sort('numLegislatura', -1))
                 allDeputies.append(result[0])
             return {'allDeputies': allDeputies}
 
         @app.route("/deputy_listing_legislature", methods=['POST'])
         def getDeputyListingLegislature():
-            legislature_number = request.form['legislature'];
+            legislature_number = request.form['legislature']
             allDeputiesId = self.getDeputyIdList()
             allDeputies= []
             for depId in allDeputiesId:

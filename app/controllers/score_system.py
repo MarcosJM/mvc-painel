@@ -3,7 +3,8 @@ from flask import request
 from app import dbConn
 from datetime import datetime
 from collections import Counter
-from app.utils import *
+import app.utils as utils
+from app.controllers.deputy_listing import DeputyListing
 # =================================================
 
 
@@ -68,7 +69,6 @@ class ScoreSystem:
                     valuesOnly = list(cpi.values())
                     cpiReunionsFormatted.update({valuesOnly[0]: valuesOnly[1]})
 
-                print(cpiReunionsFormatted)
 
 
                 # recover all commissions that the deputy is member of
@@ -76,42 +76,45 @@ class ScoreSystem:
                 query_field = {'comissoes': 1, '_id': 0}
                 result_member_comissions = next(self._collections['deputado'].find(query_deputy_comissions, query_field),
                                                 None)
-                siglas = [result['siglaComissao'] for result in result_member_comissions['comissoes']['comissao']]
+                if result_member_comissions:
+                    siglas = [result['siglaComissao'] for result in result_member_comissions['comissoes']['comissao']]
 
-                # get presence in those commissions
-                query_commissions_presence = {'legislatura': int(legislature_number)}
-                result_comissions_presence = list(self._collections['reuniao_comissao_inquerito'].find(query_commissions_presence))
+                    # get presence in those commissions
+                    query_commissions_presence = {'legislatura': int(legislature_number)}
+                    result_comissions_presence = list(self._collections['reuniao_comissao_inquerito'].find(query_commissions_presence))
 
-                deputy_presences = [item for item in result_comissions_presence if item['sigla'] in siglas]
-                if deputy_presences:
+                    deputy_presences = [item for item in result_comissions_presence if item['sigla'] in siglas]
+                    if deputy_presences:
 
-                    presencesGroup= {}
+                        presencesGroup= {}
 
-                    for presence in deputy_presences:
-                        if presence['sigla'] in presencesGroup:
-                            presencesGroup[presence['sigla']] += presence['presencas']
-                        else:
-                            presencesGroup.update({presence['sigla']: presence['presencas']})
-
-
-                    deputyPresences = {}
-
-                    for sigla in presencesGroup.keys():
-                        deputyPresences.update({sigla: presencesGroup[sigla].count(deputy_id)})
+                        for presence in deputy_presences:
+                            if presence['sigla'] in presencesGroup:
+                                presencesGroup[presence['sigla']] += presence['presencas']
+                            else:
+                                presencesGroup.update({presence['sigla']: presence['presencas']})
 
 
-                    #correction factor
-                    cf = max(list(cpiReunionsFormatted.values()))
+                        deputyPresences = {}
 
-                    # for each cpi the deputy attended, we compare his attendances to the total number of meetings
+                        for sigla in presencesGroup.keys():
+                            deputyPresences.update({sigla: presencesGroup[sigla].count(deputy_id)})
 
-                    indicatorScore = 0
-                    for cpi in deputyPresences.items():
-                        indicatorScore += (cpi[1] / cpiReunionsFormatted[cpi[0]]) * (cpi[1] / cf)
 
-                    return {'indicatorTwo': str((indicatorScore / len(presencesGroup)) * 10)}
+                        #correction factor
+                        cf = max(list(cpiReunionsFormatted.values()))
+
+                        # for each cpi the deputy attended, we compare his attendances to the total number of meetings
+
+                        indicatorScore = 0
+                        for cpi in deputyPresences.items():
+                            indicatorScore += (cpi[1] / cpiReunionsFormatted[cpi[0]]) * (cpi[1] / cf)
+
+                        return  str((indicatorScore / len(presencesGroup)) * 10)
+                    else:
+                        return None
                 else:
-                    return {'indicatorTwo':None}
+                    return None
         def calculateIndicatorOneScore(deputy_id, legislature_number=56):
             """
             this method calculates the score of a deputy in the fiscalizador indicator perspective
@@ -173,7 +176,6 @@ class ScoreSystem:
                 valuesOnly = list(cp.values())
                 cpReunionsFormatted.update({valuesOnly[0]: valuesOnly[1]})
 
-            print(cpReunionsFormatted)
 
             # recover all commissions that the deputy is member of
             query_deputy_comissions = {'numLegislatura': str(legislature_number), 'ideCadastro': str(deputy_id)}
@@ -236,3 +238,25 @@ class ScoreSystem:
             deputy_id = request.args.get('deputy_id', type=int)
             legislature_number = request.args.get('legislature_number', default=56, type=int)
             return calculateIndicatorOneScore(deputy_id, legislature_number)
+
+        @app.route("/ranking", methods=['GET'])
+        def requestRanking():
+            query_fields = {'_id': 0, 'ideCadastro': 1, 'nomeParlamentarAtual': 1, 'ufRepresentacaoAtual': 1,
+                            'partidoAtual': 1, 'urlFoto': 1}
+            collections = dbConn.initialize_collections()
+            allIds = collections['deputado'].find().distinct("ideCadastro")
+            allDeputies = []
+            for depId in allIds:
+                result = list(
+                    collections['deputado'].find({'ideCadastro': depId}, query_fields).sort('numLegislatura', -1))
+                allDeputies.append(result[0])
+
+            ranking = []
+            for iterator in range(len(allDeputies)):
+                for legislature in utils.LEGISLATURES:
+                    # indicatorOneScore = calculateIndicatorOneScore(allDeputies[iterator], 56)
+                    indicatorTwoScore = calculateIndicatorTwoScore(int(allDeputies[iterator]['ideCadastro']), legislature)
+                    indicatorThreeScore = calculateIndicatorThreeScore(int(allDeputies[iterator]['ideCadastro']), legislature)
+                    if (indicatorThreeScore is not None or indicatorTwoScore is not None):
+                        ranking.append({allDeputies[iterator]['ideCadastro']: {'fiscalizador': indicatorTwoScore,'transparente': indicatorThreeScore}})
+            return {'ranking': ranking}
