@@ -2,7 +2,9 @@
 {% block headblock %}
   <title>Ranking</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
-  <script type="text/javascript" src= "{{ url_for('static', filename='js/home.js') }}"></script>
+  <script type="text/javascript" src= "{{ url_for('static', filename='js/home.js') }}"></script>  
+  <script type="text/javascript" src= "{{ url_for('static', filename='js/ranking.js') }}"></script>
+
 {% endblock %}
 {% block content %}
   <div id='main-div' class="main-div">
@@ -26,6 +28,34 @@
               públicos. Essa aplicação usa 
               gráficos simples acompanhados de descrições claras, para que você possa interpretar 
               rapidamente o que é mostrado.
+            </div>
+          </div>
+        </div>
+        <div class="container">
+          <div class="row">
+            <div class="col-sm-12">
+              <div class="container">
+                <div class="row">
+                  <div class="col-sm-8">
+                    {% for iterator in range(lenDeputies) %}
+                      <div class="container">
+                        <div class="row">
+                          <div class="col-sm-3">
+                            {{iterator + 1}}
+                          </div>
+                          <div class="col-sm-3">
+                            <img src="{{ ranking[53][iterator]['urlFoto'] }}" alt="foto de {{ ranking[53][iterator]['nome'] }}">
+                          </div>
+                          <div class="col-sm-6">
+                            <span>{{ranking[53][iterator]['finalScore']}}</span><br>
+                            <span>{{ ranking[53][iterator]['nome'] }} {{ranking[53][iterator]['partido'] }} {{ ranking[53][iterator]['uf'] }}</span>
+                          </div>
+                        </div>
+                      </div>
+                    {% endfor %}
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
