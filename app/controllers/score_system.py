@@ -90,14 +90,13 @@ class ScoreSystem:
                     deputy_presences = [item for item in result_comissions_presence if item['sigla'] in siglas]
                     if deputy_presences is not None:
 
-                        presencesGroup= {}
+                        presencesGroup = {}
 
                         for presence in deputy_presences:
                             if presence['sigla'] in presencesGroup:
                                 presencesGroup[presence['sigla']] += presence['presencas']
                             else:
                                 presencesGroup.update({presence['sigla']: presence['presencas']})
-
 
                         deputyPresences = {}
 
@@ -121,6 +120,7 @@ class ScoreSystem:
                         return None
                 else:
                     return None
+
         def calculateIndicatorOneScore(deputy_id, legislature_number=56):
             """
             this method calculates the score of a deputy in the fiscalizador indicator perspective
@@ -150,27 +150,14 @@ class ScoreSystem:
             # ============ presence in votings
             query_all_events = {'legislatura': legislature_number}
             result_all_events = list(self._collections['votacao'].find(query_all_events))
-            votings = result_all_events
 
-            # recover the periods in which the deputy was actively working
-            query_deputy_availability = {'numLegislatura': str(legislature_number), 'ideCadastro': str(deputy_id)}
-            query_field = {'periodosExercicio': 1, '_id': 0}
-            result = next(self._collections['deputado'].find(query_deputy_availability, query_field), None)
+            if len(result_all_events) > 0:
+                deputy_presences = [voting for voting in result_all_events if str(deputy_id) in voting['presentes']]
+                score_voting = (len(deputy_presences) / len(result_all_events)) * 10
+            else:
+                return None  # there were no votings in the period
 
-            if result is not None:
-                periods_of_exercise_deputy = result['periodosExercicio']['periodoExercicio']
-
-                if isinstance(periods_of_exercise_deputy, dict):
-                    periods_of_exercise_deputy = [periods_of_exercise_deputy]
-
-                dates = [(item['dataInicio'], item['dataFim']) for item in
-                         periods_of_exercise_deputy]
-
-                total_votings = len(votings)
-                deputy_presences = [voting for voting in votings if str(deputy_id) in voting['presentes']]
-                score_voting = (len(deputy_presences) / total_votings) * 10
-
-            # ============ presence in commissions
+            # ============ presence in permanent commissions
 
             pipeline = [{"$match": {"legislatura": legislature_number}},
                         {"$group": {"_id": "$sigla", "count": {"$sum": 1}}}]
@@ -188,39 +175,43 @@ class ScoreSystem:
             query_field = {'comissoes': 1, '_id': 0}
             result_member_comissions = next(self._collections['deputado'].find(query_deputy_comissions, query_field),
                                             None)
-            siglas = [result['siglaComissao'] for result in result_member_comissions['comissoes']['comissao']]
 
-            # get presence in those commissions
-            query_commissions_presence = {'legislatura': int(legislature_number)}
-            result_comissions_presence = list(
-                self._collections['reuniao_comissao_permanente'].find(query_commissions_presence))
+            if result_member_comissions is not None and result_member_comissions['comissoes'] is not None:
+                if isinstance(result_member_comissions['comissoes']['comissao'], dict):
+                    siglas = result_member_comissions['comissoes']['comissao']['siglaComissao']
+                else:
+                    siglas = [result['siglaComissao'] for result in result_member_comissions['comissoes']['comissao']]
 
-            deputy_presences = [item for item in result_comissions_presence if item['sigla'] in siglas]
-            if deputy_presences:
+                # get presence in those commissions
+                query_commissions_presence = {'legislatura': int(legislature_number)}
+                result_comissions_presence = list(
+                    self._collections['reuniao_comissao_permanente'].find(query_commissions_presence))
 
-                presencesGroup = {}
+                deputy_presences = [item for item in result_comissions_presence if item['sigla'] in siglas]
+                if deputy_presences is not None:
 
-                for presence in deputy_presences:
-                    if presence['sigla'] in presencesGroup:
-                        presencesGroup[presence['sigla']] += presence['presencas']
-                    else:
-                        presencesGroup.update({presence['sigla']: presence['presencas']})
+                    presencesGroup = {}
 
-                deputyPresences = {}
+                    for presence in deputy_presences:
+                        if presence['sigla'] in presencesGroup:
+                            presencesGroup[presence['sigla']] += presence['presencas']
+                        else:
+                            presencesGroup.update({presence['sigla']: presence['presencas']})
 
-                for sigla in presencesGroup.keys():
-                    deputyPresences.update({sigla: presencesGroup[sigla].count(deputy_id)})
+                    deputyPresences = {}
 
-                # correction factor
-                cf = max(list(cpReunionsFormatted.values()))
+                    for sigla in presencesGroup.keys():
+                        deputyPresences.update({sigla: presencesGroup[sigla].count(deputy_id)})
 
-                # for each cp the deputy attended, we compare his attendances to the total number of meetings
+                    # correction factor
+                    cf = max(list(cpReunionsFormatted.values()))
 
-                score_commission = 0
-                for cp in deputyPresences.items():
-                    score_commission += (cp[1] / cpReunionsFormatted[cp[0]]) * (cp[1] / cf)
+                    # for each cp the deputy attended, we compare his attendances to the total number of meetings
+                    score_commission = 0
+                    for cp in deputyPresences.items():
+                        score_commission += (cp[1] / cpReunionsFormatted[cp[0]]) * (cp[1] / cf)
 
-                score_commission = score_commission / len(deputyPresences)
+                    score_commission = score_commission / len(deputyPresences)
 
 
                 return {'indicatorOne':{'scoreAuthoring': score_authoring, 'score_voting': score_voting, 'scoreCommission':score_commission, 'totalScore': (score_authoring +score_voting+score_commission)/3 }}
