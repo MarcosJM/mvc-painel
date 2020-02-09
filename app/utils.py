@@ -14,7 +14,7 @@ with open('app/party_colors.json') as f:
 
 
 def getLegislativeBody(body_name):
-    """  """
+    """ Given the body name (e.g. Comissão Permanente), return all initials belonging to it. """
     try:
         body = list(dbConn.build_collection('orgao').find({"tipoOrgao": body_name}, {'_id': 0, 'sigla': 1}))
         if len(body) > 0:

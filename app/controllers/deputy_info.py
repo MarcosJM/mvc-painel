@@ -231,6 +231,7 @@ class DeputyInfo:
 
         except Exception as e:
             print(e)
+
     def getPropositionsAuthoredDetails(self, legislature_number=56):
         """"Return a dictionary with the metadata of each proposition that the deputy is credited as an author"""
         query_authors = {'legislatura': int(legislature_number), 'idDeputadoAutor': float(self.deputy.id_register)}
