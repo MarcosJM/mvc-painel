@@ -1,5 +1,5 @@
 from app import app
-from flask import request
+from flask import request, render_template
 from app import dbConn
 from datetime import datetime
 from collections import Counter
@@ -236,7 +236,7 @@ class ScoreSystem:
             legislature_number = request.args.get('legislature_number', default=56, type=int)
             return calculateIndicatorOneScore(deputy_id, legislature_number)
 
-        @app.route("/ranking", methods=['GET'])
+        @app.route("/ranking")
         def requestRanking():
             query_fields = {'_id': 0, 'ideCadastro': 1, 'nomeParlamentarAtual': 1, 'ufRepresentacaoAtual': 1,
                             'partidoAtual': 1, 'urlFoto': 1}
@@ -251,11 +251,26 @@ class ScoreSystem:
             for legislature in utils.LEGISLATURES:
                 ranking.update({legislature: []})
 
-            for iterator in range(len(allDeputies)):
+            for iterator in range(100):
                 for legislature in utils.LEGISLATURES:
                     # indicatorOneScore = calculateIndicatorOneScore(allDeputies[iterator], 56)
                     indicatorTwoScore = calculateIndicatorTwoScore(int(allDeputies[iterator]['ideCadastro']), legislature)
                     indicatorThreeScore = calculateIndicatorThreeScore(int(allDeputies[iterator]['ideCadastro']), legislature)
+                    if indicatorTwoScore is None:
+                        finalScoreComponentOne = 0
+                    else:
+                        finalScoreComponentOne = float(indicatorTwoScore)
+                    if indicatorThreeScore is None:
+                        finalScoreComponentTwo = 0
+                    else:
+                        finalScoreComponentTwo = float(indicatorThreeScore)
+                    finalScore = (finalScoreComponentOne + finalScoreComponentTwo)/2
                     if (indicatorThreeScore is not None or indicatorTwoScore is not None):
-                        ranking[legislature].append({allDeputies[iterator]['ideCadastro']: {'fiscalizador': indicatorTwoScore,'transparente': indicatorThreeScore}})
-            return {'ranking': ranking}
+
+                        ranking[legislature].append({'id': allDeputies[iterator]['ideCadastro'], 'nome':allDeputies[iterator]['nomeParlamentarAtual'],
+                                                     'partido': allDeputies[iterator]['partidoAtual']['idPartido'], 'uf':allDeputies[iterator]['ufRepresentacaoAtual'],
+                                                     'urlFoto':allDeputies[iterator]['urlFoto'], 'fiscalizador': indicatorTwoScore,
+                                                     'transparente': indicatorThreeScore, 'finalScore':finalScore})
+                for legislature in utils.LEGISLATURES:
+                    ranking[legislature] = sorted(ranking[legislature], key = lambda x: x['finalScore'], reverse=True)
+            return render_template("ranking.html", ranking=ranking, lenDeputies=len(ranking[53]))
