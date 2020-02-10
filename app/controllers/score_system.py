@@ -323,28 +323,33 @@ class ScoreSystem:
 
             for iterator in range(100):
                 for legislature in utils.LEGISLATURES:
-                    # indicatorOneScore = calculateIndicatorOneScore(allDeputies[iterator], 56)
+                    indicatorOneScore = calculateIndicatorOneScore(int(allDeputies[iterator]['ideCadastro']), legislature)['indicator_one_score']
                     indicatorTwoScore = calculateIndicatorTwoScore(int(allDeputies[iterator]['ideCadastro']),
                                                                    legislature)
                     indicatorThreeScore = calculateIndicatorThreeScore(int(allDeputies[iterator]['ideCadastro']),
                                                                        legislature)
-                    if indicatorTwoScore is None:
+                    if indicatorOneScore is None:
                         finalScoreComponentOne = 0
                     else:
-                        finalScoreComponentOne = float(indicatorTwoScore)
-                    if indicatorThreeScore is None:
+                        finalScoreComponentOne = float(indicatorOneScore)
+                    if indicatorTwoScore is None:
                         finalScoreComponentTwo = 0
                     else:
-                        finalScoreComponentTwo = float(indicatorThreeScore)
-                    finalScore = (finalScoreComponentOne + finalScoreComponentTwo) / 2
+                        finalScoreComponentTwo = float(indicatorTwoScore)
+                    if indicatorThreeScore is None:
+                        finalScoreComponentThree = 0
+                    else:
+                        finalScoreComponentThree = float(indicatorThreeScore)
+                    finalScore = (finalScoreComponentOne + finalScoreComponentTwo + finalScoreComponentThree) / 3
                     if (indicatorThreeScore is not None or indicatorTwoScore is not None):
                         ranking[legislature].append({'id': allDeputies[iterator]['ideCadastro'],
                                                      'nome': allDeputies[iterator]['nomeParlamentarAtual'],
                                                      'partido': allDeputies[iterator]['partidoAtual']['idPartido'],
                                                      'uf': allDeputies[iterator]['ufRepresentacaoAtual'],
                                                      'urlFoto': allDeputies[iterator]['urlFoto'],
-                                                     'fiscalizador': indicatorTwoScore,
-                                                     'transparente': indicatorThreeScore, 'finalScore': finalScore})
+                                                     'legislador': finalScoreComponentOne,
+                                                     'fiscalizador': finalScoreComponentTwo,
+                                                     'transparente': finalScoreComponentThree, 'finalScore': finalScore})
                 for legislature in utils.LEGISLATURES:
                     ranking[legislature] = sorted(ranking[legislature], key=lambda x: x['finalScore'], reverse=True)
             return render_template("ranking.html", ranking=ranking, lenDeputies=len(ranking[53]))
