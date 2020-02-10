@@ -218,42 +218,51 @@ class ScoreSystem:
 
                     print("The number of deputy's c.p. is...", len(deputy_commissions))
 
-                    # get only the comissions that are permanent
-                    deputy_commissions = [comission for comission in deputy_commissions
-                                         if comission.get in utils.getLegislativeBody("Comissão Permanente")]
+                    # get just the permanent commissions
+                    deputy_commissions = [commission for commission in deputy_commissions
+                                          if list(commission.keys())[0] in
+                                          utils.getLegislativeBody("Comissão Permanente")]
 
                     all_deputy_commissions_presences = []
-                    for commission in deputy_commissions:
-                        initials, periodsOfPresence = list(commission.items())[0]
-                        if periodsOfPresence[0] is not None:
+                    if len(deputy_commissions) > 0:
+                        for commission in deputy_commissions:
+                            initials, periodsOfPresence = list(commission.items())[0]
+                            if periodsOfPresence[0] is not None:
 
-                            if periodsOfPresence[1] is None:
-                                periodsOfPresence[1] = datetime.today()  # assign today's date if there is no end date
+                                if periodsOfPresence[1] is None:
+                                    periodsOfPresence[1] = datetime.today()  # assign today's date if no end
 
-                            reunions = [reunion for reunion in cpReunions
-                                        if reunion['sigla'] == initials and
-                                        (utils.str2date(periodsOfPresence[0]) <= utils.str2date(reunion['data']) <=
-                                         utils.str2date(periodsOfPresence[1]))]
+                                print(initials, utils.str2date(periodsOfPresence[0]), utils.str2date(periodsOfPresence[1]))
+                                print(utils.str2date(cpReunions[0]['data']))
 
-                            cp_frequency = len(reunions)
-                            if cp_frequency > 0:  # there were reunions from this CP when deputy was member
-                                deputy_presence_in_cp = len([reunion for reunion in reunions
-                                                             if str(int(deputy_id)) in reunion['presencas']])
-                                all_deputy_commissions_presences.append({'comission': initials,
-                                                                         'frequency': cp_frequency,
-                                                                         'deputy_presence': deputy_presence_in_cp})
-                    sum_of_cp_score = 0
-                    print(all_deputy_commissions_presences)
-                    if len(all_deputy_commissions_presences) > 0:
-                        for cp in all_deputy_commissions_presences:
-                            adjustment_factor = cp['frequency'] / max_number_of_reunions
-                            score = ((cp['deputy_presence'] / cp['frequency']) * adjustment_factor) * 10
-                            sum_of_cp_score += score
+                                reunions = [reunion for reunion in cpReunions
+                                            if reunion['sigla'] == initials and
+                                            (utils.str2date(periodsOfPresence[0]) <= utils.str2date(reunion['data']) <=
+                                             utils.str2date(periodsOfPresence[1]))]
 
-                        score_cp = sum_of_cp_score / len(all_deputy_commissions_presences)
-                        return score_cp
+                                cp_frequency = len(reunions)
+                                print(cp_frequency)
+                                if cp_frequency > 0:  # there were reunions from this CP when deputy was member
+                                    print(str(int(deputy_id)))
+                                    deputy_presence_in_cp = len([reunion for reunion in reunions
+                                                                 if int(float(deputy_id)) in reunion['presencas']])
+                                    all_deputy_commissions_presences.append({'comission': initials,
+                                                                             'frequency': cp_frequency,
+                                                                             'deputy_presence': deputy_presence_in_cp})
+                        sum_of_cp_score = 0
+                        print(all_deputy_commissions_presences)
+                        if len(all_deputy_commissions_presences) > 0:
+                            for cp in all_deputy_commissions_presences:
+                                adjustment_factor = cp['frequency'] / max_number_of_reunions
+                                score = ((cp['deputy_presence'] / cp['frequency']) * adjustment_factor) * 10
+                                sum_of_cp_score += score
+
+                            score_cp = sum_of_cp_score / len(all_deputy_commissions_presences)
+                            return score_cp
+                    else:
+                        return score_cp # deputy has no cp comissions
                 else:
-                    return score_cp  # deputy has no cp commissions
+                    return score_cp  # deputy has no comissions at all
             else:
                 return score_cp  # there are no cp reunions
 
