@@ -1,6 +1,7 @@
 from datetime import datetime
 import math
 import json
+import os
 import seaborn as sns
 import random
 from app import dbConn
@@ -24,6 +25,12 @@ def getLegislativeBody(body_name):
             return None
     except Exception as e:
         print(e)
+
+
+def getAllDeputiesIds():
+    """ Return all deputies id's in MongoDB """
+    ids = list(dbConn.build_collection('deputado').distinct("ideCadastro"))
+    return ids
 
 
 def format_number(number, units=['', 'K', 'M', 'G', 'T', 'P']):
@@ -103,3 +110,17 @@ def get_records_by_intervals(records, dates, data_key):
             result += [item for item in records if date_start <= str2date(item[data_key])
                        <= date_finish]
     return result
+
+
+def dict_to_json_file(data, dir_name, filename):
+    """ Dumps dictionary data into a JSON file """
+    if os.path.isdir(dir_name):
+        path = os.path.join(dir_name, filename, '.json')
+        if isinstance(data, dict):
+            with open(path, 'w') as fp:
+                json.dump(data, fp)
+            print('File written to', path, '.')
+        else:
+            print('Data needs to be an dict.')
+    else:
+        print("Directory doesn't exists.")
