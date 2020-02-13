@@ -115,7 +115,7 @@ def get_records_by_intervals(records, dates, data_key):
 def dict_to_json_file(data, dir_name, filename):
     """ Dumps dictionary data into a JSON file """
     if os.path.isdir(dir_name):
-        path = os.path.join(dir_name, filename, '.json')
+        path = os.path.join(dir_name, filename)
         if isinstance(data, dict):
             with open(path, 'w') as fp:
                 json.dump(data, fp)

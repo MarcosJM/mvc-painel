@@ -152,11 +152,10 @@ class ScoreSystem:
             result = list(self._collections['autoria'].aggregate(query_authoring))
 
             if len(result) > 0:
-                print("=============== Authoring results found! ===============")
                 best_result = max(result, key=lambda d: d['count'])['count']
-                print("The best result is...", best_result)
                 deputy_result = [item['count'] for item in result if item['_id'] == deputy_id]
-                print("The deputy result is...", deputy_result)
+                print("[INDICATOR ONE - AUTHORING SCORE] Results found. Deputy has {} "
+                      "propositions authored".format(len(deputy_result)))
                 if len(deputy_result) > 0:
                     deputy_result = deputy_result[0]
                     score_authoring = (deputy_result / best_result) * 10
@@ -184,10 +183,8 @@ class ScoreSystem:
             result_all_events = list(self._collections['votacao'].find(query_all_events))
 
             if len(result_all_events) > 0:
-                print("=============== Voting results found! ===============")
                 deputy_presences = [voting for voting in result_all_events if str(deputy_id) in voting['presentes']]
-                print("The number of votings is...", len(result_all_events))
-                print("The deputy presence is...", len(deputy_presences))
+                print("[INDICATOR ONE - VOTING SCORE] Results found. Deputy attended {} votings".format(len(deputy_presences)))
                 score_voting = (len(deputy_presences) / len(result_all_events)) * 10
                 return score_voting
             else:
@@ -214,12 +211,8 @@ class ScoreSystem:
 
             if len(cpReunions) > 0:  # there are at least 1 reunion in the period
 
-                print("=============== C.P. results found! ===============")
-
                 number_of_reunions_by_cp = dict(Counter([reunion['sigla'] for reunion in cpReunions]))
                 max_number_of_reunions = max(number_of_reunions_by_cp.values())
-
-                print("The max number of reunions is...", max_number_of_reunions)
 
                 # recover all commissions that the deputy is member of
                 if legislature_number is None:
@@ -235,8 +228,6 @@ class ScoreSystem:
 
                 if result_member_comissions is not None and result_member_comissions['comissoes'] is not None:
 
-                    print("=============== Deputy's C.P. results found! ===============")
-
                     if isinstance(result_member_comissions['comissoes']['comissao'], dict):
                         deputy_commissions = [{result_member_comissions['comissoes']['comissao']['siglaComissao']:
                                                    (result_member_comissions['comissoes']['comissao']['dataEntrada'],
@@ -244,8 +235,6 @@ class ScoreSystem:
                     else:
                         deputy_commissions = [{result['siglaComissao']: (result['dataEntrada'], result['dataSaida'])}
                                               for result in result_member_comissions['comissoes']['comissao']]
-
-                    print("The number of deputy's c.p. is...", len(deputy_commissions))
 
                     # get just the permanent commissions
                     deputy_commissions = [commission for commission in deputy_commissions
@@ -272,7 +261,6 @@ class ScoreSystem:
                                             (date_start <= utils.str2date(reunion['data']) <= date_end)]
 
                                 cp_frequency = len(reunions)
-                                print(cp_frequency)
                                 if cp_frequency > 0:  # there were reunions from this CP when deputy was member
                                     print(str(int(deputy_id)))
                                     deputy_presence_in_cp = len([reunion for reunion in reunions
@@ -281,7 +269,9 @@ class ScoreSystem:
                                                                              'frequency': cp_frequency,
                                                                              'deputy_presence': deputy_presence_in_cp})
                         sum_of_cp_score = 0
-                        print(all_deputy_commissions_presences)
+                        print("[INDICATOR ONE - C.P. SCORE] Results found. Deputy has {} comissions"
+                              "and attended {}".format(len(deputy_commissions), all_deputy_commissions_presences))
+
                         if len(all_deputy_commissions_presences) > 0:
                             for cp in all_deputy_commissions_presences:
                                 adjustment_factor = cp['frequency'] / max_number_of_reunions
@@ -304,7 +294,6 @@ class ScoreSystem:
             :param legislature_number: String - the legislature to be considered
             :return: float - a value between 0 and 10
             """
-            print('======================', legislature_number, '======================')
             if legislature_number is None:  # when no legislature number provided, calculate for all dep's legislatures
 
                 # recover which legislatures the deputy participated
@@ -328,9 +317,12 @@ class ScoreSystem:
                 voting_score = calculateVotingCriteria(deputy_id, legislature_number)
                 cp_score = calculatePermanentCommissionCriteria(deputy_id, legislature_number)
 
-            indicator_one_score = (authoring_score + voting_score + cp_score)/3
-            return {'indicator_one_score': indicator_one_score, 'authoring_criteria': authoring_score,
-                    'voting_criteria': voting_score, 'cp_criteria': cp_score}
+            print("[INDICATOR ONE] ==== Partial scores:", [authoring_score, voting_score, cp_score])
+            partial_scores = [0 if score is None else score for score in [authoring_score, voting_score, cp_score]]
+
+            indicator_one_score = sum(partial_scores)/3
+            return {'indicator_one_score': indicator_one_score, 'authoring_criteria': partial_scores[0],
+                    'voting_criteria': partial_scores[1], 'cp_criteria': partial_scores[2]}
 
         @app.route("/score_indicator_three", methods=['GET', 'POST'])
         def requestIndicatorThreeScore():
@@ -358,7 +350,8 @@ class ScoreSystem:
 
             allDeputiesIds = utils.getAllDeputiesIds()
 
-            for deputy_id in allDeputiesIds:
+            for _, deputy_id in enumerate(allDeputiesIds):
+                print("*******D E P U T Y     I D", deputy_id, " - ", _, " O F", len(allDeputiesIds), '*******')
                 indicator_one_score = calculateIndicatorOneScore(deputy_id)
                 # indicator_two_score = calculateIndicatorTwoScore(deputy_id)
                 indicator_three_score = calculateIndicatorThreeScore(deputy_id)
@@ -370,7 +363,17 @@ class ScoreSystem:
                 allScores[deputy_id] = scores
 
             # write data into a JSON file
-            utils.dict_to_json_file(allScores)
+            # utils.dict_to_json_file(allScores, '/home/mariana/Documents', 'indicador_one_and_three')
+
+            allScoresFMT = {k: v['scores'] for k, v in allScores.items()}
+            allScoresFMT = {k: {'indicator_one': v['indicator_one']['indicator_one_score'],
+                                'I1_authoring': v['indicator_one']['authoring_criteria'],
+                                'I1_voting': v['indicator_one']['voting_criteria'],
+                                'I1_cp': v['indicator_one']['cp_criteria'],
+                            'indicator_three': v['indicator_three']} for k, v in allScoresFMT.items()}
+
+            with open('/home/mariana/Documents/indicador_one_and_threev3.json', 'w') as fp:
+                json.dump(allScoresFMT, fp)
 
             return allScores
 
