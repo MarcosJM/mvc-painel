@@ -363,17 +363,7 @@ class ScoreSystem:
                 allScores[deputy_id] = scores
 
             # write data into a JSON file
-            # utils.dict_to_json_file(allScores, '/home/mariana/Documents', 'indicador_one_and_three')
-
-            allScoresFMT = {k: v['scores'] for k, v in allScores.items()}
-            allScoresFMT = {k: {'indicator_one': v['indicator_one']['indicator_one_score'],
-                                'I1_authoring': v['indicator_one']['authoring_criteria'],
-                                'I1_voting': v['indicator_one']['voting_criteria'],
-                                'I1_cp': v['indicator_one']['cp_criteria'],
-                            'indicator_three': v['indicator_three']} for k, v in allScoresFMT.items()}
-
-            with open('/home/mariana/Documents/indicador_one_and_threev3.json', 'w') as fp:
-                json.dump(allScoresFMT, fp)
+            utils.dict_to_json_file(allScores, '/home/mariana/Documents', 'indicador_one_and_three.json')
 
             return allScores
 

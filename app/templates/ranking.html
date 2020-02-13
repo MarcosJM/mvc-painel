@@ -37,11 +37,41 @@
               <div class="container">
                 <div class="row">
                   <div class="col-sm-8">
-                    {% for iterator in range(lenDeputies) %}
-                      <div class="container">
+                    <table>
+                      <tr>
+                        <th></th>
+                        <th></th>
+                        <th>Indicador Legislador</th>
+                        <th>Indicador Fiscalizador</th>
+                        <th>Indicador Transparente</th>
+                      </tr>
+                      {% for iterator in range(lenDeputies) %}
+                      <tr>
+                        <td> {{iterator + 1}} </td>
+                        <td>
+                          <img src="{{ ranking[53][iterator]['urlFoto'] }}" alt="foto de {{ ranking[53][iterator]['nome'] }}">
+                          <span>{{ ranking[53][iterator]['nome'] }} {{ranking[53][iterator]['partido'] }} {{ ranking[53][iterator]['uf'] }}</span>
+                        </td>
+                        <td>
+                          {{ranking[53][iterator]['legislador']}}
+                        </td>
+                        <td>
+                          {{ranking[53][iterator]['fiscalizador']}}
+                        </td>
+                        <td>
+                          {{ranking[53][iterator]['transparente']}}
+                        </td>
+                        <td>
+                          {{ranking[53][iterator]['finalScore']}}
+                        </td>
+                      </tr>
+                      {% endfor %}
+                    </table>
+                    
+                      <!-- <div class="container">
                         <div class="row">
                           <div class="col-sm-3">
-                            {{iterator + 1}}
+                            
                           </div>
                           <div class="col-sm-3">
                             <img src="{{ ranking[53][iterator]['urlFoto'] }}" alt="foto de {{ ranking[53][iterator]['nome'] }}">
@@ -51,8 +81,7 @@
                             <span>{{ ranking[53][iterator]['nome'] }} {{ranking[53][iterator]['partido'] }} {{ ranking[53][iterator]['uf'] }}</span>
                           </div>
                         </div>
-                      </div>
-                    {% endfor %}
+                      </div> -->
                   </div>
                 </div>
               </div>
