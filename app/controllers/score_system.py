@@ -27,9 +27,17 @@ class ScoreSystem:
 
             # recover all the public audiences events that happened in a legislature
             if legislature_number is None:
-                query_all_events = {}
+                query_all_periods_of_activity = {'ideCadastro': str(deputy_id)}
+                query_fields = {"numLegislatura": 1, "_id": 0}
+                deputy_all_periods_of_activity = \
+                    list(self._collections['deputado'].find(query_all_periods_of_activity,
+                                                            query_fields).sort("numLegislatura", 1))
+                legislatures = [int(leg['numLegislatura']) for leg in deputy_all_periods_of_activity]
+
             else:
-                query_all_events = {'legislatura': {"$in": legislature_number}}
+                legislatures = [int(legislature_number)]
+
+            query_all_events = {'legislatura': {"$in": legislatures}}
 
             result_all_events = list(self._collections['reuniao_audiencia_publica'].find(query_all_events))
             public_audiences = result_all_events
@@ -305,7 +313,6 @@ class ScoreSystem:
                                                             query_fields).sort("numLegislatura", 1))
 
                 deputy_legislatures = [int(leg['numLegislatura']) for leg in deputy_all_periods_of_activity]
-                print("=============== Deputy's all legislatures:", deputy_legislatures)
 
                 authoring_score = calculateAuthoringCriteria(deputy_id, deputy_legislatures)
                 voting_score = calculateVotingCriteria(deputy_id, deputy_legislatures)
@@ -344,27 +351,31 @@ class ScoreSystem:
             legislature_number = request.args.get('legislature_number', type=int)
             return calculateIndicatorOneScore(deputy_id, legislature_number)
 
-        @app.route("/ranking")
+        @app.route("/ranking", methods=['GET', 'POST'])
         def requestRanking():
+            depId = request.args.get('deputy_id', type=int)
             allScores = {}
 
-            allDeputiesIds = utils.getAllDeputiesIds()
+            if depId is None:
+                allDeputiesIds = utils.getAllDeputiesIds()
 
-            for _, deputy_id in enumerate(allDeputiesIds):
-                print("*******D E P U T Y     I D", deputy_id, " - ", _, " O F", len(allDeputiesIds), '*******')
-                indicator_one_score = calculateIndicatorOneScore(deputy_id)
-                # indicator_two_score = calculateIndicatorTwoScore(deputy_id)
-                indicator_three_score = calculateIndicatorThreeScore(deputy_id)
+                for _, deputy_id in enumerate(allDeputiesIds):
+                    print("*******D E P U T Y     I D", deputy_id, " - ", _, " O F", len(allDeputiesIds), '*******')
+                    indicator_one_score = calculateIndicatorOneScore(deputy_id)
+                    # indicator_two_score = calculateIndicatorTwoScore(deputy_id)
+                    indicator_three_score = calculateIndicatorThreeScore(deputy_id)
 
-                scores = {'scores': {'indicator_one': indicator_one_score,
-                                     'indicator_two': '',
-                                     'indicator_three': indicator_three_score}}
+                    scores = {'scores': {'indicator_one': indicator_one_score,
+                                         'indicator_two': '',
+                                         'indicator_three': indicator_three_score}}
 
-                allScores[deputy_id] = scores
+                    allScores[deputy_id] = scores
 
-            # write data into a JSON file
-            utils.dict_to_json_file(allScores, '/home/mariana/Documents', 'indicador_one_and_three.json')
-
+                # write data into a JSON file
+                utils.dict_to_json_file(allScores, '/home/mariana/Documents', 'indicador_one_and_three.json')
+            else:
+                allScores[depId] = {'score_indicator_one': calculateIndicatorOneScore(depId),
+                                    'score_indicator_three': calculateIndicatorThreeScore(depId)}
             return allScores
 
         # @app.route("/ranking")
