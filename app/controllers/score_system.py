@@ -176,7 +176,7 @@ class ScoreSystem:
                                         else:
                                             date_end = utils.str2date(periodsOfPresence[1])
 
-                                        reunions = [reunion for reunion in cpiReunions
+                                        reunions = [reunion for reunion in cpi_reunions_filtered
                                                     if reunion['sigla'] == initials and
                                                     (date_start <= utils.str2date(reunion['data']) <= date_end)]
 
@@ -189,8 +189,8 @@ class ScoreSystem:
                                                                                      'frequency': cpi_frequency,
                                                                                      'deputy_presence': deputy_presence_in_cpi})
                                 sum_of_cpi_score = 0
-                                print("[INDICATOR ONE - C.P. SCORE] Results found. Deputy has {} comissions"
-                                      "and attended {}".format(len(deputy_commissions), all_deputy_commissions_presences))
+                                print("[INDICATOR TWO ] Results found. Deputy has {} comissions"
+                                      "and attended {}. The max number of reunions by a CPI was {}".format(len(deputy_commissions), all_deputy_commissions_presences, max_number_of_reunions))
 
                                 if len(all_deputy_commissions_presences) > 0:
                                     for cpi in all_deputy_commissions_presences:
