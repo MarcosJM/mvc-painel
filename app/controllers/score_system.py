@@ -76,72 +76,142 @@ class ScoreSystem:
             else:
                 return indicator_three_score
 
-        def calculateIndicatorTwoScore(deputy_id, legislature_number=56):
+        def calculateIndicatorTwoScore(deputy_id, legislature_number=None):
             """
                 this method calculates the score of a deputy in the fiscalizador indicator perspective
                 :param deputy_id: String - the deputy's identifier
                 :param legislature_number: String - the legislature to be considered
                 :return: float - a value between 0 and 10
                 """
-            pipeline = [{"$match": {"legislatura": legislature_number}},
-                        {"$group": {"_id": "$sigla", "count": {"$sum": 1}}}]
+            score_cpi = 0
+            # recover all the cpi events that happened in a legislature
+            if legislature_number is None:
+                query_all_periods_of_activity = {'ideCadastro': str(deputy_id)}
+                query_fields = {"numLegislatura": 1, "_id": 0}
+                deputy_all_periods_of_activity = \
+                    list(self._collections['deputado'].find(query_all_periods_of_activity,
+                                                            query_fields).sort("numLegislatura", 1))
+                legislatures = [int(leg['numLegislatura']) for leg in deputy_all_periods_of_activity]
 
-            # getting the number of reunions in each cpi
-            cpiReunions = list(self._collections['reuniao_comissao_inquerito'].aggregate(pipeline))
-            cpiReunionsFormatted = {}
-            for cpi in cpiReunions:
-                valuesOnly = list(cpi.values())
-                cpiReunionsFormatted.update({valuesOnly[0]: valuesOnly[1]})
-
-            # recover all commissions that the deputy is member of
-            query_deputy_comissions = {'numLegislatura': str(legislature_number), 'ideCadastro': str(deputy_id)}
-            query_field = {'comissoes': 1, '_id': 0}
-            result_member_comissions = next(self._collections['deputado'].find(query_deputy_comissions, query_field),
-                                            None)
-            if result_member_comissions is not None and result_member_comissions['comissoes'] is not None:
-                if isinstance(result_member_comissions['comissoes']['comissao'], dict):
-                    siglas = result_member_comissions['comissoes']['comissao']['siglaComissao']
-                else:
-                    siglas = [result['siglaComissao'] for result in result_member_comissions['comissoes']['comissao']]
-
-                # get presence in those commissions
-                query_commissions_presence = {'legislatura': int(legislature_number)}
-                result_comissions_presence = list(
-                    self._collections['reuniao_comissao_inquerito'].find(query_commissions_presence))
-
-                deputy_presences = [item for item in result_comissions_presence if item['sigla'] in siglas]
-                if deputy_presences is not None:
-
-                    presencesGroup = {}
-
-                    for presence in deputy_presences:
-                        if presence['sigla'] in presencesGroup:
-                            presencesGroup[presence['sigla']] += presence['presencas']
-                        else:
-                            presencesGroup.update({presence['sigla']: presence['presencas']})
-
-                    deputyPresences = {}
-
-                    for sigla in presencesGroup.keys():
-                        deputyPresences.update({sigla: presencesGroup[sigla].count(deputy_id)})
-
-                    # correction factor
-                    cf = max(list(cpiReunionsFormatted.values()))
-
-                    # for each cpi the deputy attended, we compare his attendances to the total number of meetings
-
-                    indicatorScore = 0
-                    for cpi in deputyPresences.items():
-                        indicatorScore += (cpi[1] / cpiReunionsFormatted[cpi[0]]) * (cpi[1] / cf)
-                    if len(presencesGroup) > 0:
-                        return str((indicatorScore / len(presencesGroup)) * 10)
-                    else:
-                        return 0
-                else:
-                    return None
             else:
-                return None
+                legislatures = [int(legislature_number)]
 
+            query_all_events = {'legislatura': {"$in": legislatures}}
+            result_all_events = list(self._collections['reuniao_comissao_inquerito'].find(query_all_events))
+            cpiReunions = result_all_events
+
+            if len(cpiReunions) > 0:
+                #getting the total number of reunions of each cpi
+                number_of_reunions_by_cpi = dict(Counter([reunion['sigla'] for reunion in cpiReunions]))
+
+                #getting the max number of reunions of an cpi to calculate correction factor
+                max_number_of_reunions = max(number_of_reunions_by_cpi.values())
+
+                # recover the periods in which the deputy was actively working
+                if legislature_number is None:
+                    query_deputy_availability = {'ideCadastro': str(deputy_id)}
+                else:
+                    query_deputy_availability = {'numLegislatura': {"$in": list(map(str, legislature_number))},
+                                                 'ideCadastro': str(deputy_id)}
+
+                query_field = {'periodosExercicio': 1, '_id': 0}
+                result = next(self._collections['deputado'].find(query_deputy_availability, query_field), None)
+
+                if result is not None and result['periodosExercicio'] is not None:
+                    periods_of_exercise_deputy = result['periodosExercicio']['periodoExercicio']
+
+                    if isinstance(periods_of_exercise_deputy, dict):
+                        periods_of_exercise_deputy = [periods_of_exercise_deputy]
+
+                    dates = [(item['dataInicio'], item['dataFim']) for item in
+                             periods_of_exercise_deputy]
+                    # filter all public cpi reunions by the period of availability of the deputy
+                    cpi_reunions_filtered = utils.get_records_by_intervals(cpiReunions, dates, 'data')
+
+                    # count all the cpi reunions that happened during deputy exercise
+                    if len(cpi_reunions_filtered) > 0:
+                        number_of_reunions_by_cpi_filtered = dict(Counter([reunion['sigla'] for reunion in cpi_reunions_filtered]))
+
+                        # recover all commissions that the deputy is member of
+                        if legislature_number is None:
+                            query_deputy_comissions = {'ideCadastro': str(deputy_id)}
+                        else:
+                            query_deputy_comissions = {'numLegislatura': {"$in": list(map(str, legislature_number))},
+                                                       'ideCadastro': str(deputy_id)}
+
+                        query_field = {'comissoes': 1, '_id': 0}
+                        result_member_comissions = next(
+                            self._collections['deputado'].find(query_deputy_comissions, query_field),
+                            None)
+
+                        if result_member_comissions is not None and result_member_comissions['comissoes'] is not None:
+
+                            if isinstance(result_member_comissions['comissoes']['comissao'], dict):
+                                deputy_commissions = [{result_member_comissions['comissoes']['comissao']['siglaComissao']:
+                                                           (
+                                                           result_member_comissions['comissoes']['comissao']['dataEntrada'],
+                                                           result_member_comissions['comissoes']['comissao']['dataSaida'])}]
+                            else:
+                                deputy_commissions = [
+                                    {result['siglaComissao']: (result['dataEntrada'], result['dataSaida'])}
+                                    for result in result_member_comissions['comissoes']['comissao']]
+
+                            # get just the cpi
+                            deputy_commissions = [commission for commission in deputy_commissions
+                                                  if list(commission.keys())[0] in
+                                                  utils.getLegislativeBody("Comissão Parlamentar de Inquérito")]
+
+                            all_deputy_commissions_presences = []
+                            if len(deputy_commissions) > 0:
+                                for commission in deputy_commissions:
+                                    initials, periodsOfPresence = list(commission.items())[0]
+                                    if periodsOfPresence[0] is not None:
+
+                                        date_start = utils.str2date(periodsOfPresence[0])
+
+                                        if periodsOfPresence[1] is None:
+                                            periodsOfPresence = list(periodsOfPresence)
+                                            periodsOfPresence[1] = datetime.today()  # assign today's date if no end
+                                            date_end = periodsOfPresence[1]
+                                        else:
+                                            date_end = utils.str2date(periodsOfPresence[1])
+
+                                        reunions = [reunion for reunion in cpi_reunions_filtered
+                                                    if reunion['sigla'] == initials and
+                                                    (date_start <= utils.str2date(reunion['data']) <= date_end)]
+
+                                        cpi_frequency = len(reunions)
+                                        if cpi_frequency > 0:  # there were reunions from this CPi when deputy was member
+                                            print(str(int(deputy_id)))
+                                            deputy_presence_in_cpi = len([reunion for reunion in reunions
+                                                                         if int(float(deputy_id)) in reunion['presencas']])
+                                            all_deputy_commissions_presences.append({'comission': initials,
+                                                                                     'frequency': cpi_frequency,
+                                                                                     'deputy_presence': deputy_presence_in_cpi})
+                                sum_of_cpi_score = 0
+                                print("[INDICATOR TWO ] Results found. Deputy has {} comissions"
+                                      "and attended {}. The max number of reunions by a CPI was {}".format(len(deputy_commissions), all_deputy_commissions_presences, max_number_of_reunions))
+
+                                if len(all_deputy_commissions_presences) > 0:
+                                    for cpi in all_deputy_commissions_presences:
+                                        adjustment_factor = cpi['frequency'] / max_number_of_reunions
+                                        score = ((cpi['deputy_presence'] / cpi['frequency']) * adjustment_factor) * 10
+                                        sum_of_cpi_score += score
+
+                                    score_cpi = sum_of_cpi_score / len(all_deputy_commissions_presences)
+                                    return score_cpi
+                                else:
+                                    return score_cpi
+                            else:
+                                return score_cpi
+                        else:
+                            return score_cpi
+                    else:
+                        return score_cpi
+                else:
+                    return score_cpi
+            else:
+                return score_cpi
         def calculateAuthoringCriteria(deputy_id, legislature_number=None):
             """
             calculates the criteria of the number of propositions authored
@@ -342,14 +412,15 @@ class ScoreSystem:
         def requestIndicatorTwoScore():
             # getting variables from url
             deputy_id = request.args.get('deputy_id', type=int)
-            legislature_number = request.args.get('legislature_number', default=56, type=int)
-            return calculateIndicatorTwoScore(deputy_id, legislature_number)
+            legislature_number = request.args.get('legislature_number', type=int)
+            print(legislature_number)
+            return {'indicator': calculateIndicatorTwoScore(deputy_id, legislature_number)}
 
         @app.route("/score_indicator_one", methods=['GET', 'POST'])
         def requestIndicatorOneScore():
             deputy_id = request.args.get('deputy_id', type=int)
-            legislature_number = request.args.get('legislature_number', type=int)
-            return calculateIndicatorOneScore(deputy_id, legislature_number)
+            # legislature_number = request.args.get('legislature_number', type=int)
+            return calculateIndicatorOneScore(deputy_id)
 
         @app.route("/ranking", methods=['GET', 'POST'])
         def requestRanking():
@@ -361,18 +432,17 @@ class ScoreSystem:
 
                 for _, deputy_id in enumerate(allDeputiesIds):
                     print("*******D E P U T Y     I D", deputy_id, " - ", _, " O F", len(allDeputiesIds), '*******')
-                    indicator_one_score = calculateIndicatorOneScore(deputy_id)
-                    # indicator_two_score = calculateIndicatorTwoScore(deputy_id)
-                    indicator_three_score = calculateIndicatorThreeScore(deputy_id)
+                    # indicator_one_score = calculateIndicatorOneScore(deputy_id)
+                    indicator_two_score = calculateIndicatorTwoScore(deputy_id)
+                    # indicator_three_score = calculateIndicatorThreeScore(deputy_id)
 
-                    scores = {'scores': {'indicator_one': indicator_one_score,
-                                         'indicator_two': '',
-                                         'indicator_three': indicator_three_score}}
+                    scores = {'scores': {
+                                         'indicator_two': indicator_two_score}}
 
                     allScores[deputy_id] = scores
 
                 # write data into a JSON file
-                utils.dict_to_json_file(allScores, '/home/mariana/Documents', 'indicador_one_and_three.json')
+                utils.dict_to_json_file(allScores, 'C:/Users/pinho/Documents/Escola/Oitavo periodo/PG2/codigo/projetos/Data', 'indicador_one_and_three.json')
             else:
                 allScores[depId] = {'score_indicator_one': calculateIndicatorOneScore(depId),
                                     'score_indicator_three': calculateIndicatorThreeScore(depId)}

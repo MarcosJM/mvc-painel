@@ -40,8 +40,11 @@ class Main:
 
             temp = personalInfo.party_affiliations
             temp = temp['filiacaoPartidaria']
-            if len(temp) > 0:
-                temp = [item['siglaPartidoAnterior'] for item in temp]
+            if temp is not None:
+                if len(temp) > 0:
+                    if isinstance(temp, dict):
+                        temp = [temp]
+                    temp = [item['filiacaoPartidaria']['siglaPartidoAnterior'] for item in temp]
 
             personalInfo.setPartyAffiliations(temp)
 
