@@ -432,20 +432,27 @@ class ScoreSystem:
 
                 for _, deputy_id in enumerate(allDeputiesIds):
                     print("*******D E P U T Y     I D", deputy_id, " - ", _, " O F", len(allDeputiesIds), '*******')
-                    # indicator_one_score = calculateIndicatorOneScore(deputy_id)
+                    indicator_one_score = calculateIndicatorOneScore(deputy_id)
                     indicator_two_score = calculateIndicatorTwoScore(deputy_id)
-                    # indicator_three_score = calculateIndicatorThreeScore(deputy_id)
+                    indicator_three_score = calculateIndicatorThreeScore(deputy_id)
 
-                    scores = {'scores': {
-                                         'indicator_two': indicator_two_score}}
+                    scores = {'scores': {'indicator_one': indicator_one_score,
+                                         'indicator_two': indicator_two_score,
+                                         'indicator_three': indicator_three_score}}
 
                     allScores[deputy_id] = scores
 
                 # write data into a JSON file
-                utils.dict_to_json_file(allScores, 'C:/Users/pinho/Documents/Escola/Oitavo periodo/PG2/codigo/projetos/Data', 'indicador_one_and_three.json')
+                utils.dict_to_json_file(allScores, utils.RANKING_FILE_DIRECTORY, 'indicadors.json')
             else:
-                allScores[depId] = {'score_indicator_one': calculateIndicatorOneScore(depId),
-                                    'score_indicator_three': calculateIndicatorThreeScore(depId)}
+                indicator_one_score = calculateIndicatorOneScore(depId)['indicator_one_score']
+                indicator_two_score = calculateIndicatorTwoScore(depId)
+                indicator_three_score = calculateIndicatorThreeScore(depId)
+                finalScore = (indicator_one_score + indicator_two_score + indicator_three_score) /3
+                allScores[depId] = {'score_indicator_one': indicator_one_score,
+                                    'score_indicator_two': indicator_two_score,
+                                    'score_indicator_three': indicator_three_score,
+                                    'final': finalScore}
             return allScores
 
         # @app.route("/ranking")

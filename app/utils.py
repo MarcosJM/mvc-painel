@@ -9,6 +9,7 @@ from app import dbConn
 
 LEGISLATURES = [53, 54, 55, 56]
 YEARS = [2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019]
+RANKING_FILE_DIRECTORY = 'C:/Users/pinho/Documents/Escola/Oitavo periodo/PG2/codigo/projetos/Data'
 
 with open('app/party_colors.json') as f:
     PARTY_COLORS = json.load(f)
