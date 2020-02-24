@@ -33,6 +33,18 @@ def getAllDeputiesIds():
     ids = list(dbConn.build_collection('deputado').distinct("ideCadastro"))
     return ids
 
+def isEligible(depId):
+    eligible = False
+    queryFilter = {'ideCadastro':str(int(depId))}
+    queryFields = {'numLegislatura': 1, '_id': 0}
+    deputyLegislatures = list(dbConn.build_collection('deputado').find(queryFilter, queryFields))
+    if len(deputyLegislatures) > 4:
+        print(deputyLegislatures)
+        for legislature in deputyLegislatures:
+            if legislature['numLegislatura'] == "55":
+                eligible = True
+    return eligible
+
 
 def format_number(number, units=['', 'K', 'M', 'G', 'T', 'P']):
     """ function for formatting big numbers """

@@ -431,19 +431,20 @@ class ScoreSystem:
                 allDeputiesIds = utils.getAllDeputiesIds()
 
                 for _, deputy_id in enumerate(allDeputiesIds):
-                    print("*******D E P U T Y     I D", deputy_id, " - ", _, " O F", len(allDeputiesIds), '*******')
-                    indicator_one_score = calculateIndicatorOneScore(deputy_id)
-                    indicator_two_score = calculateIndicatorTwoScore(deputy_id)
-                    indicator_three_score = calculateIndicatorThreeScore(deputy_id)
+                    if utils.isEligible(deputy_id):
+                        print("*******D E P U T Y     I D", deputy_id, " - ", _, " O F", len(allDeputiesIds), '*******')
+                        indicator_one_score = calculateIndicatorOneScore(deputy_id)
+                        indicator_two_score = calculateIndicatorTwoScore(deputy_id)
+                        indicator_three_score = calculateIndicatorThreeScore(deputy_id)
 
-                    scores = {'scores': {'indicator_one': indicator_one_score,
-                                         'indicator_two': indicator_two_score,
-                                         'indicator_three': indicator_three_score}}
+                        scores = {'scores': {'indicator_one': indicator_one_score,
+                                             'indicator_two': indicator_two_score,
+                                             'indicator_three': indicator_three_score}}
 
-                    allScores[deputy_id] = scores
+                        allScores[deputy_id] = scores
 
-                # write data into a JSON file
-                utils.dict_to_json_file(allScores, utils.RANKING_FILE_DIRECTORY, 'indicadors.json')
+                    # write data into a JSON file
+                    utils.dict_to_json_file(allScores, utils.RANKING_FILE_DIRECTORY, 'indicadors.json')
             else:
                 indicator_one_score = calculateIndicatorOneScore(depId)['indicator_one_score']
                 indicator_two_score = calculateIndicatorTwoScore(depId)
