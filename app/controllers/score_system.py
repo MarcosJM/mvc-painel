@@ -67,7 +67,7 @@ class ScoreSystem:
                                                       for dep_id in item['presencas']])
                 if len(public_audiences_presences) > 0:
                     best_result = public_audiences_presences.most_common(1)[0][1]  # max number of presences
-                    deputy_result = public_audiences_presences[deputy_id]
+                    deputy_result = public_audiences_presences[int(deputy_id)]
 
                     indicator_three_score = (deputy_result / best_result) * 10
                     return indicator_three_score
@@ -231,7 +231,7 @@ class ScoreSystem:
 
             if len(result) > 0:
                 best_result = max(result, key=lambda d: d['count'])['count']
-                deputy_result = [item['count'] for item in result if item['_id'] == deputy_id]
+                deputy_result = [item['count'] for item in result if item['_id'] == int(deputy_id)]
                 print("[INDICATOR ONE - AUTHORING SCORE] Results found. Deputy has {} "
                       "propositions authored".format(len(deputy_result)))
                 if len(deputy_result) > 0:
